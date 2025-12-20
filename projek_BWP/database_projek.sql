@@ -1,6 +1,6 @@
 /*
 SQLyog Community v13.3.1 (64 bit)
-MySQL - 8.0.30 : Database - db_projek
+MySQL - 8.0.30 : Database - db_ticketing
 *********************************************************************
 */
 
@@ -12,67 +12,38 @@ MySQL - 8.0.30 : Database - db_projek
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`db_projek` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`db_ticketing` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
-USE `db_projek`;
+USE `db_ticketing`;
 
-/*Table structure for table `booked_seats` */
+/*Table structure for table `order_items` */
 
-DROP TABLE IF EXISTS `booked_seats`;
+DROP TABLE IF EXISTS `order_items`;
 
-CREATE TABLE `booked_seats` (
-  `booked_id` int NOT NULL AUTO_INCREMENT,
-  `ticket_id` int DEFAULT NULL,
+CREATE TABLE `order_items` (
+  `order_item_id` int NOT NULL AUTO_INCREMENT,
+  `order_id` int DEFAULT NULL,
+  `product_id` int DEFAULT NULL,
+  `schedule_id` int DEFAULT NULL,
   `seat_id` int DEFAULT NULL,
-  PRIMARY KEY (`booked_id`),
-  KEY `ticket_id` (`ticket_id`),
+  `price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`order_item_id`),
+  KEY `order_id` (`order_id`),
+  KEY `product_id` (`product_id`),
+  KEY `schedule_id` (`schedule_id`),
   KEY `seat_id` (`seat_id`),
-  CONSTRAINT `booked_seats_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`ticket_id`),
-  CONSTRAINT `booked_seats_ibfk_2` FOREIGN KEY (`seat_id`) REFERENCES `seats` (`seat_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
+  CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
+  CONSTRAINT `order_items_ibfk_3` FOREIGN KEY (`schedule_id`) REFERENCES `schedules` (`schedule_id`),
+  CONSTRAINT `order_items_ibfk_4` FOREIGN KEY (`seat_id`) REFERENCES `seats` (`seat_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-/*Data for the table `booked_seats` */
+/*Data for the table `order_items` */
 
-insert  into `booked_seats`(`booked_id`,`ticket_id`,`seat_id`) values 
-(1,1,1),
-(2,2,2),
-(3,3,6),
-(4,4,7);
-
-/*Table structure for table `cinemas` */
-
-DROP TABLE IF EXISTS `cinemas`;
-
-CREATE TABLE `cinemas` (
-  `cinema_id` int NOT NULL AUTO_INCREMENT,
-  `cinema_name` varchar(100) DEFAULT NULL,
-  `location` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`cinema_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Data for the table `cinemas` */
-
-insert  into `cinemas`(`cinema_id`,`cinema_name`,`location`) values 
-(1,'Cinépolis Galaxy Mall','Surabaya'),
-(2,'XXI Tunjungan Plaza','Surabaya');
-
-/*Table structure for table `movies` */
-
-DROP TABLE IF EXISTS `movies`;
-
-CREATE TABLE `movies` (
-  `movie_id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) DEFAULT NULL,
-  `duration` int DEFAULT NULL,
-  `genre` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`movie_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Data for the table `movies` */
-
-insert  into `movies`(`movie_id`,`title`,`duration`,`genre`) values 
-(1,'Inside Out 2',100,'Animation'),
-(2,'Deadpool & Wolverine',130,'Action');
+insert  into `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`,`seat_id`,`price`) values 
+(1,1,1,1,1,45000.00),
+(2,1,1,1,2,45000.00),
+(3,2,6,4,4,750000.00);
 
 /*Table structure for table `orders` */
 
@@ -91,8 +62,33 @@ CREATE TABLE `orders` (
 /*Data for the table `orders` */
 
 insert  into `orders`(`order_id`,`user_id`,`order_date`,`total_price`) values 
-(1,1,'2025-11-19 16:23:43',90000.00),
-(2,2,'2025-11-19 16:23:43',120000.00);
+(1,1,'2025-11-19 16:30:00',90000.00),
+(2,2,'2025-11-19 17:00:00',750000.00);
+
+/*Table structure for table `schedules` */
+
+DROP TABLE IF EXISTS `schedules`;
+
+CREATE TABLE `schedules` (
+  `schedule_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int DEFAULT NULL,
+  `venue_id` int DEFAULT NULL,
+  `start_datetime` datetime DEFAULT NULL,
+  `end_datetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`schedule_id`),
+  KEY `product_id` (`product_id`),
+  KEY `venue_id` (`venue_id`),
+  CONSTRAINT `schedules_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
+  CONSTRAINT `schedules_ibfk_2` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `schedules` */
+
+insert  into `schedules`(`schedule_id`,`product_id`,`venue_id`,`start_datetime`,`end_datetime`) values 
+(1,1,1,'2025-11-20 18:00:00','2025-11-20 20:00:00'),
+(2,4,4,'2025-11-21 14:00:00','2025-11-21 16:00:00'),
+(3,5,4,'2025-11-22 10:00:00','2025-11-22 11:00:00'),
+(4,6,5,'2025-12-01 19:00:00','2025-12-01 22:00:00');
 
 /*Table structure for table `seats` */
 
@@ -100,92 +96,91 @@ DROP TABLE IF EXISTS `seats`;
 
 CREATE TABLE `seats` (
   `seat_id` int NOT NULL AUTO_INCREMENT,
-  `studio_id` int DEFAULT NULL,
+  `venue_id` int DEFAULT NULL,
   `seat_code` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`seat_id`),
-  KEY `studio_id` (`studio_id`),
-  CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `venue_id` (`venue_id`),
+  CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `seats` */
 
-insert  into `seats`(`seat_id`,`studio_id`,`seat_code`) values 
+insert  into `seats`(`seat_id`,`venue_id`,`seat_code`) values 
 (1,1,'A1'),
 (2,1,'A2'),
 (3,1,'A3'),
-(4,2,'C1'),
-(5,2,'C2'),
-(6,3,'VIP1'),
-(7,3,'VIP2');
+(4,5,'VIP1'),
+(5,5,'VIP2'),
+(6,5,'VIP3');
 
-/*Table structure for table `showtimes` */
+/*Table structure for table `ticket_categories` */
 
-DROP TABLE IF EXISTS `showtimes`;
+DROP TABLE IF EXISTS `ticket_categories`;
 
-CREATE TABLE `showtimes` (
-  `showtime_id` int NOT NULL AUTO_INCREMENT,
-  `studio_id` int DEFAULT NULL,
-  `movie_id` int DEFAULT NULL,
-  `show_date` date DEFAULT NULL,
-  `show_time` time DEFAULT NULL,
-  PRIMARY KEY (`showtime_id`),
-  KEY `studio_id` (`studio_id`),
-  KEY `movie_id` (`movie_id`),
-  CONSTRAINT `showtimes_ibfk_1` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`),
-  CONSTRAINT `showtimes_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`movie_id`)
+CREATE TABLE `ticket_categories` (
+  `category_id` int NOT NULL AUTO_INCREMENT,
+  `category_name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `ticket_categories` */
+
+insert  into `ticket_categories`(`category_id`,`category_name`) values 
+(1,'Movie'),
+(2,'Zoo'),
+(3,'Museum'),
+(4,'Arcade'),
+(5,'Amusement Park'),
+(6,'Sport'),
+(7,'Event');
+
+/*Table structure for table `ticket_instances` */
+
+DROP TABLE IF EXISTS `ticket_instances`;
+
+CREATE TABLE `ticket_instances` (
+  `ticket_instance_id` int NOT NULL AUTO_INCREMENT,
+  `order_item_id` int DEFAULT NULL,
+  `qr_code` varchar(255) DEFAULT NULL,
+  `is_used` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`ticket_instance_id`),
+  KEY `order_item_id` (`order_item_id`),
+  CONSTRAINT `ticket_instances_ibfk_1` FOREIGN KEY (`order_item_id`) REFERENCES `order_items` (`order_item_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-/*Data for the table `showtimes` */
+/*Data for the table `ticket_instances` */
 
-insert  into `showtimes`(`showtime_id`,`studio_id`,`movie_id`,`show_date`,`show_time`) values 
-(1,1,1,'2025-11-20','18:00:00'),
-(2,1,2,'2025-11-20','20:30:00'),
-(3,3,2,'2025-11-21','19:00:00');
+insert  into `ticket_instances`(`ticket_instance_id`,`order_item_id`,`qr_code`,`is_used`) values 
+(1,1,'QR-MOVIE-A1',0),
+(2,2,'QR-MOVIE-A2',0),
+(3,3,'QR-CONCERT-VIP1',0);
 
-/*Table structure for table `studios` */
+/*Table structure for table `ticket_products` */
 
-DROP TABLE IF EXISTS `studios`;
+DROP TABLE IF EXISTS `ticket_products`;
 
-CREATE TABLE `studios` (
-  `studio_id` int NOT NULL AUTO_INCREMENT,
-  `cinema_id` int DEFAULT NULL,
-  `studio_name` varchar(50) DEFAULT NULL,
-  `capacity` int DEFAULT NULL,
-  PRIMARY KEY (`studio_id`),
-  KEY `cinema_id` (`cinema_id`),
-  CONSTRAINT `studios_ibfk_1` FOREIGN KEY (`cinema_id`) REFERENCES `cinemas` (`cinema_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `ticket_products` (
+  `product_id` int NOT NULL AUTO_INCREMENT,
+  `category_id` int DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `description` text,
+  `base_price` decimal(10,2) DEFAULT NULL,
+  `requires_schedule` tinyint(1) DEFAULT NULL,
+  `requires_seat` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `ticket_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `ticket_categories` (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-/*Data for the table `studios` */
+/*Data for the table `ticket_products` */
 
-insert  into `studios`(`studio_id`,`cinema_id`,`studio_name`,`capacity`) values 
-(1,1,'Studio 1',50),
-(2,1,'Studio 2',75),
-(3,2,'Studio Premier',40);
-
-/*Table structure for table `tickets` */
-
-DROP TABLE IF EXISTS `tickets`;
-
-CREATE TABLE `tickets` (
-  `ticket_id` int NOT NULL AUTO_INCREMENT,
-  `order_id` int DEFAULT NULL,
-  `showtime_id` int DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (`ticket_id`),
-  KEY `order_id` (`order_id`),
-  KEY `showtime_id` (`showtime_id`),
-  CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-  CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`showtime_id`) REFERENCES `showtimes` (`showtime_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Data for the table `tickets` */
-
-insert  into `tickets`(`ticket_id`,`order_id`,`showtime_id`,`price`) values 
-(1,1,1,45000.00),
-(2,1,1,45000.00),
-(3,2,3,60000.00),
-(4,2,3,60000.00);
+insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`requires_schedule`,`requires_seat`) values 
+(1,1,'Inside Out 2','Animated movie',45000.00,1,1),
+(2,2,'Zoo Entrance Ticket','All-day zoo access',30000.00,0,0),
+(3,3,'Museum Ticket','Historical museum entry',25000.00,0,0),
+(4,4,'Arcade 2-Hour Pass','Unlimited games for 2 hours',40000.00,1,0),
+(5,6,'Trampoline Arena','1-hour trampoline session',60000.00,1,0),
+(6,7,'Coldplay Concert','Live concert event',750000.00,1,1);
 
 /*Table structure for table `users` */
 
@@ -203,8 +198,29 @@ CREATE TABLE `users` (
 /*Data for the table `users` */
 
 insert  into `users`(`user_id`,`name`,`email`,`password`) values 
-(1,'joni','joni@mail.com','12345'),
-(2,'ferlinda','fer@mail.com','12345');
+(1,'Joni','joni@mail.com','12345'),
+(2,'Ferlinda','fer@mail.com','12345');
+
+/*Table structure for table `venues` */
+
+DROP TABLE IF EXISTS `venues`;
+
+CREATE TABLE `venues` (
+  `venue_id` int NOT NULL AUTO_INCREMENT,
+  `venue_name` varchar(100) DEFAULT NULL,
+  `venue_type` varchar(50) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`venue_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `venues` */
+
+insert  into `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) values 
+(1,'XXI Tunjungan Plaza','Cinema','Surabaya'),
+(2,'Surabaya Zoo','Zoo','Surabaya'),
+(3,'City Museum','Museum','Surabaya'),
+(4,'Trampoline Arena Galaxy','Sport Arena','Surabaya'),
+(5,'Gelora Bung Tomo','Stadium','Surabaya');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
