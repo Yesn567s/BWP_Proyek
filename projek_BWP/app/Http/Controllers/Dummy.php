@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class Dummy extends Controller
 {
     function index(){
-        $users = DB::table('Users')->get();
+        $users = DB::table('users')->get();
         return view('dummy', ['users' => $users]);
     }
 }
