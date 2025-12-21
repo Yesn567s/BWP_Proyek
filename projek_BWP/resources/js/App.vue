@@ -3,7 +3,7 @@
     <Navbar />
     <Home />
     <!-- <h1>Hello from Vue 3 + Laravel 12 + Vite</h1> -->
-    <ExampleComponent />
+    <!-- <ExampleComponent /> -->
     <Footer />
   </div>
 </template>

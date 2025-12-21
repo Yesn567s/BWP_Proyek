@@ -289,11 +289,6 @@
           <div class="mega-menu solutions" :class="{ open: activeMenu === 'solutions' }">
             <div class="solutions-grid">
 
-              <img
-                src="https://via.placeholder.com/300x200"
-                alt="Placeholder"
-              />
-
               <div>
                 <h3>Solutions overview</h3>
                 <p>
