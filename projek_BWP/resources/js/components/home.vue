@@ -1,3 +1,42 @@
+<style scoped>
+.movie-card {
+  height: 420px;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 320px;      
+  object-fit: cover;  
+  display: block;
+}
+
+.img {
+  height: 100px;
+  object-fit: cover;
+}
+
+.poster-wrapper {
+  height: 500px;
+  overflow: hidden;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}
+
+/* Image default (cropped) */
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.2);
+  transition: transform 0.4s ease;
+}
+
+/* Hover = reveal full poster */
+.poster-wrapper:hover .movie-poster {
+  transform: scale(1);
+}
+</style>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -24,21 +63,28 @@ onMounted(() => {
       </p>
     </div>
     
+    <!-- diskon -->
+     <h3 class="fw-bold mb-3">Vouchers and Deals</h3>
+     
     <!-- Movies -->
     <h3 class="fw-bold mb-3">Now Playing</h3>
 
     <div class="row">
       <div class="col-md-3" v-for="movie in movies" :key="movie.id">
-        <div class="card shadow-sm mb-4">
-          <img
-            :src="movie.poster || '/images/posters/default.jpg'"
-            class="card-img-top"
-            alt="Movie Poster"
-          />
+        <div class="card shadow-sm mb-4 movie-card">
+          <div class="poster-wrapper">
+            <img
+              :src="movie.poster || '/images/posters/default.jpg'"
+              class="movie-poster"
+              alt="Movie Poster"
+            />
+          </div>
+
           <div class="card-body">
             <h6 class="fw-bold">{{ movie.title }}</h6>
           </div>
         </div>
+
       </div>
     </div>
 
