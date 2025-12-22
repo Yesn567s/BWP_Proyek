@@ -1,3 +1,136 @@
+<script setup>
+import { ref, computed } from 'vue'
+// import { TICKET_ITEMS, CATEGORIES } from '../constants'
+
+const selectedCat = ref('All')
+const search = ref('')
+
+const CATEGORIES = [
+  { id: 1, name: 'Movies', icon: '🎬' },
+  { id: 2, name: 'Theme Parks', icon: '🎢' }
+]
+
+const TICKET_ITEMS = [
+  {
+    id: 1,
+    title: 'Universal Studios',
+    category: 'Theme Parks',
+    price: 120,
+    rating: 4.8,
+    location: 'Singapore',
+    imageUrl: '/img/universal.jpg'
+  }
+]
+
+const filteredItems = computed(() => {
+  return TICKET_ITEMS.filter(item => {
+    const matchesCat =
+      selectedCat.value === 'All' || item.category === selectedCat.value
+
+    const matchesSearch =
+      item.title.toLowerCase().includes(search.value.toLowerCase())
+
+    return matchesCat && matchesSearch
+  })
+})
+
+
+</script>
+
 <template>
     <h6>halo ini tickets</h6>
+
+    <div class="container py-5">
+
+    <!-- Header -->
+    <div class="row align-items-center mb-4 g-3">
+      <div class="col-md">
+        <h1 class="fw-bold">Explore Tickets</h1>
+        <p class="text-muted mb-0">Discover amazing events and destinations</p>
+      </div>
+
+      <!-- Search -->
+      <div class="col-md-5 position-relative">
+        <input
+          type="text"
+          class="form-control form-control-lg ps-5 rounded-pill"
+          placeholder="Search for events, parks, or movies..."
+          v-model="search"
+        />
+        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="d-flex gap-2 overflow-auto mb-4 pb-2">
+      <button
+        class="btn rounded-pill fw-bold"
+        :class="selectedCat === 'All' ? 'btn-primary' : 'btn-outline-secondary'"
+        @click="selectedCat = 'All'"
+      >
+        All Categories
+      </button>
+
+      <button
+        v-for="cat in CATEGORIES"
+        :key="cat.id"
+        class="btn rounded-pill fw-bold text-nowrap"
+        :class="selectedCat === cat.name ? 'btn-primary' : 'btn-outline-secondary'"
+        @click="selectedCat = cat.name"
+      >
+        {{ cat.icon }} {{ cat.name }}
+      </button>
+    </div>
+
+    <!-- Tickets Grid -->
+    <div class="row g-4">
+      <div
+        v-for="item in filteredItems"
+        :key="item.id"
+        class="col-sm-6 col-lg-4 col-xl-3"
+      >
+        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+
+          <!-- Image -->
+          <div class="position-relative">
+            <img
+              :src="item.imageUrl"
+              class="card-img-top"
+              style="height: 200px; object-fit: cover"
+            />
+            <div class="position-absolute top-0 end-0 bg-white px-2 py-1 m-3 rounded shadow-sm small fw-bold">
+              ⭐ {{ item.rating }}
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="card-body">
+            <span class="text-primary text-uppercase small fw-bold">
+              {{ item.category }}
+            </span>
+
+            <h5 class="fw-bold mt-1">{{ item.title }}</h5>
+
+            <p class="text-muted small mb-3">
+              <i class="bi bi-geo-alt me-1"></i>
+              {{ item.location }}
+            </p>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+              <div>
+                <small class="text-muted fw-bold text-uppercase">Price from</small>
+                <div class="fs-5 fw-bold text-primary">${{ item.price }}</div>
+              </div>
+
+              <button class="btn btn-primary rounded-pill fw-bold px-3">
+                Book
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
 </template>

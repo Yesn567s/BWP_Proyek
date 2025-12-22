@@ -229,7 +229,7 @@
       <!-- Menu -->
       <ul class="navbar-nav flex-row gap-5 align-items-center">
 
-        <!-- PRODUCT -->
+        <!-- TICKETS -->
         <li class="nav-item position-relative menu-item" ref="productMenu">
           <router-link to="/tickets" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'product' }" @click.stop="toggle('product')">Tickets
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'product' }"></i>
@@ -271,7 +271,7 @@
           </div> -->
         </li>
 
-        <!-- SOLUTIONS -->
+        <!-- YOUR TICKETS -->
         <li class="nav-item position-relative menu-item" ref="solutionsMenu">
           <router-link to="/userTickets" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'solutions' }" @click.stop="toggle('solutions')">Your Tickets
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'solutions' }"></i>
@@ -296,7 +296,7 @@
           </div> -->
         </li>
 
-        <!-- CLIENTS -->
+        <!-- ABOUT US -->
         <li class="nav-item position-relative menu-item" ref="clientsMenu">
           <router-link to="/aboutUs" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'clients' }" @click.stop="toggle('clients')">
             About Us
@@ -305,9 +305,9 @@
 
           <span class="underline active" v-if="activeMenu === 'clients'"></span>
 
-          <div class="mega-menu smart-align" :class="{ open: activeMenu === 'clients' }">
+          <!-- <div class="mega-menu smart-align" :class="{ open: activeMenu === 'clients' }"> -->
             <!-- EMPTY MEGA MENU -->
-          </div>
+          <!-- </div> -->
         </li>
 
         <!-- RESOURCES -->
