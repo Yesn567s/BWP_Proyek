@@ -217,43 +217,43 @@
     <div class="container-fluid px-5">
 
       <!-- Logo -->
-      <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+      <router-link class="navbar-brand fw-bold d-flex align-items-center" to="/">
         <span class="logo">tixly</span><span class="dot">:</span>
-      </a>
+      </router-link>
+
+      <!-- <div class="d-flex align-items-center gap-3 ms-4">
+        <router-link to="/" class="menu-btn">Home</router-link>
+        <router-link to="/tickets" class="menu-btn">Tickets</router-link>
+      </div> -->
 
       <!-- Menu -->
       <ul class="navbar-nav flex-row gap-5 align-items-center">
 
         <!-- PRODUCT -->
         <li class="nav-item position-relative menu-item" ref="productMenu">
-          <button
-            class="menu-btn"
-            :class="{ 'menu-muted': activeMenu && activeMenu !== 'product' }"
-            @click.stop="toggle('product')"
-          >
-            Product
+          <router-link to="/tickets" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'product' }" @click.stop="toggle('product')">Tickets
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'product' }"></i>
-          </button>
+          </router-link>
 
           <!-- underline (ACTIVE / OPEN) -->
           <span class="underline active" v-if="activeMenu === 'product'"></span>
 
-          <!-- MEGA MENU -->
+          <!-- MEGA MENU
           <div class="mega-menu" :class="{ open: activeMenu === 'product' }">
-            <div class="mega-grid">
+            <div class="mega-grid"> -->
 
               <!-- LEFT -->
-              <div class="mega-left">
+              <!-- <div class="mega-left">
                 <h2>Product overview</h2>
                 <p>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                   Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
                 <a href="#" class="mega-btn">View all features →</a>
-              </div>
+              </div> -->
 
               <!-- RIGHT -->
-              <div class="mega-right">
+              <!-- <div class="mega-right">
                 <h6>Features</h6>
                 <ul>
                   <li><a href="#">Online sales</a></li>
@@ -268,24 +268,19 @@
               </div>
 
             </div>
-          </div>
+          </div> -->
         </li>
 
         <!-- SOLUTIONS -->
         <li class="nav-item position-relative menu-item" ref="solutionsMenu">
-          <button
-            class="menu-btn"
-            :class="{ 'menu-muted': activeMenu && activeMenu !== 'solutions' }"
-            @click.stop="toggle('solutions')"
-          >
-            Solutions
+          <router-link to="/userTickets" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'solutions' }" @click.stop="toggle('solutions')">Your Tickets
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'solutions' }"></i>
-          </button>
+          </router-link>
 
           <!-- underline -->
           <span class="underline active" v-if="activeMenu === 'solutions'"></span>
 
-          <!-- SOLUTIONS MEGA MENU -->
+          <!-- SOLUTIONS MEGA MENU
           <div class="mega-menu solutions" :class="{ open: activeMenu === 'solutions' }">
             <div class="solutions-grid">
 
@@ -298,19 +293,15 @@
               </div>
 
             </div>
-          </div>
+          </div> -->
         </li>
 
         <!-- CLIENTS -->
         <li class="nav-item position-relative menu-item" ref="clientsMenu">
-          <button
-            class="menu-btn"
-            :class="{ 'menu-muted': activeMenu && activeMenu !== 'clients' }"
-            @click.stop="toggle('clients')"
-          >
-            Clients
+          <router-link to="/aboutUs" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'clients' }" @click.stop="toggle('clients')">
+            About Us
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'clients' }"></i>
-          </button>
+          </router-link>
 
           <span class="underline active" v-if="activeMenu === 'clients'"></span>
 
@@ -320,8 +311,8 @@
         </li>
 
         <!-- RESOURCES -->
-        <li class="nav-item position-relative menu-item" ref="resourcesMenu">
-          <button
+        <!-- <li class="nav-item position-relative menu-item" ref="resourcesMenu"> -->
+          <!-- <button
             class="menu-btn"
             :class="{ 'menu-muted': activeMenu && activeMenu !== 'resources' }"
             @click.stop="toggle('resources')"
@@ -330,16 +321,16 @@
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'resources' }"></i>
           </button>
 
-          <span class="underline active" v-if="activeMenu === 'resources'"></span>
+          <span class="underline active" v-if="activeMenu === 'resources'"></span> -->
 
-          <div class="mega-menu smart-align" :class="{ open: activeMenu === 'resources' }">
+          <!-- <div class="mega-menu smart-align" :class="{ open: activeMenu === 'resources' }"> -->
             <!-- EMPTY MEGA MENU -->
-          </div>
-        </li>
+          <!-- </div> -->
+        <!-- </li> -->
 
         <!-- COMPANY -->
-        <li class="nav-item position-relative menu-item" ref="companyMenu">
-          <button
+        <!-- <li class="nav-item position-relative menu-item" ref="companyMenu"> -->
+          <!-- <button
             class="menu-btn"
             :class="{ 'menu-muted': activeMenu && activeMenu !== 'company' }"
             @click.stop="toggle('company')"
@@ -348,12 +339,12 @@
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'company' }"></i>
           </button>
 
-          <span class="underline active" v-if="activeMenu === 'company'"></span>
+          <span class="underline active" v-if="activeMenu === 'company'"></span> -->
 
-          <div class="mega-menu smart-align" :class="{ open: activeMenu === 'company' }">
+          <!-- <div class="mega-menu smart-align" :class="{ open: activeMenu === 'company' }"> -->
             <!-- EMPTY MEGA MENU -->
-          </div>
-        </li>
+          <!-- </div> -->
+        <!-- </li> -->
       </ul>
 
       <!-- Right -->

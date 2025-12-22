@@ -77,7 +77,7 @@ CREATE TABLE `product_media` (
   PRIMARY KEY (`media_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_media_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `product_media` */
 
@@ -88,7 +88,19 @@ insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) v
 (4,8,'poster','posters/zootopia-movie.jpg'),
 (5,9,'poster','posters/fnf.jpg'),
 (6,10,'poster','posters/avatar.jpg'),
-(7,11,'poster','posters/agak-lain.jpg');
+(7,11,'poster','posters/agak-lain.jpg'),
+(8,16,'poster','posters/kkn-desa-penari.jpg'),
+(10,17,'poster','posters/nemo-movie.jpg'),
+(11,12,'poster','posters/now-you-see-me.jpg'),
+(12,13,'poster','posters/alice-in-borderland.jpg'),
+(13,14,'poster','posters/arcane.jpg'),
+(14,15,'poster','posters/spongebob.jpg'),
+(15,18,'poster','posters/moana.jpg'),
+(16,19,'poster','posters/final-destination.jpg'),
+(17,16,'trailer','https://youtu.be/PAMx9m4Z2V4?si=0MoXUDuOt8NJEQak'),
+(18,17,'trailer','https://youtu.be/SPHfeNgogVs?si=qH-hZ6IBmFKYNi9A'),
+(19,18,'trailer','https://youtu.be/hDZ7y8RP5HE?si=XRfbVmOPIvWzkV_t'),
+(20,19,'trailer','https://youtu.be/UWMzKXsY9A4?si=pfPCWSIYVt3m0zDp');
 
 /*Table structure for table `schedules` */
 
@@ -105,7 +117,7 @@ CREATE TABLE `schedules` (
   KEY `venue_id` (`venue_id`),
   CONSTRAINT `schedules_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
   CONSTRAINT `schedules_ibfk_2` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `schedules` */
 
@@ -118,7 +130,11 @@ insert  into `schedules`(`schedule_id`,`product_id`,`venue_id`,`start_datetime`,
 (6,12,9,'2025-12-31 12:00:00','2026-01-31 20:00:00'),
 (7,13,8,'2026-01-09 10:00:00','2026-02-04 23:30:00'),
 (8,14,1,'2026-01-02 11:00:00','2026-02-14 21:30:00'),
-(9,15,6,'2026-02-11 22:00:00','2026-03-18 23:00:00');
+(9,15,6,'2026-02-11 22:00:00','2026-03-18 23:00:00'),
+(10,16,1,'2025-11-01 08:25:45','2025-12-31 08:25:54'),
+(11,17,8,'2025-09-01 08:31:10','2025-11-30 08:31:16'),
+(12,18,9,'2025-10-01 09:04:01','2025-11-30 09:04:07'),
+(13,19,8,'2025-05-01 09:06:21','2025-06-30 09:06:30');
 
 /*Table structure for table `seats` */
 
@@ -200,7 +216,7 @@ CREATE TABLE `ticket_products` (
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `ticket_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `ticket_categories` (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_products` */
 
@@ -219,7 +235,11 @@ insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`
 (12,1,'Now You See Me: Now You Don\'t','The Four Horsemen and a new generation of illusionists join forces to steal the world\'s largest diamond from a South African mogul who heads an international crime syndicate.',50000.00,1,1),
 (13,1,'Alice in Borderland','Obsessed gamer Arisu suddenly finds himself in a strange, emptied-out version of Tokyo in which he and his friends must compete in dangerous games in order to survive.',45000.00,1,1),
 (14,1,'Arcane','The origins of two iconic League champions, set in the utopian Piltover and the oppressed underground of Zaun.',40000.00,1,1),
-(15,1,'The SpongeBob Movie: Search for SquarePants','Hoping to prove his bravery to Mr. Krabs, SpongeBob follows a mysterious, swashbuckling ghost pirate known as the Flying Dutchman on a seafaring adventure that takes him to the deepest depths of the ocean.',50000.00,1,1);
+(15,1,'The SpongeBob Movie: Search for SquarePants','Hoping to prove his bravery to Mr. Krabs, SpongeBob follows a mysterious, swashbuckling ghost pirate known as the Flying Dutchman on a seafaring adventure that takes him to the deepest depths of the ocean.',50000.00,1,1),
+(16,1,'KKN di Desa Penari','When a group of students visits a village for community service, their project turns deadly. They encounter the wrathful spirit of a dancer, which unleashes a terrifying cascade of horrors upon them.',40000.00,1,1),
+(17,1,'Finding Nemo','After his son gets abducted from the Great Barrier Reef and is dispatched to Sydney, Marlin, a meek clownfish, enlists the help of a forgetful fish and embarks on a journey to bring him home.',40000.00,1,1),
+(18,1,'Moana 2','After receiving an unexpected call from her wayfinding ancestors, a strong-willed girl journeys with her crew to the far seas of Oceania and into dangerous, long-lost waters for an adventure unlike anything she has ever faced.',45000.00,1,1),
+(19,1,'Final Destination Bloodlines','Plagued by a violent and recurring nightmare, a college student heads home to track down the one person who might be able to break the cycle of death and save her family from the grisly demise that inevitably awaits them all.',50000.00,1,1);
 
 /*Table structure for table `users` */
 

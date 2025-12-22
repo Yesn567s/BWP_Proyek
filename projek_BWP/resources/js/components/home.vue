@@ -434,7 +434,6 @@ const openTrailer = (youtubeUrl) => {
 
 <template>
   <div class="container my-5">
-
     <!-- Hero -->
     <div class="bg-warning text-dark p-5 rounded text-center mb-5">
       <h1 class="fw-bold">Exclusive Movie Premieres & Promos</h1>
