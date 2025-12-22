@@ -37,4 +37,9 @@ class TicketProduct extends Model
         return $this->hasOne(ProductMedia::class, 'product_id', 'product_id');
     }
 
+    public function media()
+    {
+        return $this->hasMany(ProductMedia::class, 'product_id');
+    }
+
 }

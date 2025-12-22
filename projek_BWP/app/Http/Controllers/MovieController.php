@@ -47,7 +47,6 @@ class MovieController extends Controller
             });
     }
 
-
     private function formatMovie($movie)
     {
         return [
@@ -59,6 +58,27 @@ class MovieController extends Controller
                 : asset('images/posters/default.jpg'),
         ];
     }
+
+    public function trailers()
+    {
+        $movies = TicketProduct::with(['media' => function ($q) {
+            $q->where('media_type', 'trailer');
+        }])->whereHas('media', function ($q) {
+            $q->where('media_type', 'trailer');
+        })->get();
+
+        return $movies->map(function ($movie) {
+            $media = $movie->media->first();
+
+            return [
+                'id' => $movie->product_id,
+                'title' => $movie->name,
+                'description' => $movie->description,
+                'youtube_url' => $media ? $media->media_url : null,
+            ];
+        });
+    }
+
 
 }
 

@@ -186,6 +186,86 @@
   text-overflow: ellipsis;
 }
 
+.trailer-card {
+  width: 300px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.trailer-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.trailer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.trailer-card:hover .trailer-img {
+  transform: scale(1.05);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-btn {
+  width: 56px;
+  height: 56px;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.duration {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* Title clamp */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Description clamp */
+.trailer-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* show 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trailer-card:hover .overlay {
+  background: rgba(0,0,0,0.5);
+}
+
+.trailer-card:hover .play-btn {
+  transform: scale(1.15);
+}
 
 </style>
 
@@ -331,7 +411,25 @@ onMounted(() => {
   })
 })
 
+const trailers = ref([])
+const activeVideo = ref(null)
 
+onMounted(() => {
+  axios.get('/api/movies/trailers').then(res => {
+    trailers.value = res.data
+  })
+})
+
+const getYoutubeId = (url) => {
+  const match = url.match(
+    /(?:youtube\.com\/(?:.*v=|embed\/)|youtu\.be\/)([^&\/\?]+)/
+  )
+  return match ? match[1] : null
+}
+
+const openTrailer = (youtubeUrl) => {
+  activeVideo.value = getYoutubeId(youtubeUrl)
+}
 </script>
 
 <template>
@@ -347,35 +445,17 @@ onMounted(() => {
     
     <!-- diskon disskonn -->
      <h3 class="fw-bold mb-3">Vouchers and Deals</h3>
-    <div class="position-relative deals-carousel">
+     <div class="position-relative deals-carousel">
 
       <!-- LEFT ARROW -->
-      <button
-        class="carousel-arrow left"
-        @click="scroll('left')"
-      >
-        ‹
-      </button>
+      <button class="carousel-arrow left" @click="scroll('left')">‹</button>
 
       <!-- SCROLL AREA -->
-      <div
-        ref="scrollRef"
-        class="d-flex gap-3 overflow-auto pb-3 deals-track"
-      >
-        <div
-          v-for="deal in deals"
-          :key="deal.id"
-          class="deal-card card shadow-sm"
-        >
+      <div ref="scrollRef" class="d-flex gap-3 overflow-auto pb-3 deals-track">
+        <div v-for="deal in deals" :key="deal.id" class="deal-card card shadow-sm">
           <div class="deal-image-wrapper">
-            <img
-              :src="deal.imageUrl"
-              class="deal-image"
-              :alt="deal.title"
-            />
-            <span class="deal-badge">
-              {{ deal.discount }}
-            </span>
+            <img :src="deal.imageUrl" class="deal-image" :alt="deal.title"/>
+            <span class="deal-badge">{{ deal.discount }}</span>
           </div>
 
           <div class="card-body">
@@ -393,12 +473,7 @@ onMounted(() => {
       </div>
 
       <!-- RIGHT ARROW -->
-      <button
-        class="carousel-arrow right"
-        @click="scroll('right')"
-      >
-        ›
-      </button>
+      <button class="carousel-arrow right" @click="scroll('right')">›</button>
 
     </div>
 
@@ -406,23 +481,14 @@ onMounted(() => {
     <h3 class="fw-bold mb-3 mt-5">Find Your Tickets</h3>
     <div class="row g-4 justify-content-center">
 
-      <div
-        v-for="cat in categories"
-        :key="cat.id"
-        class="col-6 col-sm-4 col-md-2 text-center"
-      >
+      <div v-for="cat in categories":key="cat.id" class="col-6 col-sm-4 col-md-2 text-center">
         <button class="category-btn w-100">
 
-          <div
-            class="category-icon"
-            :class="cat.colorClass"
-          >
+          <div class="category-icon" :class="cat.colorClass">
             <span class="icon-emoji">{{ cat.icon }}</span>
           </div>
 
-          <span class="category-name">
-            {{ cat.name }}
-          </span>
+          <span class="category-name">{{ cat.name }}</span>
 
         </button>
       </div>
@@ -456,17 +522,12 @@ onMounted(() => {
       <!-- LEFT ARROW -->
       <button class="carousel-arrow left" @click="scroll('left')">‹</button>
       <!-- SCROLL AREA -->
-      <div
-        ref="scrollRef"
-        class="d-flex gap-3 overflow-auto pb-3 deals-track"
+      <div ref="scrollRef" class="d-flex gap-3 overflow-auto pb-3 deals-track"
       >
         <div class="col-md-3" v-for="movie in movies" :key="movie.id">
           <div class="card shadow-sm mb-4 movie-card">
             <div class="poster-wrapper">
-            <img
-              :src="movie.poster || '/images/posters/default.jpg'"
-              class="movie-poster"
-              alt="Movie Poster"
+            <img :src="movie.poster || '/images/posters/default.jpg'" class="movie-poster" alt="Movie Poster"
             />
           </div>
 
@@ -491,36 +552,19 @@ onMounted(() => {
       <button class="carousel-arrow left" @click="scroll('left')">‹</button>
 
       <!-- SCROLL -->
-      <div
-        ref="scrollRef"
-        class="d-flex gap-3 overflow-auto pb-3 deals-track"
-      >
-        <div
-          class="col-md-3"
-          v-for="movie in coomingSoon"
-          :key="movie.product_id"
-        >
+      <div ref="scrollRef" class="d-flex gap-3 overflow-auto pb-3 deals-track">
+        <div class="col-md-3" v-for="movie in coomingSoon":key="movie.product_id">
           <div class="card shadow-sm mb-4 movie-card">
-
             <div class="poster-wrapper">
-              <img
-                :src="movie.poster || '/images/posters/default.jpg'"
-                class="movie-poster"
-                alt="Movie Poster"
-              />
+              <img :src="movie.poster || '/images/posters/default.jpg'" class="movie-poster" alt="Movie Poster"/>
             </div>
 
             <div class="card-body">
               <h6 class="fw-bold">{{ movie.title }}</h6>
-
-              <p class="text-muted small movie-desc">
-                {{ movie.desc }}
-              </p>
+              <p class="text-muted small movie-desc">{{ movie.desc }}</p>
 
               <!-- RELEASE DATE -->
-              <small class="text-primary fw-bold">
-                Release: {{ new Date(movie.release_date).toLocaleDateString() }}
-              </small>
+              <small class="text-primary fw-bold">📅: {{ new Date(movie.release_date).toLocaleDateString() }}</small>
             </div>
 
           </div>
@@ -530,6 +574,27 @@ onMounted(() => {
       <!-- RIGHT -->
       <button class="carousel-arrow right" @click="scroll('right')">›</button>
     </div>
-
   </div>
+
+  <!-- trailer -->
+<div class="container my-5">
+  <h3 class="fw-bold mb-3 mt-5">Latest Trailers</h3>
+
+  <div class="d-flex gap-4 overflow-auto pb-3">
+    <div v-for="movie in trailers" :key="movie.id" class="trailer-card" @click="openTrailer(movie.youtube_url)">
+      <div class="trailer-thumb">
+        <img :src="`https://img.youtube.com/vi/${getYoutubeId(movie.youtube_url)}/hqdefault.jpg`" class="trailer-img"/>
+
+        <div class="overlay">
+          <div class="play-btn">▶</div>
+        </div>
+      </div>
+
+      <h6 class="fw-bold mt-2 line-clamp-1">{{ movie.title }}</h6>
+      <p class="text-muted small trailer-desc">{{ movie.description }}</p>
+    </div>
+  </div>
+</div>
+
+
 </template>
