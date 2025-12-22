@@ -1,6 +1,6 @@
 <style scoped>
 .movie-card {
-  height: 420px;
+  height: 520px;
 }
 
 .movie-poster {
@@ -16,7 +16,7 @@
 }
 
 .poster-wrapper {
-  height: 500px;
+  height: 600px;
   overflow: hidden;
   border-top-left-radius: 0.375rem;
   border-top-right-radius: 0.375rem;
@@ -178,6 +178,15 @@
   color: #0d6efd; /* Bootstrap primary */
 }
 
+.movie-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;      /* number of lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 </style>
 
 <script setup>
@@ -199,35 +208,35 @@ const deals = ref([
     title: 'Family Pack',
     description: 'Buy 3 get 1 free for Waterpark',
     discount: 'B3G1',
-    imageUrl: '/storage/posters/zootopia.jpg'
+    imageUrl: '/storage/posters/zootopia-movie.jpg'
   },
   {
     id: 2,
     title: 'Arcade Mania',
     description: 'Double credits for every top-up',
     discount: '2X CREDITS',
-    imageUrl: '/storage/posters/zootopia.jpg'
+    imageUrl: '/storage/posters/zootopia-movie.jpg'
   },
   {
     id: 3,
     title: 'Night Show',
     description: 'Special price for late night movies',
     discount: 'FLAT $5',
-    imageUrl: '/images/posters/zootopia.jpg'
+    imageUrl: '/images/posters/zootopia-movie.jpg'
   },
   {
     id: 4,
     title: 'tess',
     description: 'alohaa',
     discount: 'FLAT $5',
-    imageUrl: '/images/posters/zootopia.jpg'
+    imageUrl: '/images/posters/zootopia-movie.jpg'
   },
   {
     id: 5,
     title: 'testistos',
     description: 'aaaaaaaa',
     discount: 'FLAT $5',
-    imageUrl: '/images/posters/zootopia.jpg'
+    imageUrl: '/images/posters/zootopia-movie.jpg'
   }
 ]);
 
@@ -309,6 +318,19 @@ const scroll = (direction) => {
     behavior: 'smooth'
   })
 }
+
+const coomingSoon = ref([])
+
+onMounted(() => {
+  axios.get('/api/movies/now-playing').then(res => {
+    movies.value = res.data
+  })
+
+  axios.get('/api/movies/upcoming').then(res => {
+    coomingSoon.value = res.data
+  })
+})
+
 
 </script>
 
@@ -408,7 +430,7 @@ const scroll = (direction) => {
     </div>
 
     <!-- Movies -->
-    <h3 class="fw-bold mb-3">Now Playing</h3>
+    <!-- <h3 class="fw-bold mb-3">Now Playing</h3>
 
     <div class="row">
       <div class="col-md-3" v-for="movie in movies" :key="movie.id">
@@ -427,6 +449,86 @@ const scroll = (direction) => {
         </div>
 
       </div>
+    </div> -->
+    <h3 class="fw-bold mb-3">Now Playing</h3>
+
+    <div class="position-relative deals-carousel">
+      <!-- LEFT ARROW -->
+      <button class="carousel-arrow left" @click="scroll('left')">‹</button>
+      <!-- SCROLL AREA -->
+      <div
+        ref="scrollRef"
+        class="d-flex gap-3 overflow-auto pb-3 deals-track"
+      >
+        <div class="col-md-3" v-for="movie in movies" :key="movie.id">
+          <div class="card shadow-sm mb-4 movie-card">
+            <div class="poster-wrapper">
+            <img
+              :src="movie.poster || '/images/posters/default.jpg'"
+              class="movie-poster"
+              alt="Movie Poster"
+            />
+          </div>
+
+          <div class="card-body">
+            <h6 class="fw-bold">{{ movie.title }}</h6>
+            <p class="text-muted small mb-3 movie-desc">{{ movie.desc }}</p>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT ARROW -->
+      <button class="carousel-arrow right" @click="scroll('right')">›</button>
+    </div>
+
+    <!-- upcoming movies -->
+    <h3 class="fw-bold mb-3 mt-5">Upcoming Movies</h3>
+
+    <div class="position-relative deals-carousel">
+
+      <!-- LEFT -->
+      <button class="carousel-arrow left" @click="scroll('left')">‹</button>
+
+      <!-- SCROLL -->
+      <div
+        ref="scrollRef"
+        class="d-flex gap-3 overflow-auto pb-3 deals-track"
+      >
+        <div
+          class="col-md-3"
+          v-for="movie in coomingSoon"
+          :key="movie.product_id"
+        >
+          <div class="card shadow-sm mb-4 movie-card">
+
+            <div class="poster-wrapper">
+              <img
+                :src="movie.poster || '/images/posters/default.jpg'"
+                class="movie-poster"
+                alt="Movie Poster"
+              />
+            </div>
+
+            <div class="card-body">
+              <h6 class="fw-bold">{{ movie.title }}</h6>
+
+              <p class="text-muted small movie-desc">
+                {{ movie.desc }}
+              </p>
+
+              <!-- RELEASE DATE -->
+              <small class="text-primary fw-bold">
+                Release: {{ new Date(movie.release_date).toLocaleDateString() }}
+              </small>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <button class="carousel-arrow right" @click="scroll('right')">›</button>
     </div>
 
   </div>

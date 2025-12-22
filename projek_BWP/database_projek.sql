@@ -65,6 +65,31 @@ insert  into `orders`(`order_id`,`user_id`,`order_date`,`total_price`) values
 (1,1,'2025-11-19 16:30:00',90000.00),
 (2,2,'2025-11-19 17:00:00',750000.00);
 
+/*Table structure for table `product_media` */
+
+DROP TABLE IF EXISTS `product_media`;
+
+CREATE TABLE `product_media` (
+  `media_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int DEFAULT NULL,
+  `media_type` enum('poster','trailer','image','video') DEFAULT NULL,
+  `media_url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`media_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `product_media_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `product_media` */
+
+insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) values 
+(1,1,'poster','posters/inside-out-2.jpg'),
+(2,1,'trailer','https://www.youtube.com/embed/LEjhY15eCx0'),
+(3,7,'poster','posters/minecraft-movie.jpg'),
+(4,8,'poster','posters/zootopia-movie.jpg'),
+(5,9,'poster','posters/fnf.jpg'),
+(6,10,'poster','posters/avatar.jpg'),
+(7,11,'poster','posters/agak-lain.jpg');
+
 /*Table structure for table `schedules` */
 
 DROP TABLE IF EXISTS `schedules`;
@@ -80,7 +105,7 @@ CREATE TABLE `schedules` (
   KEY `venue_id` (`venue_id`),
   CONSTRAINT `schedules_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
   CONSTRAINT `schedules_ibfk_2` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `schedules` */
 
@@ -88,7 +113,12 @@ insert  into `schedules`(`schedule_id`,`product_id`,`venue_id`,`start_datetime`,
 (1,1,1,'2025-11-20 18:00:00','2025-11-20 20:00:00'),
 (2,4,4,'2025-11-21 14:00:00','2025-11-21 16:00:00'),
 (3,5,4,'2025-11-22 10:00:00','2025-11-22 11:00:00'),
-(4,6,5,'2025-12-01 19:00:00','2025-12-01 22:00:00');
+(4,6,5,'2025-12-01 19:00:00','2025-12-01 22:00:00'),
+(5,7,7,'2026-01-15 12:00:00','2026-02-15 20:00:00'),
+(6,12,9,'2025-12-31 12:00:00','2026-01-31 20:00:00'),
+(7,13,8,'2026-01-09 10:00:00','2026-02-04 23:30:00'),
+(8,14,1,'2026-01-02 11:00:00','2026-02-14 21:30:00'),
+(9,15,6,'2026-02-11 22:00:00','2026-03-18 23:00:00');
 
 /*Table structure for table `seats` */
 
@@ -170,17 +200,26 @@ CREATE TABLE `ticket_products` (
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `ticket_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `ticket_categories` (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_products` */
 
 insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`requires_schedule`,`requires_seat`) values 
-(1,1,'Inside Out 2','Animated movie',45000.00,1,1),
+(1,1,'Inside Out 2','Inside Out 2 returns to the mind of newly minted teenager Riley just as headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions! Joy, Sadness, Anger, Fear, and Disgust, who\'ve long been running a successful operation by all accounts, aren\'t sure how to feel when Anxiety shows up and it looks like she\'s not alone.',45000.00,1,1),
 (2,2,'Zoo Entrance Ticket','All-day zoo access',30000.00,0,0),
 (3,3,'Museum Ticket','Historical museum entry',25000.00,0,0),
 (4,4,'Arcade 2-Hour Pass','Unlimited games for 2 hours',40000.00,1,0),
 (5,6,'Trampoline Arena','1-hour trampoline session',60000.00,1,0),
-(6,7,'Coldplay Concert','Live concert event',750000.00,1,1);
+(6,7,'Coldplay Concert','Live concert event',750000.00,1,1),
+(7,1,'A Minecraft Movie','A mysterious portal pulls four misfits into the Overworld, a bizarre, cubic wonderland that thrives on imagination. To get back home, they\'ll have to master the terrain while embarking on a magical quest with an unexpected crafter named Steve.',50000.00,1,1),
+(8,1,'Zootopia 2','Detectives Judy Hopps and Nick Wilde find themselves on the twisting trail of a mysterious reptile who turns the mammal metropolis of Zootopia upside down. Testing their growing partnership like never before, they go under cover in new parts of town to crack the case.',40000.00,1,1),
+(9,1,'Five Nights At Freddys 2','One year has passed since the supernatural nightmare at Freddy Fazbear\'s Pizza. Former security guard Mike has kept the truth from his 11-year-old sister, Abby, concerning the fate of her animatronic friends. When Abby sneaks out to reconnect with Freddy, Bonnie, Chica and Foxy, she sets into motion a terrifying series of events that reveal dark secrets about the true origin of Freddy\'s.',45000.00,1,1),
+(10,1,'Avatar: Fire and Ash','The conflict on Pandora escalates as Jake and Neytiri\'s family encounter a new, aggressive Na\'vi tribe.',50000.00,1,1),
+(11,1,'Agak Laen: Menyala Pantiku!','Setelah berulang kali gagal menjalankan misi, Detektif Bene, Boris, Jegel, dan Oki diberi satu kesempatan terakhir: Menyamar dan menyusup ke sebuah panti jompo, untuk mencari buronan kasus pembunuhan anak wali kota.',40000.00,1,1),
+(12,1,'Now You See Me: Now You Don\'t','The Four Horsemen and a new generation of illusionists join forces to steal the world\'s largest diamond from a South African mogul who heads an international crime syndicate.',50000.00,1,1),
+(13,1,'Alice in Borderland','Obsessed gamer Arisu suddenly finds himself in a strange, emptied-out version of Tokyo in which he and his friends must compete in dangerous games in order to survive.',45000.00,1,1),
+(14,1,'Arcane','The origins of two iconic League champions, set in the utopian Piltover and the oppressed underground of Zaun.',40000.00,1,1),
+(15,1,'The SpongeBob Movie: Search for SquarePants','Hoping to prove his bravery to Mr. Krabs, SpongeBob follows a mysterious, swashbuckling ghost pirate known as the Flying Dutchman on a seafaring adventure that takes him to the deepest depths of the ocean.',50000.00,1,1);
 
 /*Table structure for table `users` */
 
@@ -211,7 +250,7 @@ CREATE TABLE `venues` (
   `venue_type` varchar(50) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`venue_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `venues` */
 
@@ -220,7 +259,11 @@ insert  into `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) values
 (2,'Surabaya Zoo','Zoo','Surabaya'),
 (3,'City Museum','Museum','Surabaya'),
 (4,'Trampoline Arena Galaxy','Sport Arena','Surabaya'),
-(5,'Gelora Bung Tomo','Stadium','Surabaya');
+(5,'Gelora Bung Tomo','Stadium','Surabaya'),
+(6,'XXI Galaxy Mall','Cinema','Surabaya'),
+(7,'XXI Ciputra World','Cinema','Surabaya'),
+(8,'CGV BG Junction','Cinema','Surabaya'),
+(9,'CGV Marvel City','Cinema',NULL);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

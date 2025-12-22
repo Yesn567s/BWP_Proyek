@@ -18,12 +18,23 @@ class TicketProduct extends Model
         );
     }
 
+    // public function poster()
+    // {
+    //     return $this->hasOne(
+    //         ProductMedia::class,
+    //         'product_id',
+    //         'product_id'
+    //     )->where('media_type', 'poster');
+    // }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class, 'product_id', 'product_id');
+    }
+
     public function poster()
     {
-        return $this->hasOne(
-            ProductMedia::class,
-            'product_id',
-            'product_id'
-        )->where('media_type', 'poster');
+        return $this->hasOne(ProductMedia::class, 'product_id', 'product_id');
     }
+
 }

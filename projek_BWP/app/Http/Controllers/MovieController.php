@@ -13,15 +13,51 @@ class MovieController extends Controller
         return TicketProduct::with('poster')
             ->where('category_id', 1)
             ->get()
+            ->map(fn ($movie) => $this->formatMovie($movie));
+    }
+
+    public function nowPlaying()
+    {
+        return TicketProduct::with('poster')
+            ->where('category_id', 1)
+            ->whereHas('schedules', function ($q) {
+                $q->where('start_datetime', '<=', now());
+            })
+            ->get()
+            ->map(fn ($movie) => $this->formatMovie($movie));
+    }
+
+    public function coomingSoon()
+    {
+        return TicketProduct::with('poster')
+            ->where('category_id', 1)
+            ->whereHas('schedules', function ($q) {
+                $q->where('start_datetime', '>', now());
+            })
+            ->get()
             ->map(function ($movie) {
                 return [
                     'id'    => $movie->product_id,
                     'title' => $movie->name,
+                    'desc'  => $movie->description,
                     'poster'=> $movie->poster
                         ? Storage::url($movie->poster->media_url)
-                        : asset('images/posters/default.jpg'),
+                        : Storage::url('posters/default.jpg'),
                 ];
             });
+    }
+
+
+    private function formatMovie($movie)
+    {
+        return [
+            'id'     => $movie->product_id,
+            'title'  => $movie->name,
+            'desc'   => $movie->description,
+            'poster' => $movie->poster
+                ? Storage::url($movie->poster->media_url)
+                : asset('images/posters/default.jpg'),
+        ];
     }
 
 }
