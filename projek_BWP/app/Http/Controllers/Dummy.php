@@ -9,6 +9,17 @@ class Dummy extends Controller
 {
     function index(){
         $users = DB::table('users')->get();
-        return view('dummy', ['users' => $users]);
+
+        $stats = [
+            'totalProducts' => DB::table('ticket_products')->count(),
+            'totalVenues'   => DB::table('venues')->count(),
+            'totalOrders'   => DB::table('orders')->count(),
+            'totalUsers'    => DB::table('users')->count(),
+        ];
+
+        return view('dummy', [
+            'users' => $users,
+            'stats' => $stats
+        ]);
     }
 }

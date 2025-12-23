@@ -16,3 +16,6 @@ Route::get('/login', function () {
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Catch-all route for SPA client-side routes (prevents 404 on page refresh)
+Route::get('/{any}', [Dummy::class, 'index'])->where('any', '.*');
