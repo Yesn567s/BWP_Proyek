@@ -102,7 +102,11 @@ insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) v
 (17,16,'trailer','https://youtu.be/PAMx9m4Z2V4?si=0MoXUDuOt8NJEQak'),
 (18,17,'trailer','https://youtu.be/SPHfeNgogVs?si=qH-hZ6IBmFKYNi9A'),
 (19,18,'trailer','https://youtu.be/hDZ7y8RP5HE?si=XRfbVmOPIvWzkV_t'),
-(20,19,'trailer','https://youtu.be/UWMzKXsY9A4?si=pfPCWSIYVt3m0zDp');
+(20,19,'trailer','https://youtu.be/UWMzKXsY9A4?si=pfPCWSIYVt3m0zDp'),
+(21,20,'poster','posters/popcorn.jpg'),
+(22,21,'poster','posters/burger.jpg'),
+(23,22,'poster','posters/hotdog.jpg'),
+(24,23,'poster','posters/coca-cola.jpg');
 
 /*Table structure for table `schedules` */
 
@@ -181,7 +185,8 @@ insert  into `ticket_categories`(`category_id`,`category_name`,`icons`) values
 (4,'Arcade','icons/arcade-machine.png'),
 (5,'Amusement Park','icons/theme-park.png'),
 (6,'Sport','icons/basketball.png'),
-(7,'Event','icons/event-list.png');
+(7,'Event','icons/event-list.png'),
+(8,'Food & Beverage','icons/food-and-drink.png');
 
 /*Table structure for table `ticket_instances` */
 
@@ -249,7 +254,11 @@ insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`
 (16,1,'KKN di Desa Penari','When a group of students visits a village for community service, their project turns deadly. They encounter the wrathful spirit of a dancer, which unleashes a terrifying cascade of horrors upon them.',40000.00,1,1),
 (17,1,'Finding Nemo','After his son gets abducted from the Great Barrier Reef and is dispatched to Sydney, Marlin, a meek clownfish, enlists the help of a forgetful fish and embarks on a journey to bring him home.',40000.00,1,1),
 (18,1,'Moana 2','After receiving an unexpected call from her wayfinding ancestors, a strong-willed girl journeys with her crew to the far seas of Oceania and into dangerous, long-lost waters for an adventure unlike anything she has ever faced.',45000.00,1,1),
-(19,1,'Final Destination Bloodlines','Plagued by a violent and recurring nightmare, a college student heads home to track down the one person who might be able to break the cycle of death and save her family from the grisly demise that inevitably awaits them all.',50000.00,1,1);
+(19,1,'Final Destination Bloodlines','Plagued by a violent and recurring nightmare, a college student heads home to track down the one person who might be able to break the cycle of death and save her family from the grisly demise that inevitably awaits them all.',50000.00,1,1),
+(20,8,'Popcorn','A variety of corn kernel, which forcefully expands and puffs up when heated.',45000.00,0,0),
+(21,8,'Hotdog','A grilled sausage served in the slits of a partially sliced bun.',20000.00,0,0),
+(22,8,'Burger','A beef patty served inside a sliced bun, with toppings lettuce, tomato, onion, cheese, pickles, and condiments (ketchup, mustard, or mayo).',25000.00,0,0),
+(23,8,'Coke','Carbonated soft drink',10000.00,0,0);
 
 /*Table structure for table `users` */
 
