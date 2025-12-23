@@ -282,51 +282,29 @@ onMounted(() => {
   })
 })
 
-const deals = ref([
-  {
-    id: 1,
-    title: 'Family Pack',
-    description: 'Buy 3 get 1 free for Waterpark',
-    discount: 'B3G1',
-    imageUrl: '/storage/posters/zootopia-movie.jpg'
-  },
-  {
-    id: 2,
-    title: 'Arcade Mania',
-    description: 'Double credits for every top-up',
-    discount: '2X CREDITS',
-    imageUrl: '/storage/posters/zootopia-movie.jpg'
-  },
-  {
-    id: 3,
-    title: 'Night Show',
-    description: 'Special price for late night movies',
-    discount: 'FLAT $5',
-    imageUrl: '/images/posters/zootopia-movie.jpg'
-  },
-  {
-    id: 4,
-    title: 'tess',
-    description: 'alohaa',
-    discount: 'FLAT $5',
-    imageUrl: '/images/posters/zootopia-movie.jpg'
-  },
-  {
-    id: 5,
-    title: 'testistos',
-    description: 'aaaaaaaa',
-    discount: 'FLAT $5',
-    imageUrl: '/images/posters/zootopia-movie.jpg'
-  }
-]);
+const deals = ref([])
+
+onMounted(async () => {
+  const res = await axios.get('/api/vouchers')
+
+  deals.value = res.data.map(voucher => ({
+    id: voucher.voucher_id,
+    title: voucher.title,
+    description: voucher.description,
+    discount:
+      voucher.discount_type === 'percent'
+        ? `${voucher.discount_value}% OFF`
+        : `FLAT ${voucher.discount_value}`,
+    imageUrl: '/images/posters/zootopia-movie.jpg', // static for now
+    validUntil: voucher.end_date
+  }))
+})
 
 const categories = ref([])
 
 onMounted(async () => {
   const res = await axios.get('/api/categories')
   categories.value = res.data
-
-  
 })
 
 const scrollRef = ref(null)
