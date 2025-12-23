@@ -10,6 +10,8 @@ class TicketCategory extends Model
     protected $primaryKey = 'category_id';
     public $timestamps = false;
 
+    protected $fillable = ['category_name'];
+
     public function products()
     {
         return $this->hasMany(

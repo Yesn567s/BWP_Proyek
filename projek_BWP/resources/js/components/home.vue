@@ -149,11 +149,6 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Emoji size */
-.icon-emoji {
-  font-size: 36px;
-}
-
 /* Hover / active effects */
 .category-btn:hover .category-icon {
   transform: scale(1.12);
@@ -267,6 +262,11 @@
   transform: scale(1.15);
 }
 
+.cat-icon{
+  width: 50px;
+  height: 50px;
+}
+
 </style>
 
 <script setup>
@@ -320,68 +320,14 @@ const deals = ref([
   }
 ]);
 
-const categories = ref([
-  {
-    id: 1,
-    name: 'Movies',
-    icon: '🎬',
-    colorClass: 'bg-primary'
-  },
-  {
-    id: 2,
-    name: 'Concerts',
-    icon: '🎵',
-    colorClass: 'bg-success'
-  },
-  {
-    id: 3,
-    name: 'Sports',
-    icon: '⚽',
-    colorClass: 'bg-warning'
-  },
-  {
-    id: 4,
-    name: 'Theatre',
-    icon: '🎭',
-    colorClass: 'bg-danger'
-  },
-  {
-    id: 5,
-    name: 'Events',
-    icon: '🎉',
-    colorClass: 'bg-info'
-  },
-  {
-    id: 6,
-    name: 'Movies',
-    icon: '🎬',
-    colorClass: 'bg-primary'
-  },
-  {
-    id: 7,
-    name: 'Concerts',
-    icon: '🎵',
-    colorClass: 'bg-success'
-  },
-  {
-    id: 8,
-    name: 'Sports',
-    icon: '⚽',
-    colorClass: 'bg-warning'
-  },
-  {
-    id: 9,
-    name: 'Theatre',
-    icon: '🎭',
-    colorClass: 'bg-danger'
-  },
-  {
-    id: 10,
-    name: 'Events',
-    icon: '🎉',
-    colorClass: 'bg-info'
-  }
-]);
+const categories = ref([])
+
+onMounted(async () => {
+  const res = await axios.get('/api/categories')
+  categories.value = res.data
+
+  
+})
 
 const scrollRef = ref(null)
 
@@ -484,10 +430,10 @@ const openTrailer = (youtubeUrl) => {
         <button class="category-btn w-100">
 
           <div class="category-icon" :class="cat.colorClass">
-            <span class="icon-emoji">{{ cat.icon }}</span>
+             <img :src="`/${cat.icons}`" class="w-16 h-16 mb-2 cat-icon"/>
           </div>
 
-          <span class="category-name">{{ cat.name }}</span>
+          <span class="category-name">{{ cat.category_name }}</span>
 
         </button>
       </div>
