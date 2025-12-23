@@ -4,46 +4,12 @@ import axios from 'axios'
 
 const activeTab = ref('active')
 const showingQR = ref(null)
-// const tickets = ref([])
+const tickets = ref([])
 
-const tickets = ref([
-  {
-    id: 1,
-    title: 'Inside Out 2',
-    category_name: 'Movie',
-    date: '2025-07-12',
-    time: '19:30',
-    status: 'active',
-    qr_value: 'MOV-2025-0001'
-  },
-  {
-    id: 2,
-    title: 'Universal Studios Singapore',
-    category_name: 'Amusement Park',
-    date: '2025-08-03',
-    time: '09:00',
-    status: 'active',
-    qr_value: 'AMP-2025-0142'
-  },
-  {
-    id: 3,
-    title: 'National Museum Jakarta',
-    category_name: 'Museum',
-    date: '2025-05-20',
-    time: '10:00',
-    status: 'used',
-    qr_value: 'MUS-2025-0311'
-  },
-  {
-    id: 4,
-    title: 'Java Jazz Festival',
-    category_name: 'Event',
-    date: '2025-03-15',
-    time: '18:00',
-    status: 'cancelled',
-    qr_value: 'EVT-2025-0089'
-  }
-])
+onMounted(async () => {
+  const res = await axios.get('/api/tickets')
+  tickets.value = res.data
+})
 
 
 const filteredTickets = computed(() => {
@@ -54,14 +20,14 @@ const filteredTickets = computed(() => {
   )
 })
 
-onMounted(async () => {
-  try {
-    const res = await axios.get('/api/my-tickets')
-    tickets.value = res.data
-  } catch (err) {
-    console.error('Failed to load tickets', err)
-  }
-})
+// onMounted(async () => {
+//   try {
+//     const res = await axios.get('/api/my-tickets')
+//     tickets.value = res.data
+//   } catch (err) {
+//     console.error('Failed to load tickets', err)
+//   }
+// })
 </script>
 
 <template>
@@ -172,17 +138,3 @@ onMounted(async () => {
   </div>
 </template>
 
-<script>
-const getIcon = (category) => {
-  const map = {
-    Movie: '🎬',
-    Zoo: '🦁',
-    Museum: '🏛️',
-    Arcade: '🕹️',
-    'Amusement Park': '🎢',
-    Sport: '🏟️',
-    Event: '🎤'
-  }
-  return map[category] || '🎫'
-}
-</script>

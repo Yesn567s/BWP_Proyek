@@ -1,29 +1,35 @@
+<style scoped>
+.cat-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+</style>
+
 <script setup>
+import axios from 'axios'
 import { ref, computed } from 'vue'
-// import { TICKET_ITEMS, CATEGORIES } from '../constants'
+import { onMounted } from 'vue'
 
 const selectedCat = ref('All')
 const search = ref('')
 
-const CATEGORIES = [
-  { id: 1, name: 'Movies', icon: '🎬' },
-  { id: 2, name: 'Theme Parks', icon: '🎢' }
-]
+const categories = ref([])
 
-const TICKET_ITEMS = [
-  {
-    id: 1,
-    title: 'Universal Studios',
-    category: 'Theme Parks',
-    price: 120,
-    rating: 4.8,
-    location: 'Singapore',
-    imageUrl: '/img/universal.jpg'
-  }
-]
+onMounted(async () => {
+  const res = await axios.get('/api/categories')
+  categories.value = res.data
+})
+
+const tickets = ref([])
+
+onMounted(async () => {
+  const res = await axios.get('/api/tickets')
+  tickets.value = res.data
+})
 
 const filteredItems = computed(() => {
-  return TICKET_ITEMS.filter(item => {
+  return tickets.value.filter(item => {
     const matchesCat =
       selectedCat.value === 'All' || item.category === selectedCat.value
 
@@ -72,13 +78,13 @@ const filteredItems = computed(() => {
       </button>
 
       <button
-        v-for="cat in CATEGORIES"
+        v-for="cat in categories"
         :key="cat.id"
         class="btn rounded-pill fw-bold text-nowrap"
-        :class="selectedCat === cat.name ? 'btn-primary' : 'btn-outline-secondary'"
-        @click="selectedCat = cat.name"
+        :class="selectedCat ===  cat.category_name  ? 'btn-primary' : 'btn-outline-secondary'"
+        @click="selectedCat = cat.category_name"
       >
-        {{ cat.icon }} {{ cat.name }}
+        <img :src="`/${cat.icons}`" class="cat-icon"/> {{ cat.category_name }}
       </button>
     </div>
 
@@ -119,7 +125,7 @@ const filteredItems = computed(() => {
             <div class="d-flex justify-content-between align-items-center pt-3 border-top">
               <div>
                 <small class="text-muted fw-bold text-uppercase">Price from</small>
-                <div class="fs-5 fw-bold text-primary">${{ item.price }}</div>
+                <div class="fs-5 fw-bold text-primary">Rp {{ item.price }}</div>
               </div>
 
               <button class="btn btn-primary rounded-pill fw-bold px-3">

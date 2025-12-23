@@ -36,14 +36,15 @@ CREATE TABLE `order_items` (
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
   CONSTRAINT `order_items_ibfk_3` FOREIGN KEY (`schedule_id`) REFERENCES `schedules` (`schedule_id`),
   CONSTRAINT `order_items_ibfk_4` FOREIGN KEY (`seat_id`) REFERENCES `seats` (`seat_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `order_items` */
 
 insert  into `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`,`seat_id`,`price`) values 
 (1,1,1,1,1,45000.00),
 (2,1,1,1,2,45000.00),
-(3,2,6,4,4,750000.00);
+(3,2,6,4,4,750000.00),
+(4,3,17,11,3,50000.00);
 
 /*Table structure for table `orders` */
 
@@ -57,13 +58,14 @@ CREATE TABLE `orders` (
   PRIMARY KEY (`order_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `orders` */
 
 insert  into `orders`(`order_id`,`user_id`,`order_date`,`total_price`) values 
 (1,1,'2025-11-19 16:30:00',90000.00),
-(2,2,'2025-11-19 17:00:00',750000.00);
+(2,2,'2025-11-19 17:00:00',750000.00),
+(3,2,'2025-10-01 17:17:45',50000.00);
 
 /*Table structure for table `product_media` */
 
@@ -166,19 +168,20 @@ DROP TABLE IF EXISTS `ticket_categories`;
 CREATE TABLE `ticket_categories` (
   `category_id` int NOT NULL AUTO_INCREMENT,
   `category_name` varchar(50) DEFAULT NULL,
+  `icons` varchar(50) NOT NULL,
   PRIMARY KEY (`category_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_categories` */
 
-insert  into `ticket_categories`(`category_id`,`category_name`) values 
-(1,'Movie'),
-(2,'Zoo'),
-(3,'Museum'),
-(4,'Arcade'),
-(5,'Amusement Park'),
-(6,'Sport'),
-(7,'Event');
+insert  into `ticket_categories`(`category_id`,`category_name`,`icons`) values 
+(1,'Movie','icons/watching-a-movie.png'),
+(2,'Zoo','icons/zoo.png'),
+(3,'Museum','icons/art-museum.png'),
+(4,'Arcade','icons/arcade-machine.png'),
+(5,'Amusement Park','icons/theme-park.png'),
+(6,'Sport','icons/basketball.png'),
+(7,'Event','icons/event-list.png');
 
 /*Table structure for table `ticket_instances` */
 
@@ -187,19 +190,26 @@ DROP TABLE IF EXISTS `ticket_instances`;
 CREATE TABLE `ticket_instances` (
   `ticket_instance_id` int NOT NULL AUTO_INCREMENT,
   `order_item_id` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
   `qr_code` varchar(255) DEFAULT NULL,
   `is_used` tinyint(1) DEFAULT '0',
+  `status` enum('active','used','cancelled','expired') DEFAULT 'active',
+  `valid_until` datetime DEFAULT NULL,
+  `used_at` datetime DEFAULT NULL,
   PRIMARY KEY (`ticket_instance_id`),
   KEY `order_item_id` (`order_item_id`),
+  KEY `fk_ticket_instances_user` (`user_id`),
+  CONSTRAINT `fk_ticket_instances_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `ticket_instances_ibfk_1` FOREIGN KEY (`order_item_id`) REFERENCES `order_items` (`order_item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_instances` */
 
-insert  into `ticket_instances`(`ticket_instance_id`,`order_item_id`,`qr_code`,`is_used`) values 
-(1,1,'QR-MOVIE-A1',0),
-(2,2,'QR-MOVIE-A2',0),
-(3,3,'QR-CONCERT-VIP1',0);
+insert  into `ticket_instances`(`ticket_instance_id`,`order_item_id`,`user_id`,`qr_code`,`is_used`,`status`,`valid_until`,`used_at`) values 
+(1,1,1,'QR-MOVIE-A1',0,'active',NULL,NULL),
+(2,2,1,'QR-MOVIE-A2',0,'active',NULL,NULL),
+(3,3,2,'QR-CONCERT-VIP1',0,'active',NULL,NULL),
+(4,4,2,'QR-MOVIE-FN',1,'used',NULL,'2025-11-01 17:20:01');
 
 /*Table structure for table `ticket_products` */
 
@@ -252,13 +262,14 @@ CREATE TABLE `users` (
   `password` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `users` */
 
 insert  into `users`(`user_id`,`name`,`email`,`password`) values 
 (1,'Joni','joni@mail.com','12345'),
-(2,'Ferlinda','fer@mail.com','12345');
+(2,'Ferlinda','fer@mail.com','12345'),
+(3,'admin','admin@gmail.com','123');
 
 /*Table structure for table `venues` */
 
@@ -284,6 +295,38 @@ insert  into `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) values
 (7,'XXI Ciputra World','Cinema','Surabaya'),
 (8,'CGV BG Junction','Cinema','Surabaya'),
 (9,'CGV Marvel City','Cinema',NULL);
+
+/*Table structure for table `vouchers` */
+
+DROP TABLE IF EXISTS `vouchers`;
+
+CREATE TABLE `vouchers` (
+  `voucher_id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `description` text,
+  `discount_type` enum('percent','fixed') NOT NULL,
+  `discount_value` int NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `max_usage` int DEFAULT NULL,
+  `used_count` int DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`voucher_id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `vouchers` */
+
+insert  into `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type`,`discount_value`,`start_date`,`end_date`,`max_usage`,`used_count`,`is_active`,`created_at`,`updated_at`) values 
+(1,'MOV01','Movie Voucher 10%',NULL,'percent',10,'2025-01-01','2025-02-01',NULL,0,1,'2025-12-23 10:17:44','2025-12-23 10:19:27'),
+(2,'FAMILYB3G1','Family Pack','Buy 3 get 1 free for Waterpark','fixed',1,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
+(3,'ARCADE2X','Arcade Mania','Double credits for every top-up','percent',100,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
+(4,'NIGHT5','Night Show','Special price for late night movies','fixed',5,'2025-01-01','2025-12-31',500,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
+(5,'STUDENT20','Student Special','20% discount for students on selected shows','percent',20,'2025-01-01','2025-12-31',300,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
+(6,'WEEKEND15','Weekend Deal','15% off for weekend attractions','percent',15,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
