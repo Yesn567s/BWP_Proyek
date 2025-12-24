@@ -404,17 +404,29 @@ const openTrailer = (youtubeUrl) => {
     <h3 class="fw-bold mb-3 mt-5">Find Your Tickets</h3>
     <div class="row g-4 justify-content-center">
 
-      <div v-for="cat in categories":key="cat.id" class="col-6 col-sm-4 col-md-2 text-center">
-        <button class="category-btn w-100">
-
-          <div class="category-icon" :class="cat.colorClass">
-             <img :src="`/${cat.icons}`" class="w-16 h-16 mb-2 cat-icon"/>
+      <div
+        v-for="cat in categories"
+        :key="cat.id"
+        class="col-6 col-sm-4 col-md-2 text-center"
+      >
+        <router-link
+          :to="{
+            name: 'tickets',
+            query: { category: cat.category_id  }
+          }"
+          class="category-btn w-100 text-decoration-none"
+        >
+          <div class="category-icon">
+            <img
+              :src="`/${cat.icons}`"
+              class="w-16 h-16 mb-2 cat-icon"
+            />
           </div>
 
           <span class="category-name">{{ cat.category_name }}</span>
-
-        </button>
+        </router-link>
       </div>
+
 
     </div>
 

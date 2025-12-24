@@ -8,40 +8,43 @@
 
 <script setup>
 import axios from 'axios'
-import { ref, computed } from 'vue'
-import { onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const selectedCat = ref('All')
+const route = useRoute()
+const router = useRouter()
+
 const search = ref('')
-
 const categories = ref([])
+const tickets = ref([])
 
 onMounted(async () => {
   const res = await axios.get('/api/categories')
   categories.value = res.data
 })
 
-const tickets = ref([])
-
-onMounted(async () => {
-  const res = await axios.get('/api/tickets')
+const fetchTickets = async () => {
+  const res = await axios.get('/api/tickets', {
+    params: {
+      category: route.query.category
+    }
+  })
   tickets.value = res.data
-})
+}
+
+watch(
+  () => route.query.category,
+  fetchTickets,
+  { immediate: true }
+)
 
 const filteredItems = computed(() => {
-  return tickets.value.filter(item => {
-    const matchesCat =
-      selectedCat.value === 'All' || item.category === selectedCat.value
-
-    const matchesSearch =
-      item.title.toLowerCase().includes(search.value.toLowerCase())
-
-    return matchesCat && matchesSearch
-  })
+  return tickets.value.filter(item =>
+    item.title.toLowerCase().includes(search.value.toLowerCase())
+  )
 })
-
-
 </script>
+
 
 <template>
     <h6>halo ini tickets</h6>
@@ -69,15 +72,22 @@ const filteredItems = computed(() => {
 
     <!-- Categories -->
     <div class="d-flex gap-2 overflow-auto mb-4 pb-2">
-      <button
+      <!-- <button
         class="btn rounded-pill fw-bold"
         :class="selectedCat === 'All' ? 'btn-primary' : 'btn-outline-secondary'"
         @click="selectedCat = 'All'"
       >
         All Categories
-      </button>
+      </button> -->
+<button
+  class="btn rounded-pill fw-bold"
+  :class="!route.query.category ? 'btn-primary' : 'btn-outline-secondary'"
+  @click="$router.push({ name: 'tickets' })"
+>
+  All Categories
+</button>
 
-      <button
+      <!-- <button
         v-for="cat in categories"
         :key="cat.id"
         class="btn rounded-pill fw-bold text-nowrap"
@@ -85,7 +95,17 @@ const filteredItems = computed(() => {
         @click="selectedCat = cat.category_name"
       >
         <img :src="`/${cat.icons}`" class="cat-icon"/> {{ cat.category_name }}
-      </button>
+      </button> -->
+      <button
+  v-for="cat in categories"
+  :key="cat.category_id"
+  class="btn rounded-pill fw-bold text-nowrap"
+  :class="route.query.category == cat.category_id ? 'btn-primary' : 'btn-outline-secondary'"
+  @click="$router.push({ name: 'tickets', query: { category: cat.category_id } })"
+>
+  <img :src="`/${cat.icons}`" class="cat-icon"/> {{ cat.category_name }}
+</button>
+
     </div>
 
     <!-- Tickets Grid -->
@@ -99,6 +119,7 @@ const filteredItems = computed(() => {
 
           <!-- Image -->
           <div class="position-relative">
+            <!-- <img src="https://drive.google.com/file/d/1DYML00DDNF8K1bh27DzYZjVIVeLc423M/view?usp=drive_link" alt=""> -->
             <img
               :src="item.imageUrl"
               class="card-img-top"
