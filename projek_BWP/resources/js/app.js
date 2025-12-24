@@ -8,6 +8,8 @@ import Home from './components/home.vue';
 import Tickets from './components/tickets.vue';
 import UserTickets from './components/userTickets.vue';
 import AboutUs from './components/aboutUs.vue';
+import ChooseDate from './components/schedule.vue';
+import Schedule from './components/schedule.vue';
 
 const routes=[
     {
@@ -27,6 +29,10 @@ const routes=[
     {
         path: '/aboutUs',
         component: AboutUs
+    },
+    {
+        path: '/schedule',
+        component: Schedule
     }
 ];
 

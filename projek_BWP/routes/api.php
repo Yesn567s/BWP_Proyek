@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\TicketProductController;
 use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\ScheduleController;
 
 Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/now-playing', [MovieController::class, 'nowPlaying']);
@@ -23,4 +24,5 @@ Route::get('/stats', function () {
 Route::get('/categories', [TicketCategoryController::class, 'index']);
 Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
+Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
     

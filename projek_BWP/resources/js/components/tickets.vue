@@ -105,7 +105,7 @@ const filteredItems = computed(() => {
               style="height: 200px; object-fit: cover"
             />
             <div class="position-absolute top-0 end-0 bg-white px-2 py-1 m-3 rounded shadow-sm small fw-bold">
-              ⭐ {{ item.rating }}
+                ⭐ {{ item.rating ?? '—' }}
             </div>
           </div>
 
@@ -127,10 +127,10 @@ const filteredItems = computed(() => {
                 <small class="text-muted fw-bold text-uppercase">Price from</small>
                 <div class="fs-5 fw-bold text-primary">Rp {{ item.price }}</div>
               </div>
-
-              <button class="btn btn-primary rounded-pill fw-bold px-3">
-                Book
-              </button>
+              <router-link :to="{ path: '/schedule', query: { productId: item.id } }">
+                <button class="btn btn-primary rounded-pill fw-bold px-3">Book</button>
+              </router-link>
+              
             </div>
           </div>
 
