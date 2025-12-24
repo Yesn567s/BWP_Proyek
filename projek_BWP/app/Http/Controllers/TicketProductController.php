@@ -32,7 +32,7 @@ class TicketProductController extends Controller
     //     return response()->json($tickets);
     // }
 
-    public function index()
+    public function index(Request $request)
     {
         $tickets = DB::table('ticket_products as tp')
             ->join('ticket_categories as tc', 'tp.category_id', '=', 'tc.category_id')
@@ -44,9 +44,13 @@ class TicketProductController extends Controller
                 'tp.product_id as id',
                 'tp.name as title',
                 'tc.category_name as category',
+                'tp.category_id as category_id', // 👈 important
                 'tp.base_price as price',
                 DB::raw("CONCAT('/storage/', pm.media_url) as imageUrl")
             )
+            ->when($request->category, function ($query) use ($request) {
+                $query->where('tp.category_id', $request->category);
+            })
             ->get();
 
         return response()->json($tickets);

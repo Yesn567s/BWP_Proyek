@@ -16,7 +16,7 @@ const routes=[
     },
     {
         path:'/tickets',
-        // name: kalo ada pake alias nama route
+        name: 'tickets',
         component: Tickets
     },
     {
