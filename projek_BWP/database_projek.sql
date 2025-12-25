@@ -1,5 +1,5 @@
 /*
-SQLyog Community v13.3.1 (64 bit)
+SQLyog Community v13.3.0 (64 bit)
 MySQL - 8.0.30 : Database - db_ticketing
 *********************************************************************
 */
@@ -79,7 +79,7 @@ CREATE TABLE `product_media` (
   PRIMARY KEY (`media_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_media_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `product_media` */
 
@@ -102,7 +102,11 @@ insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) v
 (17,16,'trailer','https://youtu.be/PAMx9m4Z2V4?si=0MoXUDuOt8NJEQak'),
 (18,17,'trailer','https://youtu.be/SPHfeNgogVs?si=qH-hZ6IBmFKYNi9A'),
 (19,18,'trailer','https://youtu.be/hDZ7y8RP5HE?si=XRfbVmOPIvWzkV_t'),
-(20,19,'trailer','https://youtu.be/UWMzKXsY9A4?si=pfPCWSIYVt3m0zDp');
+(20,19,'trailer','https://youtu.be/UWMzKXsY9A4?si=pfPCWSIYVt3m0zDp'),
+(21,20,'poster','posters/popcorn.jpg'),
+(22,21,'poster','posters/burger.jpg'),
+(23,22,'poster','posters/hotdog.jpg'),
+(24,23,'poster','posters/coca-cola.jpg');
 
 /*Table structure for table `schedules` */
 
@@ -111,32 +115,32 @@ DROP TABLE IF EXISTS `schedules`;
 CREATE TABLE `schedules` (
   `schedule_id` int NOT NULL AUTO_INCREMENT,
   `product_id` int DEFAULT NULL,
-  `venue_id` int DEFAULT NULL,
+  `studio_id` int DEFAULT NULL,
   `start_datetime` datetime DEFAULT NULL,
   `end_datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`schedule_id`),
   KEY `product_id` (`product_id`),
-  KEY `venue_id` (`venue_id`),
+  KEY `studio_id` (`studio_id`),
   CONSTRAINT `schedules_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
-  CONSTRAINT `schedules_ibfk_2` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`)
+  CONSTRAINT `schedules_ibfk_3` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `schedules` */
 
-insert  into `schedules`(`schedule_id`,`product_id`,`venue_id`,`start_datetime`,`end_datetime`) values 
+insert  into `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`,`end_datetime`) values 
 (1,1,1,'2025-11-20 18:00:00','2025-11-20 20:00:00'),
-(2,4,4,'2025-11-21 14:00:00','2025-11-21 16:00:00'),
-(3,5,4,'2025-11-22 10:00:00','2025-11-22 11:00:00'),
-(4,6,5,'2025-12-01 19:00:00','2025-12-01 22:00:00'),
-(5,7,7,'2026-01-15 12:00:00','2026-02-15 20:00:00'),
-(6,12,9,'2025-12-31 12:00:00','2026-01-31 20:00:00'),
-(7,13,8,'2026-01-09 10:00:00','2026-02-04 23:30:00'),
+(2,4,NULL,'2025-11-21 14:00:00','2025-11-21 16:00:00'),
+(3,5,NULL,'2025-11-22 10:00:00','2025-11-22 11:00:00'),
+(4,6,8,'2025-12-01 19:00:00','2025-12-01 22:00:00'),
+(5,7,3,'2026-01-15 12:00:00','2026-02-15 20:00:00'),
+(6,12,5,'2025-12-31 12:00:00','2026-01-31 20:00:00'),
+(7,13,4,'2026-01-09 10:00:00','2026-02-04 23:30:00'),
 (8,14,1,'2026-01-02 11:00:00','2026-02-14 21:30:00'),
-(9,15,6,'2026-02-11 22:00:00','2026-03-18 23:00:00'),
+(9,15,2,'2026-02-11 22:00:00','2026-03-18 23:00:00'),
 (10,16,1,'2025-11-01 08:25:45','2025-12-31 08:25:54'),
-(11,17,8,'2025-09-01 08:31:10','2025-11-30 08:31:16'),
-(12,18,9,'2025-10-01 09:04:01','2025-11-30 09:04:07'),
-(13,19,8,'2025-05-01 09:06:21','2025-06-30 09:06:30');
+(11,17,4,'2025-09-01 08:31:10','2025-11-30 08:31:16'),
+(12,18,5,'2025-10-01 09:04:01','2025-11-30 09:04:07'),
+(13,19,4,'2025-05-01 09:06:21','2025-06-30 09:06:30');
 
 /*Table structure for table `seats` */
 
@@ -144,22 +148,47 @@ DROP TABLE IF EXISTS `seats`;
 
 CREATE TABLE `seats` (
   `seat_id` int NOT NULL AUTO_INCREMENT,
-  `venue_id` int DEFAULT NULL,
+  `studio_id` int NOT NULL,
   `seat_code` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`seat_id`),
-  KEY `venue_id` (`venue_id`),
-  CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`)
+  UNIQUE KEY `uniq_studio_seat` (`studio_id`,`seat_code`),
+  KEY `studio_id` (`studio_id`),
+  CONSTRAINT `seats_ibfk_studio` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `seats` */
 
-insert  into `seats`(`seat_id`,`venue_id`,`seat_code`) values 
+insert  into `seats`(`seat_id`,`studio_id`,`seat_code`) values 
 (1,1,'A1'),
 (2,1,'A2'),
 (3,1,'A3'),
-(4,5,'VIP1'),
-(5,5,'VIP2'),
-(6,5,'VIP3');
+(4,8,'VIP1'),
+(5,8,'VIP2'),
+(6,8,'VIP3');
+
+/*Table structure for table `studios` */
+
+DROP TABLE IF EXISTS `studios`;
+
+CREATE TABLE `studios` (
+  `studio_id` int NOT NULL AUTO_INCREMENT,
+  `venue_id` int NOT NULL,
+  `studio_name` varchar(50) NOT NULL,
+  `studio_type` varchar(50) DEFAULT 'Regular',
+  PRIMARY KEY (`studio_id`),
+  KEY `venue_id` (`venue_id`),
+  CONSTRAINT `studios_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `studios` */
+
+insert  into `studios`(`studio_id`,`venue_id`,`studio_name`,`studio_type`) values 
+(1,1,'Studio 1','Regular'),
+(2,6,'Studio 1','Regular'),
+(3,7,'Studio 1','Regular'),
+(4,8,'Studio 1','Regular'),
+(5,9,'Studio 1','Regular'),
+(8,5,'Main Studio','General');
 
 /*Table structure for table `ticket_categories` */
 
@@ -170,7 +199,7 @@ CREATE TABLE `ticket_categories` (
   `category_name` varchar(50) DEFAULT NULL,
   `icons` varchar(50) NOT NULL,
   PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_categories` */
 
@@ -181,7 +210,8 @@ insert  into `ticket_categories`(`category_id`,`category_name`,`icons`) values
 (4,'Arcade','icons/arcade-machine.png'),
 (5,'Amusement Park','icons/theme-park.png'),
 (6,'Sport','icons/basketball.png'),
-(7,'Event','icons/event-list.png');
+(7,'Event','icons/event-list.png'),
+(8,'Food & Beverage','icons/food-and-drink.png');
 
 /*Table structure for table `ticket_instances` */
 
@@ -226,7 +256,7 @@ CREATE TABLE `ticket_products` (
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `ticket_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `ticket_categories` (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_products` */
 
@@ -249,9 +279,14 @@ insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`
 (16,1,'KKN di Desa Penari','When a group of students visits a village for community service, their project turns deadly. They encounter the wrathful spirit of a dancer, which unleashes a terrifying cascade of horrors upon them.',40000.00,1,1),
 (17,1,'Finding Nemo','After his son gets abducted from the Great Barrier Reef and is dispatched to Sydney, Marlin, a meek clownfish, enlists the help of a forgetful fish and embarks on a journey to bring him home.',40000.00,1,1),
 (18,1,'Moana 2','After receiving an unexpected call from her wayfinding ancestors, a strong-willed girl journeys with her crew to the far seas of Oceania and into dangerous, long-lost waters for an adventure unlike anything she has ever faced.',45000.00,1,1),
-(19,1,'Final Destination Bloodlines','Plagued by a violent and recurring nightmare, a college student heads home to track down the one person who might be able to break the cycle of death and save her family from the grisly demise that inevitably awaits them all.',50000.00,1,1);
+(19,1,'Final Destination Bloodlines','Plagued by a violent and recurring nightmare, a college student heads home to track down the one person who might be able to break the cycle of death and save her family from the grisly demise that inevitably awaits them all.',50000.00,1,1),
+(20,8,'Popcorn','A variety of corn kernel, which forcefully expands and puffs up when heated.',45000.00,0,0),
+(21,8,'Hotdog','A grilled sausage served in the slits of a partially sliced bun.',20000.00,0,0),
+(22,8,'Burger','A beef patty served inside a sliced bun, with toppings lettuce, tomato, onion, cheese, pickles, and condiments (ketchup, mustard, or mayo).',25000.00,0,0),
+(23,8,'Coke','Carbonated soft drink',10000.00,0,0);
 
 /*Table structure for table `users` */
+
 
 DROP TABLE IF EXISTS `users`;
 
@@ -271,6 +306,7 @@ insert  into `users`(`user_id`,`name`,`email`,`password`,`role`) values
 (1,'Joni','joni@mail.com','12345','user'),
 (2,'Ferlinda','fer@mail.com','12345','user'),
 (3,'admin','admin@gmail.com','123','admin');
+
 
 /*Table structure for table `venues` */
 
