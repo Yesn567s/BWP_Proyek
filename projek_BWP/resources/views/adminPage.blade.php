@@ -6,6 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     {{-- @vite('resources/js/admin.js') --}}
+    {{-- <div
+    id="admin-app"
+    data-stats='@json($stats)'
+    ></div> --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

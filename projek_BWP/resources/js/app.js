@@ -3,7 +3,7 @@ import 'bootstrap';
 
 import { createApp } from 'vue';
 import App from './App.vue';
-import AdminApp from './AdminApp.vue';
+import AdminApp from './components/AdminApp.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from './components/home.vue';
 import Tickets from './components/tickets.vue';
