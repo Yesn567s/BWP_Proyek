@@ -29,21 +29,47 @@ class AuthController extends Controller
         }
     }
 
+    // public function login(Request $request)
+    // {
+    //     $user = DB::table('users')
+    //         ->where('email', $request->email)
+    //         ->where('password', $request->password)
+    //         ->first();
+
+    //     if ($user) {
+    //         // Optional: store user session
+    //         session(['user_id' => $user->user_id]);
+    //         session(['user_name' => $user->name]);
+
+    //         return response('success', 200);
+    //     }
+
+    //     return response('invalid', 401);
+    // }
+
     public function login(Request $request)
     {
         $user = DB::table('users')
             ->where('email', $request->email)
-            ->where('password', $request->password)
             ->first();
 
-        if ($user) {
-            // Optional: store user session
-            session(['user_id' => $user->user_id]);
-            session(['user_name' => $user->name]);
-
-            return response('success', 200);
+        if (!$user || $user->password !== $request->password) {
+            return response('invalid', 401);
         }
 
-        return response('invalid', 401);
+        session([
+            'user_id'   => $user->user_id,
+            'user_name' => $user->name,
+            'user_role' => $user->role,
+        ]);
+
+        // 👇 IMPORTANT: return role info
+        return response()->json([
+            'status' => 'success',
+            'role' => $user->role
+        ]);
     }
+
+
+    
 }

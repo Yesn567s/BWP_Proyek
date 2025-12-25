@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MovieController;
 use Illuminate\Support\Facades\DB;
@@ -25,4 +26,8 @@ Route::get('/categories', [TicketCategoryController::class, 'index']);
 Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
+
+// routes/api.php
+// Route::post('/admin/login', [AuthController::class, 'login']);
+
     

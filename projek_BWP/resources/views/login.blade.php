@@ -470,15 +470,28 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     },
     body: formData
   })
-  .then(res => res.text())
-  .then(result => {
-    if (result === "success") {
-      // ✅ Redirect to dummy.blade.php
-      window.location.href = "/";
+  // .then(res => res.text())
+  // .then(result => {
+  //   if (result === "success") {
+  //     // ✅ Redirect to dummy.blade.php
+  //     window.location.href = "/";
+  //   } else {
+  //     alert("Invalid email or password");
+  //   }
+  // });
+  .then(res => res.json())
+.then(result => {
+  if (result.status === "success") {
+    if (result.role === "admin") {
+      window.location.href = "/admin";
     } else {
-      alert("Invalid email or password");
+      window.location.href = "/";
     }
-  });
+  } else {
+    alert("Invalid email or password");
+  }
+});
+
 });
 </script>
 
