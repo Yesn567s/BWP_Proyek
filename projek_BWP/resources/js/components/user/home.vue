@@ -453,8 +453,7 @@ const openTrailer = (youtubeUrl) => {
         <div class="col-md-3" v-for="movie in movies" :key="movie.id">
           <div class="card shadow-sm mb-4 movie-card">
             <div class="poster-wrapper">
-            <img :src="movie.poster || '/images/posters/default.jpg'" class="movie-poster" alt="Movie Poster"
-            />
+            <img :src="movie.poster || '/images/posters/default.jpg'" class="movie-poster" alt="Movie Poster"/>
           </div>
 
           <div class="card-body">

@@ -3,18 +3,19 @@ import 'bootstrap';
 
 import { createApp } from 'vue';
 import App from './App.vue';
-import AdminApp from './components/AdminApp.vue';
+import AdminApp from './components/admin/AdminApp.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from './components/home.vue';
-import Tickets from './components/tickets.vue';
-import UserTickets from './components/userTickets.vue';
-import AboutUs from './components/aboutUs.vue';
-import ChooseDate from './components/schedule.vue';
-import Schedule from './components/schedule.vue';
+import Home from './components/user/home.vue';
+import Tickets from './components/user/tickets.vue';
+import UserTickets from './components/user/userTickets.vue';
+import AboutUs from './components/user/aboutUs.vue';
+import ChooseDate from './components/user/schedule.vue';
+import Schedule from './components/user/schedule.vue';
 
 const routes=[
     {
         path:'/',
+        name: 'userHome',
         component: Home
     },
     {
@@ -24,21 +25,19 @@ const routes=[
     },
     {
         path:'/userTickets',
-        // name:
+        name: 'userTickets',
         component: UserTickets
     },
     {
         path: '/aboutUs',
+        name: 'aboutUs',
         component: AboutUs
     },
     {
         path: '/schedule',
+        name: 'schedule',
         component: Schedule
     }
-    // { 
-    //     path: '/admin', 
-    //     component: AdminPage 
-    // }
 ];
 
 const router = createRouter({
@@ -49,4 +48,3 @@ const router = createRouter({
 
 // register router and mount app with router
 createApp(App).use(router).mount('#app');
-createApp(AdminApp).use(router).mount('#admin-app');

@@ -10,7 +10,7 @@
     id="admin-app"
     data-stats='@json($stats)'
     ></div> --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/admin.js'])
 </head>
 <body>
     <div id="admin-app"></div>

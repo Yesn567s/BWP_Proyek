@@ -21,5 +21,7 @@ Route::get('/admin', function (){
     return view ('adminPage');
 })->name('admin');
 
+Route::view('/admin/{any}', 'adminPage')->where('any', '.*');
+
 // Catch-all route for SPA client-side routes (prevents 404 on page refresh)
 Route::get('/{any}', [Dummy::class, 'index'])->where('any', '.*');
