@@ -5,11 +5,12 @@
 
 .footer-bg {
   background-color: #f2f2f2;
-  max-width: 1200px;       /* reduce background width */
+  width: 100vw;
   margin: 0 auto;         /* center it */
   border-radius: 20px;    /* soft edges */
   padding: 3rem 1.5rem;   /* inner spacing */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* subtle softness */
+  
 }
 
 .footer-bg {

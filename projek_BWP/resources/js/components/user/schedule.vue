@@ -110,12 +110,11 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 			<div class="card border-0 shadow-sm rounded-4">
 				<div class="card-body p-4">
 					<div class="row g-4 align-items-center">
-						<div class="col-md-4">
+						<div class="col-md-auto">
 							<div class="poster-frame rounded-4 overflow-hidden shadow-sm">
 								<img
 									:src="movie.poster"
 									alt="Poster"
-									class="w-50 h-50"
 								/>
 							</div>
 						</div>
@@ -208,8 +207,7 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 }
 
 .poster-frame img {
-	/* object-fit: cover; */
-	background-size: cover;
+	max-width: 200px;
 }
 
 .bg-primary-soft {
