@@ -47,7 +47,6 @@ const filteredItems = computed(() => {
 
 
 <template>
-    <h6>halo ini tickets</h6>
 
     <div class="container py-5">
 
