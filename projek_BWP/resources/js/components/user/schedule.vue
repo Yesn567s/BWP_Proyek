@@ -13,18 +13,35 @@ const error = ref('')
 
 const numberFormatter = new Intl.NumberFormat('id-ID')
 
+const dates = ref([])
+
+const setSelectedDate = v => {
+	selectedDate.value = v
+}
+
 const loadSchedule = async () => {
 	loading.value = true
 	error.value = ''
 
 	try {
 		const productId = route.params.id || route.query.productId || 1
-		const { data } = await axios.get(`/api/movies/${productId}/schedule`)
 
-		movie.value = data.movie
-		schedules.value = data.schedules
-		selectedDate.value = data.schedules?.[0]?.date ?? null
+		// Fetch schedule and the precomputed dates in parallel
+		const [scheduleRes, datesRes] = await Promise.all([
+			axios.get(`/api/movies/${productId}/schedule`),
+			axios.get(`/api/movies/${productId}/dates`),
+		])
+
+		movie.value = scheduleRes.data.movie
+		schedules.value = scheduleRes.data.schedules
+
+		// API returns array of { value, weekday, day, month }
+		dates.value = Array.isArray(datesRes.data) ? datesRes.data : []
+
+		// Prefer first date from dates API, fallback to schedule date
+		selectedDate.value = dates.value?.[0]?.value ?? scheduleRes.data.schedules?.[0]?.date ?? null
 	} catch (err) {
+		console.error(err)
 		error.value = 'Unable to load schedule data right now.'
 	} finally {
 		loading.value = false
@@ -32,21 +49,14 @@ const loadSchedule = async () => {
 }
 
 onMounted(loadSchedule)
+// onMounted(async () => {
+//   const res = await axios.get('/api/movies/1/dates')
+//   dates.value = res.data          // ✅ BENAR
+//   selectedDate.value = res.data[0]?.value ?? null
+// })
 
-const dates = computed(() => {
-	const uniqueDates = [...new Set(schedules.value.map(s => s.date))]
-
-	return uniqueDates.map(dateStr => {
-		const date = new Date(dateStr)
-
-		return {
-			value: dateStr,
-			weekday: date.toLocaleDateString('en-US', { weekday: 'short' }),
-			day: date.toLocaleDateString('en-US', { day: 'numeric' }),
-			month: date.toLocaleDateString('en-US', { month: 'short' }),
-		}
-	})
-})
+// `dates` is now populated from the API above (array of { value, weekday, day, month })
+// If you prefer computing from `schedules`, we can keep that logic as a fallback later.
 
 const venuesForSelectedDate = computed(() => {
 	if (!selectedDate.value) return []
@@ -105,7 +115,7 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 								<img
 									:src="movie.poster"
 									alt="Poster"
-									class="w-100 h-100"
+									class="w-50 h-50"
 								/>
 							</div>
 						</div>
@@ -114,10 +124,17 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 								{{ movie.category || 'Movie' }}
 							</span>
 							<h2 class="fw-bold mb-2">{{ movie.title }}</h2>
+							<div class="d-flex align-items-center gap-3">
+								<p>⭐ {{ movie.rating ?? '—' }}</p> 
+								<span class="badge bg-primary-soft text-primary fw-semibold mb-2">
+									{{ movie.ageRating || 'All Ages' }}
+								</span>
+							</div>
+							<p class="text-muted mb-3">Genre : {{ movie.genre }}</p>
 							<p class="text-muted mb-3">{{ movie.desc }}</p>
 							<div class="d-flex align-items-center gap-3">
 								<div class="fw-bold text-primary fs-4">Rp {{ formatPrice(movie.price) }}</div>
-								<small class="text-muted">Base price</small>
+								<!-- <small class="text-muted">Base price</small> -->
 							</div>
 						</div>
 					</div>
@@ -135,13 +152,7 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 				</div>
 
 				<div class="d-flex gap-3 overflow-auto pb-2">
-					<button
-						v-for="date in dates"
-						:key="date.value"
-						class="date-card btn p-3 border shadow-sm rounded-4 text-start flex-shrink-0"
-						:class="{ 'date-card-active': selectedDate === date.value }"
-						@click="selectedDate = date.value"
-					>
+					<button v-for="date in dates" :key="date.value" class="date-card btn p-3 border shadow-sm rounded-4 text-start flex-shrink-0" :class="{ 'date-card-active': selectedDate === date.value }" @click="setSelectedDate(date.value)">
 						<div class="text-uppercase small text-muted mb-1">{{ date.weekday }}</div>
 						<div class="fw-bold fs-5">{{ date.day }}</div>
 						<div class="text-muted small">{{ date.month }}</div>
@@ -164,11 +175,7 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 							No venues available for this date.
 						</div>
 
-						<div
-							v-for="venue in venuesForSelectedDate"
-							:key="venue.venueName + venue.location"
-							class="border-bottom p-4"
-						>
+						<div v-for="venue in venuesForSelectedDate" :key="venue.venueName + venue.location" class="border-bottom p-4">
 							<div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
 								<div>
 									<h6 class="fw-bold mb-1">{{ venue.venueName }}</h6>
@@ -196,12 +203,13 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 
 <style scoped>
 .poster-frame {
-	height: 320px;
+	/* height: 500px; */
 	background: #f8f9fa;
 }
 
 .poster-frame img {
-	object-fit: cover;
+	/* object-fit: cover; */
+	background-size: cover;
 }
 
 .bg-primary-soft {

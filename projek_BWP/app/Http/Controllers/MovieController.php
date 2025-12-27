@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Schedule;
 use App\Models\TicketProduct;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
@@ -80,6 +83,29 @@ class MovieController extends Controller
             ];
         });
     }
+
+    public function dates($id)
+{
+    $schedule = Schedule::where('product_id', $id)->firstOrFail();
+
+    $start = Carbon::parse($schedule->start_datetime)->startOfDay();
+    $end   = Carbon::parse($schedule->end_datetime)->startOfDay();
+
+    $period = CarbonPeriod::create($start, $end);
+
+    $dates = [];
+
+    foreach ($period as $date) {
+        $dates[] = [
+            'value' => $date->toDateString(),
+            'weekday' => $date->format('D'),
+            'day' => $date->format('d'),
+            'month' => $date->format('M'),
+        ];
+    }
+
+    return response()->json($dates);
+}
 
 
 }

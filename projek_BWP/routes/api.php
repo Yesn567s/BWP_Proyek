@@ -29,6 +29,9 @@ Route::get('/categories', [TicketCategoryController::class, 'index']);
 Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
+Route::get('/movies/{id}/dates', [ScheduleController::class, 'datesByMovie']);
+Route::get('/movies/{id}/dates', [MovieController::class, 'dates']);
+
 Route::get('/food/venues', [VenueController::class, 'foodVenues']);
 Route::get('/food', [FoodController::class, 'allFood']);
 

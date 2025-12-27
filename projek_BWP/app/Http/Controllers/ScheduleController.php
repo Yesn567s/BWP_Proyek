@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Schedule;
 use App\Models\TicketProduct;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -20,6 +22,9 @@ class ScheduleController extends Controller
             'desc'     => $movie->description,
             'category' => $movie->category?->category_name,
             'price'    => $movie->base_price,
+            'rating'   => $movie->rating,
+            'ageRating' => $movie->age_rating,
+            'genre'    => $movie->genre,
             'poster'   => $movie->poster
                 ? Storage::url($movie->poster->media_url)
                 : asset('images/posters/default.jpg'),
@@ -64,5 +69,32 @@ class ScheduleController extends Controller
             'movie'     => $movieDto,
             'schedules' => $schedules,
         ]);
+    }
+
+    public function datesByMovie($productId)
+    {
+        $schedule = Schedule::where('product_id', $productId)->first();
+
+        if (!$schedule) {
+            return response()->json([]);
+        }
+
+        $period = CarbonPeriod::create(
+            $schedule->start_datetime->startOfDay(),
+            $schedule->end_datetime->startOfDay()
+        );
+
+        $dates = [];
+
+        foreach ($period as $date) {
+            $dates[] = [
+                'value'   => $date->format('Y-m-d'),
+                'day'     => $date->format('d'),
+                'weekday' => $date->format('D'),
+                'month'   => $date->format('M'),
+            ];
+        }
+
+        return response()->json($dates);
     }
 }
