@@ -1,4 +1,17 @@
 <style scoped>
+*{
+    box-sizing: border-box;
+}
+.hero {
+  width: 100vw;
+  height: 500px;
+  margin: auto;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .movie-card {
   height: 520px;
 }
@@ -215,9 +228,10 @@
 }
 
 .play-btn {
-  width: 56px;
-  height: 56px;
-  background: #dc3545;
+  width: 45px;
+  height: 45px;
+  background: black;
+  opacity: 0.7;
   color: white;
   border-radius: 50%;
   font-size: 22px;
@@ -374,15 +388,14 @@ const openTrailer = (youtubeUrl) => {
 </script>
 
 <template>
-  <div class="container my-5">
-    <!-- Hero -->
-    <div class="bg-warning text-dark p-5 rounded text-center mb-5">
+  <!-- Hero -->
+  <div class="hero bg-warning text-dark p-5 rounded text-center mb-5">
       <h1 class="fw-bold">Exclusive Movie Premieres & Promos</h1>
       <p class="lead">
         Get your tickets now and enjoy 20% cashback on your first booking!
       </p>
     </div>
-    
+  <div class="container my-5">
     <!-- diskon disskonn -->
      <h3 class="fw-bold mb-3">Vouchers and Deals</h3>
      <div class="position-relative deals-carousel">
@@ -528,7 +541,7 @@ const openTrailer = (youtubeUrl) => {
         <img :src="`https://img.youtube.com/vi/${getYoutubeId(movie.youtube_url)}/hqdefault.jpg`" class="trailer-img"/>
 
         <div class="overlay">
-          <div class="play-btn">▶</div>
+          <div class="play-btn"><i class="bi bi-play-fill" style="opacity: 1;"></i></div>
         </div>
       </div>
 
