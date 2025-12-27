@@ -237,6 +237,20 @@
           <span class="underline active" v-if="activeMenu === 'movies'"></span>
         </li>
 
+        <!-- FUN -->
+        <li class="nav-item position-relative menu-item" ref="funMenu">
+          <router-link to="/fun" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'fun' }" @click.stop="toggle('fun')">FUNLy
+            <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'fun' }"></i>
+          </router-link>
+        </li>
+
+        <!-- Foods -->
+        <li class="nav-item position-relative menu-item" ref="foodMenu">
+          <router-link to="/food" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'food' }" @click.stop="toggle('food')">Foods & Beverages
+            <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'food' }"></i>
+          </router-link>
+        </li>
+
         <!-- <li class="nav-item position-relative menu-item" ref="productMenu">
           <router-link to="/tickets" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'product' }" @click.stop="toggle('product')">Tickets
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'product' }"></i>
@@ -300,12 +314,6 @@
 
             </div>
           </div> -->
-        </li>
-
-        <li>
-          <router-link to="/schedule" class="menu-btn">
-            FUN
-          </router-link>
         </li>
         
         <!-- ABOUT US -->

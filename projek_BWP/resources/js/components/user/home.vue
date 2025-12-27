@@ -272,6 +272,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const movies = ref([])
 
@@ -301,6 +304,20 @@ onMounted(async () => {
 })
 
 const categories = ref([])
+const goToCategory = (cat) => {
+  const name = cat.category_name.toLowerCase()
+
+  if (name.includes('movie')) {
+    router.push({ name: 'movies' })
+  } 
+  else if (name.includes('food')) {
+    router.push({ name: 'food' })
+  } 
+  else {
+    router.push({ name: 'fun' })
+  }
+}
+
 
 onMounted(async () => {
   const res = await axios.get('/api/categories')
@@ -405,17 +422,17 @@ const openTrailer = (youtubeUrl) => {
     <div class="row g-4 justify-content-center">
 
       <div v-for="cat in categories" :key="cat.id" class="col-6 col-sm-4 col-md-2 text-center">
-        <router-link :to="{
-            name: 'tickets',
-            query: { category: cat.category_id  }
-          }" class="category-btn w-100 text-decoration-none"
-        >
-          <div class="category-icon">
-            <img :src="`/${cat.icons}`" class="w-16 h-16 mb-2 cat-icon"/>
-          </div>
+        <button
+  class="category-btn w-100 text-decoration-none"
+  @click="goToCategory(cat)"
+>
+  <div class="category-icon">
+    <img :src="`/${cat.icons}`" class="cat-icon"/>
+  </div>
 
-          <span class="category-name">{{ cat.category_name }}</span>
-        </router-link>
+  <span class="category-name">{{ cat.category_name }}</span>
+</button>
+
       </div>
 
 

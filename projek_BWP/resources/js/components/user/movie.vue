@@ -45,7 +45,7 @@ const filteredItems = computed(() => {
         <input
           type="text"
           class="form-control form-control-lg ps-5 rounded-pill"
-          placeholder="Search for events, parks, or movies..."
+          placeholder="Search for any movies here..."
           v-model="search"
         />
         <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
@@ -64,7 +64,7 @@ const filteredItems = computed(() => {
           <!-- Image -->
           <div class="position-relative">
             <img
-              :src="item.imageUrl"
+              :src="item.poster"
               class="card-img-top"
               style="height: 200px; object-fit: cover"
             />
