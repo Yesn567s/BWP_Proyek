@@ -230,13 +230,19 @@
       <ul class="navbar-nav flex-row gap-5 align-items-center">
 
         <!-- TICKETS -->
-        <li class="nav-item position-relative menu-item" ref="productMenu">
+         <li class="nav-item position-relative menu-item" ref="moviesMenu">
+          <router-link to="/movies" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'movies' }" @click.stop="toggle('movies')">Movies
+            <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'movies' }"></i>
+          </router-link>
+          <span class="underline active" v-if="activeMenu === 'movies'"></span>
+        </li>
+
+        <!-- <li class="nav-item position-relative menu-item" ref="productMenu">
           <router-link to="/tickets" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'product' }" @click.stop="toggle('product')">Tickets
             <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'product' }"></i>
-          </router-link>
+          </router-link> -->
 
           <!-- underline (ACTIVE / OPEN) -->
-          <span class="underline active" v-if="activeMenu === 'product'"></span>
 
           <!-- MEGA MENU
           <div class="mega-menu" :class="{ open: activeMenu === 'product' }">
@@ -269,7 +275,7 @@
 
             </div>
           </div> -->
-        </li>
+        <!-- </li> -->
 
         <!-- YOUR TICKETS -->
         <li class="nav-item position-relative menu-item" ref="solutionsMenu">
@@ -296,6 +302,12 @@
           </div> -->
         </li>
 
+        <li>
+          <router-link to="/schedule" class="menu-btn">
+            FUN
+          </router-link>
+        </li>
+        
         <!-- ABOUT US -->
         <li class="nav-item position-relative menu-item" ref="clientsMenu">
           <router-link to="/aboutUs" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'clients' }" @click.stop="toggle('clients')">
@@ -309,6 +321,9 @@
             <!-- EMPTY MEGA MENU -->
           <!-- </div> -->
         </li>
+
+        
+        
 
         <!-- RESOURCES -->
         <!-- <li class="nav-item position-relative menu-item" ref="resourcesMenu"> -->
@@ -349,8 +364,11 @@
 
       <!-- Right -->
       <div class="d-flex align-items-center gap-3">
-        <i class="bi bi-search fs-5"></i>
-        <a class="btn demo-btn">Book a demo</a>
+        <router-link to="/accountPage">
+          <!-- <a class="btn demo-btn"></a> -->
+          <i class="bi bi-person-circle fs-5 demo-btn"></i>
+        </router-link>
+        <!-- <i class="bi bi-search fs-5"></i> -->
       </div>
 
     </div>

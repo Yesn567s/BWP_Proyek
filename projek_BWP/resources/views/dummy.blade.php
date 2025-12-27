@@ -13,7 +13,7 @@
 </head>
 <body>
     <div id="app"> </div>
-    <table>
+    {{-- <table>
         <tr>
             <th>ID</th>
             <th>Name</th>
@@ -26,6 +26,6 @@
             <td>{{ $user->email }}</td>
         </tr>
         @endforeach
-    </table>
+    </table> --}}
 </body>
 </html>

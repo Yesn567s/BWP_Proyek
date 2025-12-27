@@ -1,60 +1,43 @@
-<style scoped>
-.cat-icon {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-</style>
-
 <script setup>
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 
-const route = useRoute()
-const router = useRouter()
-
+/* state */
+const items = ref([])
 const search = ref('')
-const categories = ref([])
-const tickets = ref([])
 
+/* fetch movies */
 onMounted(async () => {
-  const res = await axios.get('/api/categories')
-  categories.value = res.data
+  try {
+    const res = await axios.get('/api/movies')
+    items.value = res.data
+  } catch (err) {
+    console.error('Failed to load movies', err)
+  }
 })
 
-const fetchTickets = async () => {
-  const res = await axios.get('/api/tickets', {
-    params: {
-      category: route.query.category
-    }
-  })
-  tickets.value = res.data
-}
-
-watch(
-  () => route.query.category,
-  fetchTickets,
-  { immediate: true }
-)
-
+/* search filter */
 const filteredItems = computed(() => {
-  return tickets.value.filter(item =>
-    item.title.toLowerCase().includes(search.value.toLowerCase())
+  if (!search.value) return items.value
+
+  const q = search.value.toLowerCase()
+
+  return items.value.filter(item =>
+    item.title.toLowerCase().includes(q) ||
+    item.location?.toLowerCase().includes(q) ||
+    item.category?.toLowerCase().includes(q)
   )
 })
 </script>
 
 
 <template>
-
     <div class="container py-5">
-
     <!-- Header -->
     <div class="row align-items-center mb-4 g-3">
       <div class="col-md">
-        <h1 class="fw-bold">Explore Tickets</h1>
-        <p class="text-muted mb-0">Discover amazing events and destinations</p>
+        <h1 class="fw-bold">Explore Movies</h1>
+        <p class="text-muted mb-0">blablalbalbeadfvbf vfqdwe nb movie </p>
       </div>
 
       <!-- Search -->
@@ -69,45 +52,7 @@ const filteredItems = computed(() => {
       </div>
     </div>
 
-    <!-- Categories -->
-    <div class="d-flex gap-2 overflow-auto mb-4 pb-2">
-      <!-- <button
-        class="btn rounded-pill fw-bold"
-        :class="selectedCat === 'All' ? 'btn-primary' : 'btn-outline-secondary'"
-        @click="selectedCat = 'All'"
-      >
-        All Categories
-      </button> -->
-<button
-  class="btn rounded-pill fw-bold"
-  :class="!route.query.category ? 'btn-primary' : 'btn-outline-secondary'"
-  @click="$router.push({ name: 'tickets' })"
->
-  All Categories
-</button>
 
-      <!-- <button
-        v-for="cat in categories"
-        :key="cat.id"
-        class="btn rounded-pill fw-bold text-nowrap"
-        :class="selectedCat ===  cat.category_name  ? 'btn-primary' : 'btn-outline-secondary'"
-        @click="selectedCat = cat.category_name"
-      >
-        <img :src="`/${cat.icons}`" class="cat-icon"/> {{ cat.category_name }}
-      </button> -->
-      <button
-  v-for="cat in categories"
-  :key="cat.category_id"
-  class="btn rounded-pill fw-bold text-nowrap"
-  :class="route.query.category == cat.category_id ? 'btn-primary' : 'btn-outline-secondary'"
-  @click="$router.push({ name: 'tickets', query: { category: cat.category_id } })"
->
-  <img :src="`/${cat.icons}`" class="cat-icon"/> {{ cat.category_name }}
-</button>
-
-    </div>
-
-    <!-- Tickets Grid -->
     <div class="row g-4">
       <div
         v-for="item in filteredItems"
@@ -118,7 +63,6 @@ const filteredItems = computed(() => {
 
           <!-- Image -->
           <div class="position-relative">
-            <!-- <img src="https://drive.google.com/file/d/1DYML00DDNF8K1bh27DzYZjVIVeLc423M/view?usp=drive_link" alt=""> -->
             <img
               :src="item.imageUrl"
               class="card-img-top"
@@ -157,6 +101,5 @@ const filteredItems = computed(() => {
         </div>
       </div>
     </div>
-
-  </div>
+    </div>
 </template>
