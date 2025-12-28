@@ -14,6 +14,7 @@ import Movie from './components/user/movie.vue';
 import Food from './components/user/food.vue';
 import Fun from './components/user/fun.vue';
 import FoodMenu from './components/user/foodMenu.vue';
+import Seats from './components/user/seats.vue';
 
 const routes=[
     {
@@ -66,6 +67,17 @@ const routes=[
         path: '/fun',
         name: 'fun',
         component: Fun
+    },
+    {
+        path: '/seats/:scheduleId',
+        name: 'seats',
+        component: Seats,
+        props: route => ({
+            scheduleId: Number(route.params.scheduleId) || null,
+            studioName: route.query.studioName ?? null,
+            venueName: route.query.venueName ?? null,
+            date: route.query.date ?? null,
+        })
     }
 ];
 

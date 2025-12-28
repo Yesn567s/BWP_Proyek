@@ -1,9 +1,10 @@
 <script setup>
 import axios from 'axios'
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 
 const movie = ref(null)
 const schedules = ref([])
@@ -80,6 +81,12 @@ const venuesForSelectedDate = computed(() => {
 			id: slot.id,
 			start: slot.start_time,
 			end: slot.end_time,
+			studioId: slot.studio_id ?? null,
+			studioName: slot.studio_name ?? grouped[key].studio,
+			venueId: slot.venue_id ?? null,
+			date: slot.date,
+			startFull: slot.start,
+			endFull: slot.end,
 		})
 	})
 
@@ -87,6 +94,22 @@ const venuesForSelectedDate = computed(() => {
 })
 
 const formatPrice = amount => numberFormatter.format(amount ?? 0)
+
+const goToSeatSelection = (slot, venue) => {
+	if (!slot?.id) return
+
+	router.push({
+		name: 'seats',
+		params: { scheduleId: slot.id },
+		query: {
+			studioName: slot.studioName ?? venue.studio,
+			venueName: venue.venueName,
+			date: slot.date ?? selectedDate.value,
+			start: slot.start,
+			end: slot.end,
+		},
+	})
+}
 </script>
 
 <template>
@@ -188,6 +211,7 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 									v-for="slot in venue.slots"
 									:key="slot.id"
 									class="btn btn-outline-primary rounded-pill px-3 py-2"
+									@click="goToSeatSelection(slot, venue)"
 								>
 									{{ slot.start }} - {{ slot.end }}
 								</button>

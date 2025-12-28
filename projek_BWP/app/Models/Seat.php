@@ -10,8 +10,14 @@ class Seat extends Model
     protected $primaryKey = 'seat_id';
 
     protected $fillable = [
-        'venue_id',
-        'seat_code',
+        'studio_id',
+        'row_letter',
+        'seat_number',
+        'status',
+    ];
+
+    protected $casts = [
+        'seat_number' => 'integer',
     ];
 
     /**

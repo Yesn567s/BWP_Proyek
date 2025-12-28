@@ -61,6 +61,7 @@ class ScheduleController extends Controller
                 'venue_id'    => $row->venue_id,
                 'venue_name'  => $row->venue_name,
                 'location'    => $row->location,
+                'studio_id'   => $row->studio_id,
                 'studio_name' => $row->studio_name,
             ];
         });
@@ -68,6 +69,66 @@ class ScheduleController extends Controller
         return response()->json([
             'movie'     => $movieDto,
             'schedules' => $schedules,
+        ]);
+    }
+
+    public function seats(int $scheduleId): JsonResponse
+    {
+        $schedule = DB::table('schedules as s')
+            ->leftJoin('studios as st', 's.studio_id', '=', 'st.studio_id')
+            ->leftJoin('venues as v', 'st.venue_id', '=', 'v.venue_id')
+            ->leftJoin('ticket_products as p', 's.product_id', '=', 'p.product_id')
+            ->select(
+                's.schedule_id',
+                's.start_datetime',
+                's.end_datetime',
+                'st.studio_id',
+                'st.studio_name',
+                'v.venue_name',
+                'v.location',
+                'p.name as movie_title'
+            )
+            ->where('s.schedule_id', $scheduleId)
+            ->first();
+
+        if (!$schedule) {
+            abort(404, 'Schedule not found');
+        }
+
+        $start = Carbon::parse($schedule->start_datetime);
+        $end   = Carbon::parse($schedule->end_datetime);
+
+        $rows = DB::table('seats')
+            ->select('seat_id', 'row_letter', 'seat_number', 'status')
+            ->where('studio_id', $schedule->studio_id)
+            ->orderBy('row_letter')
+            ->orderBy('seat_number')
+            ->get()
+            ->groupBy('row_letter')
+            ->map(function ($rowSeats) {
+                return $rowSeats->map(function ($seat) {
+                    return [
+                        'id'     => $seat->seat_id,
+                        'number' => (int) $seat->seat_number,
+                        'status' => $seat->status,
+                    ];
+                })->values();
+            })
+            ->toArray();
+
+        return response()->json([
+            'schedule' => [
+                'id'          => $schedule->schedule_id,
+                'studio_id'   => $schedule->studio_id,
+                'studio_name' => $schedule->studio_name,
+                'venue_name'  => $schedule->venue_name,
+                'location'    => $schedule->location,
+                'movie_title' => $schedule->movie_title,
+                'date'        => $start->toDateString(),
+                'start_time'  => $start->format('H:i'),
+                'end_time'    => $end->format('H:i'),
+            ],
+            'rows' => $rows,
         ]);
     }
 
