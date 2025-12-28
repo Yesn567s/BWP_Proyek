@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminMovieController;
+use App\Http\Controllers\AdminScheduleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,9 @@ Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
 // Route::get('/movies/{id}/dates', [ScheduleController::class, 'datesByMovie']);
 Route::get('/movies/{id}/dates', [MovieController::class, 'dates']);
 Route::get('/schedules/{schedule}/seats', [ScheduleController::class, 'seats']);
+Route::post('/admin/schedules', [AdminScheduleController::class, 'store']);
+
+
 
 Route::get('/food/venues', [VenueController::class, 'foodVenues']);
 Route::get('/food', [FoodController::class, 'allFood']);
