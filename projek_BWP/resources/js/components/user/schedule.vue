@@ -62,17 +62,23 @@ onMounted(loadSchedule)
 const venuesForSelectedDate = computed(() => {
 	if (!selectedDate.value) return []
 
-	const filtered = schedules.value.filter(s => s.date === selectedDate.value)
+	const filtered = schedules.value.filter(
+		s => s.date === selectedDate.value
+	)
+
 	const grouped = {}
 
 	filtered.forEach(slot => {
-		const key = slot.venue_id ?? `studio-${slot.studio_name ?? slot.id}`
+		// 🔑 venue + studio = unik
+		const key = `${slot.venue_id}-${slot.studio_id}`
 
 		if (!grouped[key]) {
 			grouped[key] = {
-				venueName: slot.venue_name ?? 'Venue TBA',
-				location: slot.location ?? 'Location TBA',
-				studio: slot.studio_name ?? 'Studio',
+				venueName: slot.venue_name,
+				location: slot.location,
+				studio: slot.studio_name,
+				venueId: slot.venue_id,
+				studioId: slot.studio_id,
 				slots: [],
 			}
 		}
@@ -81,9 +87,9 @@ const venuesForSelectedDate = computed(() => {
 			id: slot.id,
 			start: slot.start_time,
 			end: slot.end_time,
-			studioId: slot.studio_id ?? null,
-			studioName: slot.studio_name ?? grouped[key].studio,
-			venueId: slot.venue_id ?? null,
+			studioId: slot.studio_id,
+			studioName: slot.studio_name,
+			venueId: slot.venue_id,
 			date: slot.date,
 			startFull: slot.start,
 			endFull: slot.end,
@@ -92,6 +98,7 @@ const venuesForSelectedDate = computed(() => {
 
 	return Object.values(grouped)
 })
+
 
 const formatPrice = amount => numberFormatter.format(amount ?? 0)
 
@@ -197,7 +204,8 @@ const goToSeatSelection = (slot, venue) => {
 							No venues available for this date.
 						</div>
 
-						<div v-for="venue in venuesForSelectedDate" :key="venue.venueName + venue.location" class="border-bottom p-4">
+						<div v-for="venue in venuesForSelectedDate" :key="venue.venueId + '-' + venue.studioId" class="border-bottom p-4">
+
 							<div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
 								<div>
 									<h6 class="fw-bold mb-1">{{ venue.venueName }}</h6>
