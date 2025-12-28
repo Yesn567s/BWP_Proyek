@@ -255,6 +255,8 @@ CREATE TABLE `ticket_products` (
   `genre` varchar(200) DEFAULT NULL,
   `requires_schedule` tinyint(1) DEFAULT NULL,
   `requires_seat` tinyint(1) DEFAULT NULL,
+  `duration_minutes` int DEFAULT NULL,
+  `age_rating` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `ticket_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `ticket_categories` (`category_id`),
@@ -263,30 +265,30 @@ CREATE TABLE `ticket_products` (
 
 /*Data for the table `ticket_products` */
 
-insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`rating`,`genre`,`requires_schedule`,`requires_seat`) values 
-(1,1,'Inside Out 2','Inside Out 2 returns to the mind of newly minted teenager Riley just as headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!',45000.00,4.6,'Animation, Comedy, Family',1,1),
-(2,2,'Zoo Entrance Ticket','All-day zoo access',30000.00,NULL,NULL,0,0),
-(3,3,'Museum Ticket','Historical museum entry',25000.00,NULL,NULL,0,0),
-(4,4,'Arcade 2-Hour Pass','Unlimited games for 2 hours',40000.00,NULL,NULL,1,0),
-(5,6,'Trampoline Arena','1-hour trampoline session',60000.00,NULL,NULL,1,0),
-(6,7,'Coldplay Concert','Live concert event',750000.00,NULL,NULL,1,1),
-(7,1,'A Minecraft Movie','A mysterious portal pulls four misfits into the Overworld, a bizarre, cubic wonderland that thrives on imagination.',50000.00,4.2,'Adventure, Fantasy, Family',1,1),
-(8,1,'Zootopia 2','Detectives Judy Hopps and Nick Wilde uncover a mystery that shakes Zootopia.',40000.00,4.4,'Animation, Adventure, Comedy',1,1),
-(9,1,'Five Nights At Freddys 2','One year after the nightmare at Freddy Fazbear’s Pizza, dark secrets resurface.',45000.00,3.9,'Horror, Thriller',1,1),
-(10,1,'Avatar: Fire and Ash','Pandora faces a new conflict as a hostile Na’vi tribe emerges.',50000.00,4.5,'Science Fiction, Adventure',1,1),
-(11,1,'Agak Laen: Menyala Pantiku!','Four detectives go undercover in a retirement home to solve a murder case.',40000.00,4.0,'Comedy, Mystery',1,1),
-(12,1,'Now You See Me: Now You Don\'t','The Four Horsemen return to steal the world’s largest diamond.',50000.00,4.3,'Crime, Thriller',1,1),
-(13,1,'Alice in Borderland','A gamer is trapped in a deadly alternate version of Tokyo.',45000.00,4.1,'Action, Thriller, Sci-Fi',1,1),
-(14,1,'Arcane','The origins of two League of Legends champions in Piltover and Zaun.',40000.00,4.7,'Animation, Action, Drama',1,1),
-(15,1,'The SpongeBob Movie: Search for SquarePants','SpongeBob follows the Flying Dutchman on a pirate adventure.',50000.00,4.2,'Animation, Adventure, Comedy',1,1),
-(16,1,'KKN di Desa Penari','A community service project turns into a terrifying horror story.',40000.00,3.8,'Horror',1,1),
-(17,1,'Finding Nemo','A clownfish travels across the ocean to rescue his son.',40000.00,4.6,'Animation, Adventure, Family',1,1),
-(18,1,'Moana 2','Moana journeys beyond familiar seas on a dangerous new adventure.',45000.00,4.4,'Animation, Adventure, Fantasy',1,1),
-(19,1,'Final Destination Bloodlines','A college student attempts to stop the cycle of death.',50000.00,4.1,'Horror, Mystery, Thriller',1,1),
-(20,8,'Popcorn','A variety of corn kernel, which forcefully expands and puffs up when heated.',45000.00,NULL,NULL,0,0),
-(21,8,'Hotdog','A grilled sausage served in a sliced bun.',20000.00,NULL,NULL,0,0),
-(22,8,'Burger','A beef patty served in a bun with toppings.',25000.00,NULL,NULL,0,0),
-(23,8,'Coke','Carbonated soft drink',10000.00,NULL,NULL,0,0);
+insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`rating`,`genre`,`requires_schedule`,`requires_seat`,`duration_minutes`,`age_rating`) values 
+(1,1,'Inside Out 2','Inside Out 2 returns to the mind of newly minted teenager Riley just as headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!',45000.00,4.6,'Animation, Comedy, Family',1,1,96,'SU'),
+(2,2,'Zoo Entrance Ticket','All-day zoo access',30000.00,NULL,NULL,0,0,NULL,NULL),
+(3,3,'Museum Ticket','Historical museum entry',25000.00,NULL,NULL,0,0,NULL,NULL),
+(4,4,'Arcade 2-Hour Pass','Unlimited games for 2 hours',40000.00,NULL,NULL,1,0,NULL,NULL),
+(5,6,'Trampoline Arena','1-hour trampoline session',60000.00,NULL,NULL,1,0,NULL,NULL),
+(6,7,'Coldplay Concert','Live concert event',750000.00,NULL,NULL,1,1,NULL,NULL),
+(7,1,'A Minecraft Movie','A mysterious portal pulls four misfits into the Overworld, a bizarre, cubic wonderland that thrives on imagination.',50000.00,4.2,'Adventure, Fantasy, Family',1,1,NULL,NULL),
+(8,1,'Zootopia 2','Detectives Judy Hopps and Nick Wilde uncover a mystery that shakes Zootopia.',40000.00,4.4,'Animation, Adventure, Comedy',1,1,108,'SU'),
+(9,1,'Five Nights At Freddys 2','One year after the nightmare at Freddy Fazbear’s Pizza, dark secrets resurface.',45000.00,3.9,'Horror, Thriller',1,1,110,'13+'),
+(10,1,'Avatar: Fire and Ash','Pandora faces a new conflict as a hostile Na’vi tribe emerges.',50000.00,4.5,'Science Fiction, Adventure',1,1,NULL,NULL),
+(11,1,'Agak Laen: Menyala Pantiku!','Four detectives go undercover in a retirement home to solve a murder case.',40000.00,4.0,'Comedy, Mystery',1,1,NULL,NULL),
+(12,1,'Now You See Me: Now You Don\'t','The Four Horsemen return to steal the world’s largest diamond.',50000.00,4.3,'Crime, Thriller',1,1,NULL,NULL),
+(13,1,'Alice in Borderland','A gamer is trapped in a deadly alternate version of Tokyo.',45000.00,4.1,'Action, Thriller, Sci-Fi',1,1,NULL,NULL),
+(14,1,'Arcane','The origins of two League of Legends champions in Piltover and Zaun.',40000.00,4.7,'Animation, Action, Drama',1,1,NULL,NULL),
+(15,1,'The SpongeBob Movie: Search for SquarePants','SpongeBob follows the Flying Dutchman on a pirate adventure.',50000.00,4.2,'Animation, Adventure, Comedy',1,1,NULL,NULL),
+(16,1,'KKN di Desa Penari','A community service project turns into a terrifying horror story.',40000.00,3.8,'Horror',1,1,NULL,NULL),
+(17,1,'Finding Nemo','A clownfish travels across the ocean to rescue his son.',40000.00,4.6,'Animation, Adventure, Family',1,1,NULL,NULL),
+(18,1,'Moana 2','Moana journeys beyond familiar seas on a dangerous new adventure.',45000.00,4.4,'Animation, Adventure, Fantasy',1,1,NULL,NULL),
+(19,1,'Final Destination Bloodlines','A college student attempts to stop the cycle of death.',50000.00,4.1,'Horror, Mystery, Thriller',1,1,NULL,NULL),
+(20,8,'Popcorn','A variety of corn kernel, which forcefully expands and puffs up when heated.',45000.00,NULL,NULL,0,0,NULL,NULL),
+(21,8,'Hotdog','A grilled sausage served in a sliced bun.',20000.00,NULL,NULL,0,0,NULL,NULL),
+(22,8,'Burger','A beef patty served in a bun with toppings.',25000.00,NULL,NULL,0,0,NULL,NULL),
+(23,8,'Coke','Carbonated soft drink',10000.00,NULL,NULL,0,0,NULL,NULL);
 
 /*Table structure for table `users` */
 

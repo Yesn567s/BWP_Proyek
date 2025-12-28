@@ -23,7 +23,7 @@ class ScheduleController extends Controller
             'category' => $movie->category?->category_name,
             'price'    => $movie->base_price,
             'rating'   => $movie->rating,
-            'ageRating' => $movie->age_rating,
+            'age_rating' => $movie->age_rating,
             'genre'    => $movie->genre,
             'poster'   => $movie->poster
                 ? Storage::url($movie->poster->media_url)

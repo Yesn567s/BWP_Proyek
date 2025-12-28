@@ -20,35 +20,29 @@ class MovieController extends Controller
     }
 
     public function nowPlaying()
-    {
-        return TicketProduct::with('poster')
-            ->where('category_id', 1)
-            ->whereHas('schedules', function ($q) {
-                $q->where('start_datetime', '<=', now());
-            })
-            ->get()
-            ->map(fn ($movie) => $this->formatMovie($movie));
-    }
+{
+    return TicketProduct::with('poster')
+        ->where('category_id', 1) // movie only
+        ->whereHas('schedules', function ($q) {
+            $q->where('start_datetime', '<=', now())
+              ->where('end_datetime', '>=', now());
+        })
+        ->get()
+        ->map(fn ($movie) => $this->formatMovie($movie));
+}
+
 
     public function coomingSoon()
-    {
-        return TicketProduct::with('poster')
-            ->where('category_id', 1)
-            ->whereHas('schedules', function ($q) {
-                $q->where('start_datetime', '>', now());
-            })
-            ->get()
-            ->map(function ($movie) {
-                return [
-                    'id'    => $movie->product_id,
-                    'title' => $movie->name,
-                    'desc'  => $movie->description,
-                    'poster'=> $movie->poster
-                        ? Storage::url($movie->poster->media_url)
-                        : Storage::url('posters/default.jpg'),
-                ];
-            });
-    }
+{
+    return TicketProduct::with('poster')
+        ->where('category_id', 1)
+        ->whereHas('schedules', function ($q) {
+            $q->where('start_datetime', '>', now());
+        })
+        ->get()
+        ->map(fn ($movie) => $this->formatMovie($movie));
+}
+
 
     private function formatMovie($movie)
     {

@@ -126,7 +126,7 @@ const formatPrice = amount => numberFormatter.format(amount ?? 0)
 							<div class="d-flex align-items-center gap-3">
 								<p>⭐ {{ movie.rating ?? '—' }}</p> 
 								<span class="badge bg-primary-soft text-primary fw-semibold mb-2">
-									{{ movie.ageRating || 'All Ages' }}
+									{{ movie.age_rating || 'All Ages' }}
 								</span>
 							</div>
 							<p class="text-muted mb-3">Genre : {{ movie.genre }}</p>
