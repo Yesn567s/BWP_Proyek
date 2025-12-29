@@ -158,4 +158,34 @@ class ScheduleController extends Controller
 
         return response()->json($dates);
     }
+
+    public function availableDates(int $productId)
+    {
+        $today = Carbon::today();
+        $end   = Carbon::today()->addDays(13); // total 14 hari (hari ini + 13)
+
+        // Ambil tanggal unik dari schedules (14 hari ke depan)
+        $dates = DB::table('schedules')
+            ->where('product_id', $productId)
+            ->whereBetween('start_datetime', [
+                $today->startOfDay(),
+                $end->endOfDay()
+            ])
+            ->selectRaw('DATE(start_datetime) as date')
+            ->distinct()
+            ->orderBy('date')
+            ->get()
+            ->map(function ($row) {
+                $date = Carbon::parse($row->date);
+
+                return [
+                    'value'   => $date->toDateString(),          // 2025-12-02
+                    'weekday'=> $date->translatedFormat('D'),    // Mon
+                    'day'    => $date->format('d'),              // 02
+                    'month'  => $date->translatedFormat('M'),    // Dec
+                ];
+            });
+
+        return response()->json($dates);
+    }
 }

@@ -78,28 +78,26 @@ class MovieController extends Controller
         });
     }
 
-    public function dates($id)
-{
-    $schedule = Schedule::where('product_id', $id)->firstOrFail();
+    // public function dates($productId)
+    // {
+    //     $dates = Schedule::where('product_id', $productId)
+    //         ->selectRaw('DATE(start_datetime) as value')
+    //         ->distinct()
+    //         ->orderBy('value')
+    //         ->get()
+    //         ->map(function ($item) {
+    //             $date = \Carbon\Carbon::parse($item->value);
+    //             return [
+    //                 'value'   => $date->toDateString(), // 2025-12-02
+    //                 'weekday'=> $date->translatedFormat('D'),
+    //                 'day'    => $date->format('d'),
+    //                 'month'  => $date->translatedFormat('M'),
+    //             ];
+    //         });
 
-    $start = Carbon::parse($schedule->start_datetime)->startOfDay();
-    $end   = Carbon::parse($schedule->end_datetime)->startOfDay();
+    //     return response()->json($dates);
+    // }
 
-    $period = CarbonPeriod::create($start, $end);
-
-    $dates = [];
-
-    foreach ($period as $date) {
-        $dates[] = [
-            'value' => $date->toDateString(),
-            'weekday' => $date->format('D'),
-            'day' => $date->format('d'),
-            'month' => $date->format('M'),
-        ];
-    }
-
-    return response()->json($dates);
-}
 
 
 }

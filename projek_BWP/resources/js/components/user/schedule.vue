@@ -66,38 +66,36 @@ const venuesForSelectedDate = computed(() => {
 		s => s.date === selectedDate.value
 	)
 
-	const grouped = {}
+	const venues = {}
 
 	filtered.forEach(slot => {
-		// 🔑 venue + studio = unik
-		const key = `${slot.venue_id}-${slot.studio_id}`
-
-		if (!grouped[key]) {
-			grouped[key] = {
+		// 🔹 Group by venue ONLY
+		if (!venues[slot.venue_id]) {
+			venues[slot.venue_id] = {
+				venueId: slot.venue_id,
 				venueName: slot.venue_name,
 				location: slot.location,
-				studio: slot.studio_name,
-				venueId: slot.venue_id,
-				studioId: slot.studio_id,
 				slots: [],
 			}
 		}
 
-		grouped[key].slots.push({
+		// 🔹 langsung push slot (tanpa group studio)
+		venues[slot.venue_id].slots.push({
 			id: slot.id,
 			start: slot.start_time,
 			end: slot.end_time,
-			studioId: slot.studio_id,
-			studioName: slot.studio_name,
-			venueId: slot.venue_id,
+			studioId: slot.studio_id,      // disimpan, tidak ditampilkan
+			studioName: slot.studio_name,  // disimpan, tidak ditampilkan
 			date: slot.date,
 			startFull: slot.start,
 			endFull: slot.end,
 		})
 	})
 
-	return Object.values(grouped)
+	return Object.values(venues)
 })
+
+
 
 
 const formatPrice = amount => numberFormatter.format(amount ?? 0)
@@ -160,6 +158,7 @@ const goToSeatSelection = (slot, venue) => {
 								</span>
 							</div>
 							<p class="text-muted mb-3">Genre : {{ movie.genre }}</p>
+							<p class="text-muted mb-3">Duration : {{ movie.duration }}</p>
 							<p class="text-muted mb-3">{{ movie.desc }}</p>
 							<div class="d-flex align-items-center gap-3">
 								<div class="fw-bold text-primary fs-4">Rp {{ formatPrice(movie.price) }}</div>
@@ -198,30 +197,57 @@ const goToSeatSelection = (slot, venue) => {
 					</div>
 				</div>
 
+				<!-- select cinema e apa -->
+				<div class="d-flex gap-2 overflow-auto mb-4 pb-2 category-scroll">
+
+					<!-- ALL -->
+					<button
+						class="btn rounded-pill fw-bold"
+						:class="!route.query.category ? 'btn-primary' : 'btn-outline-secondary'"
+						@click="router.push({ name: 'fun' })"
+					>
+						All Fun
+					</button>
+
+					<!-- FUN CATEGORIES -->
+					<button
+						v-for="cat in funCategories"
+						:key="cat.category_id"
+						class="btn rounded-pill fw-bold text-nowrap"
+						:class="route.query.category == cat.category_id
+						? 'btn-primary'
+						: 'btn-outline-secondary'"
+						@click="router.push({ name: 'fun', query: { category: cat.category_id } })"
+					>
+						<img :src="`/${cat.icons}`" class="cat-icon" />
+						{{ cat.category_name }}
+					</button>
+
+					</div>
 				<div class="card border-0 shadow-sm rounded-4 venue-list">
 					<div class="card-body p-0">
 						<div v-if="venuesForSelectedDate.length === 0" class="p-4 text-center text-muted">
 							No venues available for this date.
 						</div>
 
-						<div v-for="venue in venuesForSelectedDate" :key="venue.venueId + '-' + venue.studioId" class="border-bottom p-4">
-
+						<div v-for="venue in venuesForSelectedDate" :key="venue.venueId" class="border-bottom p-4">
+							<!-- Venue info -->
 							<div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
 								<div>
-									<h6 class="fw-bold mb-1">{{ venue.venueName }}</h6>
-									<small class="text-muted">{{ venue.location }}</small>
+								<h6 class="fw-bold mb-1">{{ venue.venueName }}</h6>
+								<small class="text-muted">{{ venue.location }}</small>
 								</div>
-								<span class="badge bg-light text-secondary">{{ venue.studio }}</span>
 							</div>
 
+							<!-- Time slots -->
 							<div class="d-flex flex-wrap gap-2 mt-3">
 								<button
-									v-for="slot in venue.slots"
-									:key="slot.id"
-									class="btn btn-outline-primary rounded-pill px-3 py-2"
-									@click="goToSeatSelection(slot, venue)"
+								v-for="slot in venue.slots"
+								:key="slot.id"
+								class="btn btn-outline-primary rounded-pill px-3 py-2"
+								@click="goToSeatSelection(slot, venue)"
 								>
-									{{ slot.start }} - {{ slot.end }}
+								{{ slot.start }} - {{ slot.end }}
 								</button>
 							</div>
 						</div>
@@ -260,7 +286,7 @@ const goToSeatSelection = (slot, venue) => {
 }
 
 .venue-list {
-	max-height: 440px;
-	overflow-y: auto;
+	/* max-height: 440px;
+	overflow-y: auto; */
 }
 </style>
