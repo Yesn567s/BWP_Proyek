@@ -9,6 +9,7 @@ use App\Http\Controllers\MovieController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\TicketProductController;
+use App\Http\Controllers\TicketInstanceController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\VenueController;
@@ -29,6 +30,7 @@ Route::get('/stats', function () {
 Route::get('/categories', [TicketCategoryController::class, 'index']);
 Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
+Route::get('/yourTickets', [TicketInstanceController::class, 'index']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
 // Route::get('/movies/{id}/dates', [ScheduleController::class, 'datesByMovie']);
 Route::get('/movies/{id}/dates', [MovieController::class, 'dates']);

@@ -7,7 +7,7 @@ const showingQR = ref(null)
 const tickets = ref([])
 
 onMounted(async () => {
-  const res = await axios.get('/api/tickets')
+  const res = await axios.get('/api/yourTickets')
   tickets.value = res.data
 })
 
@@ -19,6 +19,9 @@ const filteredTickets = computed(() => {
       : t.status !== 'active'
   )
 })
+// const filteredTickets = computed(() => {
+//   return tickets.value 
+// })
 
 // onMounted(async () => {
 //   try {
@@ -31,6 +34,7 @@ const filteredTickets = computed(() => {
 </script>
 
 <template>
+  
   <div class="container py-5">
 
     <h1 class="fw-bold">Your Tickets</h1>
@@ -76,7 +80,7 @@ const filteredTickets = computed(() => {
                   : 'bg-secondary bg-opacity-10 text-secondary'"
                 style="width:64px;height:64px"
               >
-                {{ getIcon(ticket.category_name) }}
+                <!-- {{ getIcon(ticket.category_name) }} -->
               </div>
 
               <div>
@@ -85,8 +89,11 @@ const filteredTickets = computed(() => {
                 </small>
                 <h5 class="fw-bold mb-1">{{ ticket.title }}</h5>
                 <small class="text-muted">
-                  {{ ticket.date }} • {{ ticket.time }}
+                  {{ ticket.date }}
                 </small>
+                <!-- <small class="text-muted">
+                  {{ ticket.date }} • {{ ticket.time }}
+                </small> -->
               </div>
             </div>
 
