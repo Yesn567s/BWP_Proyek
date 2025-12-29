@@ -297,7 +297,7 @@ const headerInfo = computed(() => ({
 
 .row-grid {
 	display: grid;
-	grid-template-columns: repeat(10, 100px);
+	grid-template-columns: repeat(10,100px);
 	justify-content: center;
 	justify-items: center;
 	gap: 16px;
@@ -317,7 +317,7 @@ const headerInfo = computed(() => ({
 	font-weight: 600;
 	border: none;
 	padding: 10px 0;
-	width: 64px;
+	width: 110px;
 	transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
