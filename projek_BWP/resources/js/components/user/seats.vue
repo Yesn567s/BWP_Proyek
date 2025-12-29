@@ -17,6 +17,7 @@ const loading = ref(true)
 const error = ref('')
 const seatRows = ref({})
 const schedule = ref(null)
+const selectedSeats = ref([])
 
 const resolvedScheduleId = computed(() => {
 	return (
@@ -42,6 +43,7 @@ const fetchSeats = async () => {
 		const { data } = await axios.get(`/api/schedules/${id}/seats`)
 		schedule.value = data.schedule
 		seatRows.value = data.rows || {}
+		pruneSelectedSeats()
 	} catch (err) {
 		console.error(err)
 		error.value = 'Unable to load seat availability right now.'
@@ -87,13 +89,68 @@ const segmentedRows = computed(() => {
 	})
 })
 
+const buildRowSlots = rowData => {
+	const slots = []
+	const pushSeat = seat => slots.push({ type: 'seat', seat })
+	const pushSpacer = suffix =>
+		slots.push({ type: 'spacer', id: `${rowData.row}-spacer-${suffix}` })
+
+	rowData.left.forEach(pushSeat)
+	pushSpacer('left')
+	rowData.center.forEach(pushSeat)
+	pushSpacer('right')
+	rowData.right.forEach(pushSeat)
+
+	return slots
+}
+
+const rowLayouts = computed(() =>
+	segmentedRows.value.map(row => ({
+		...row,
+		slots: buildRowSlots(row),
+	}))
+)
+
 const seatLabel = (row, seatNumber) => `${row}${seatNumber}`
 
 const seatClass = seat => ({
 	'seat-button': true,
 	'seat-reserved': seat.status === 'reserved',
 	'seat-maintenance': seat.status === 'maintenance',
+	'seat-selected': isSeatSelected(seat.id),
 })
+
+const isSeatSelected = seatId =>
+	selectedSeats.value.some(selectedSeat => selectedSeat.id === seatId)
+
+const toggleSeatSelection = (rowLabel, seat) => {
+	if (seat.status !== 'available') return
+
+	if (isSeatSelected(seat.id)) {
+		selectedSeats.value = selectedSeats.value.filter(sel => sel.id !== seat.id)
+		return
+	}
+
+	selectedSeats.value = [
+		...selectedSeats.value,
+		{ id: seat.id, row: rowLabel, number: seat.number },
+	]
+}
+
+const pruneSelectedSeats = () => {
+	const availableSeatIds = new Set()
+	Object.values(seatRows.value).forEach(rowSeats => {
+		rowSeats.forEach(seat => {
+			if (seat.status === 'available') {
+				availableSeatIds.add(seat.id)
+			}
+		})
+	})
+
+	selectedSeats.value = selectedSeats.value.filter(sel =>
+		availableSeatIds.has(sel.id)
+	)
+}
 
 const headerInfo = computed(() => ({
 	studio: schedule.value?.studio_name ?? props.studioName ?? 'Studio',
@@ -118,7 +175,7 @@ const headerInfo = computed(() => ({
 				</p>
 				<p class="text-muted small">{{ headerInfo.date }} {{ headerInfo.location ? `• ${headerInfo.location}` : '' }}</p>
 			</div>
-			<button class="btn btn-link fw-semibold text-primary" @click="goBack">&larr; Back to schedule</button>
+			<button class="btn btn-outline-primary fw-semibold" @click="goBack">&larr; Back to schedule</button>
 		</div>
 
 		<div v-if="loading" class="text-center py-5">
@@ -137,62 +194,64 @@ const headerInfo = computed(() => ({
 					<span class="legend legend-reserved">Reserved</span>
 					<span class="legend legend-maintenance">Maintenance</span>
 				</div>
-				<small class="text-muted">Tap a seat to continue (coming soon)</small>
+				<small class="text-muted">Select the seats you want to buy</small>
 			</div>
 
 
 			<div class="seat-grid mt-4">
 				<div
-					v-for="row in segmentedRows"
+					v-for="row in rowLayouts"
 					:key="row.row"
 					class="seat-row"
 				>
 					<div class="row-label">{{ row.row }}</div>
-					<div class="row-sections">
-						<div class="seat-section seat-section--edge">
+					<div class="row-grid">
+						<template
+							v-for="(slot, index) in row.slots"
+							:key="slot.type === 'seat' ? slot.seat.id : slot.id"
+						>
+							<div v-if="slot.type === 'spacer'" class="seat-spacer"></div>
 							<button
-								v-for="seat in row.left"
-								:key="seat.id"
+								v-else
 								:type="button"
 								class="btn"
-								:class="seatClass(seat)"
-								:disabled="seat.status !== 'available'"
+								:class="seatClass(slot.seat)"
+								:disabled="slot.seat.status !== 'available'"
+								@click="toggleSeatSelection(row.row, slot.seat)"
 							>
-								{{ seatLabel(row.row, seat.number) }}
+								{{ seatLabel(row.row, slot.seat.number) }}
 							</button>
-						</div>
-						<div class="aisle"></div>
-						<div class="seat-section seat-section--center">
-							<button
-								v-for="seat in row.center"
-								:key="seat.id"
-								:type="button"
-								class="btn"
-								:class="seatClass(seat)"
-								:disabled="seat.status !== 'available'"
-							>
-								{{ seatLabel(row.row, seat.number) }}
-							</button>
-						</div>
-						<div class="aisle"></div>
-						<div class="seat-section seat-section--edge">
-							<button
-								v-for="seat in row.right"
-								:key="seat.id"
-								:type="button"
-								class="btn"
-								:class="seatClass(seat)"
-								:disabled="seat.status !== 'available'"
-							>
-								{{ seatLabel(row.row, seat.number) }}
-							</button>
-						</div>
+						</template>
 					</div>
 				</div>
 			</div>
             <br>
             <br>
             <div class="screen text-center text-uppercase fw-semibold">Cinema Screen</div>
+		</div>
+		<div class="seat-footer container border-0 shadow-sm rounded-4 p-4 mt-4 bg-white d-sm-inline-flex">
+			<div class="card-body border-0 p-3 rounded-4 shadow-lg w-75 h-25">
+				<h4>Selected Seats</h4>
+				<div class="selected-seat-list mt-3">
+					<template v-if="selectedSeats.length">
+						<button
+							v-for="seat in selectedSeats"
+							:key="seat.id"
+							class="btn seat-button seat-button--summary"
+							type="button"
+						>
+							{{ seatLabel(seat.row, seat.number) }}
+						</button>
+					</template>
+					<p v-else class="text-muted mb-0">No seats selected yet.</p>
+				</div>
+			</div>
+			<div class="card-body border-0 p-3 rounded-4 shadow-lg w-25 h-25">
+				<h4>Total Price</h4>
+				<h3 class="px-3 text-primary">Rp.</h3>
+			</div>
+
+
 
 		</div>
 	</div>
@@ -236,29 +295,19 @@ const headerInfo = computed(() => ({
 	text-align: center;
 }
 
-.row-sections {
+.row-grid {
 	display: grid;
-	grid-template-columns: auto 24px auto 24px auto;
+	grid-template-columns: repeat(10, 100px);
+	justify-content: center;
+	justify-items: center;
 	gap: 16px;
 	width: 100%;
-	align-items: center;
 }
 
-.seat-section {
-	display: grid;
-	gap: 10px;
-}
-
-.seat-section--edge {
-	grid-template-columns: repeat( 2,minmax(50px, 1fr));
-}
-
-.seat-section--center {
-	grid-template-columns: repeat(4, minmax(50px, 1fr));
-}
-
-.aisle {
-	width: 24px;
+.seat-spacer {
+	width: 30px;
+	height: 44px;
+	visibility: hidden;
 }
 
 .seat-button {
@@ -268,7 +317,14 @@ const headerInfo = computed(() => ({
 	font-weight: 600;
 	border: none;
 	padding: 10px 0;
+	width: 64px;
 	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.seat-selected:not(.seat-reserved):not(.seat-maintenance) {
+	background: #f59e0b;
+	color: #1f2937;
+	box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35);
 }
 
 .seat-button:not(:disabled):hover {
@@ -315,5 +371,18 @@ const headerInfo = computed(() => ({
 
 .legend-maintenance::before {
 	background: #ffe4d6;
+}
+
+.selected-seat-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.seat-button--summary {
+	padding: 8px 16px;
+	min-width: 0;
+	border-radius: 999px;
+	width: auto;
 }
 </style>
