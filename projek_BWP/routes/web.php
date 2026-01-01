@@ -17,6 +17,15 @@ Route::get('/login', function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Return simple JSON about current session user for client-side auth checks
+Route::get('/current-user', function () {
+    return response()->json([
+        'authenticated' => session()->has('user_id'),
+        'user_id' => session('user_id') ?? null,
+        'user_name' => session('user_name') ?? null,
+    ]);
+});
+
 Route::get('/admin', function (){
     return view ('adminPage');
 })->name('admin');

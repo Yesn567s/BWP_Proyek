@@ -15,6 +15,7 @@ import Food from './components/user/food.vue';
 import Fun from './components/user/fun.vue';
 import FoodMenu from './components/user/foodMenu.vue';
 import Seats from './components/user/seats.vue';
+import Blog from './components/user/blog.vue';
 
 const routes=[
     {
@@ -67,6 +68,11 @@ const routes=[
         path: '/fun',
         name: 'fun',
         component: Fun
+    },
+    {
+        path: '/blog',
+        name: 'blog',
+        component: Blog
     },
     {
         path: '/seats/:scheduleId',

@@ -5731,6 +5731,25 @@ insert  into `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type
 (5,'STUDENT20','Student Special','20% discount for students on selected shows','percent',20,'2025-01-01','2025-12-31',300,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
 (6,'WEEKEND15','Weekend Deal','15% off for weekend attractions','percent',15,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23');
 
+
+DROP TABLE IF EXISTS `post`;
+
+CREATE TABLE Post (
+    post_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    content TEXT,
+    created_at DATETIME DEFAULT NOW()
+);
+
+INSERT INTO `post`(title,content) VALUES
+("Rayakan Tahun Baru Bareng Film Dusun Mayit di Bioskop!",
+"Buat kamu para pemburu adrenalin, film Dusun Mayit resmi tayang perdana di seluruh bioskop pada hari ini, 31 Desember 2025! Film ini menjadi perbincangan hangat karena menandai kembalinya Amanda Manopo ke jagat sinema horor. Digarap oleh sutradara bertangan dingin, Rizal Mantovani, film ini bukan sekadar fiksi belaka, melainkan hasil adaptasi dari thread horor yang sempat viral di media sosial X milik @JeroPoint. Perpaduan antara nama besar aktor dan cerita yang sudah punya basis penggemar kuat membuat film ini jadi tontonan wajib untuk menutup tahun.
+
+Tidak main-main produksi film in mengambil lokasi langsung di lereng Gunung Welirang. Amanda Manopo dan jajaran pemeran lainnya harus berjuang melawan cuaca ekstrem demi mendapatkan atmosfer yang autentik. Memberikan kisah yang dekat dengan mitos pendakian di Indonesia tentang sekelompok anak muda yang terjebak di desa gaib setelah tanpa sengaja karena melanggar adat setempat. Kamu akan diajak merasakan sensasi tersesat di dimensi lain yang penuh misteri yang menegangkan.
+
+Diperankan oleh nama-nama besar yang sudah tidak perlu lagi diragukan kemampuannya, langsung pesan tiket nonton Dusun Mayit kalian sekarang lewat aplikasi TIX ID untuk mendapatkan sensasi nonton terbaik dan jangan lupa un tuk memasukan film favorit kalian ke dalam watchlist!"
+);
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
