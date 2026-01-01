@@ -12,6 +12,7 @@ use App\Http\Controllers\TicketInstanceController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\VenueController;
+use App\Http\Controllers\BlogController;
 
 Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/now-playing', [MovieController::class, 'nowPlaying']);
@@ -30,6 +31,7 @@ Route::get('/categories', [TicketCategoryController::class, 'index']);
 Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
 Route::get('/yourTickets', [TicketInstanceController::class, 'index']);
+Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
 // Route::get('/movies/{id}/dates', [ScheduleController::class, 'datesByMovie']);
 Route::get('/movies/{id}/dates', [MovieController::class, 'dates']);

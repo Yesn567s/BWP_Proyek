@@ -330,7 +330,19 @@
           <!-- </div> -->
         </li>
 
-        
+        <!-- BLOGS -->
+        <li class="nav-item position-relative menu-item" ref="clientsMenu">
+          <router-link to="/blog" class="menu-btn" :class="{ 'menu-muted': activeMenu && activeMenu !== 'blog' }" @click.stop="toggle('blog')">
+            Blogs
+            <i class="bi bi-chevron-down" :class="{ rotate: activeMenu === 'blog' }"></i>
+          </router-link>
+
+          <span class="underline active" v-if="activeMenu === 'blog'"></span>
+
+          <!-- <div class="mega-menu smart-align" :class="{ open: activeMenu === 'clients' }"> -->
+            <!-- EMPTY MEGA MENU -->
+          <!-- </div> -->
+        </li>
         
 
         <!-- RESOURCES -->
@@ -407,6 +419,7 @@ export default {
         this.$refs.clientsMenu,
         this.$refs.resourcesMenu,
         this.$refs.companyMenu
+        
       ]
 
       if (menus.some(m => m && m.contains(e.target))) return
