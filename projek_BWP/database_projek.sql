@@ -21,12 +21,12 @@ USE `db_ticketing`;
 DROP TABLE IF EXISTS `order_items`;
 
 CREATE TABLE `order_items` (
-  `order_item_id` INT NOT NULL AUTO_INCREMENT,
-  `order_id` INT DEFAULT NULL,
-  `product_id` INT DEFAULT NULL,
-  `schedule_id` INT DEFAULT NULL,
-  `seat_id` INT DEFAULT NULL,
-  `price` DECIMAL(10,2) DEFAULT NULL,
+  `order_item_id` int NOT NULL AUTO_INCREMENT,
+  `order_id` int DEFAULT NULL,
+  `product_id` int DEFAULT NULL,
+  `schedule_id` int DEFAULT NULL,
+  `seat_id` int DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`order_item_id`),
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`),
@@ -36,11 +36,11 @@ CREATE TABLE `order_items` (
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
   CONSTRAINT `order_items_ibfk_3` FOREIGN KEY (`schedule_id`) REFERENCES `schedules` (`schedule_id`),
   CONSTRAINT `order_items_ibfk_4` FOREIGN KEY (`seat_id`) REFERENCES `seats` (`seat_id`)
-) ENGINE=INNODB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `order_items` */
 
-INSERT  INTO `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`,`seat_id`,`price`) VALUES 
+insert  into `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`,`seat_id`,`price`) values 
 (1,1,1,1,1,45000.00),
 (2,1,1,1,2,45000.00),
 (3,2,6,4,4,750000.00);
@@ -50,39 +50,56 @@ INSERT  INTO `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`
 DROP TABLE IF EXISTS `orders`;
 
 CREATE TABLE `orders` (
-  `order_id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT DEFAULT NULL,
-  `order_date` DATETIME DEFAULT NULL,
-  `total_price` DECIMAL(10,2) DEFAULT NULL,
+  `order_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `order_date` datetime DEFAULT NULL,
+  `total_price` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=INNODB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `orders` */
 
-INSERT  INTO `orders`(`order_id`,`user_id`,`order_date`,`total_price`) VALUES 
+insert  into `orders`(`order_id`,`user_id`,`order_date`,`total_price`) values 
 (1,1,'2025-11-19 16:30:00',90000.00),
 (2,2,'2025-11-19 17:00:00',750000.00),
 (3,2,'2025-10-01 17:17:45',50000.00);
+
+/*Table structure for table `post` */
+
+DROP TABLE IF EXISTS `post`;
+
+CREATE TABLE `post` (
+  `post_id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `content` text,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`post_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `post` */
+
+insert  into `post`(`post_id`,`title`,`content`,`created_at`) values 
+(1,'Rayakan Tahun Baru Bareng Film Dusun Mayit di Bioskop!','Buat kamu para pemburu adrenalin, film Dusun Mayit resmi tayang perdana di seluruh bioskop pada hari ini, 31 Desember 2025! Film ini menjadi perbincangan hangat karena menandai kembalinya Amanda Manopo ke jagat sinema horor. Digarap oleh sutradara bertangan dingin, Rizal Mantovani, film ini bukan sekadar fiksi belaka, melainkan hasil adaptasi dari thread horor yang sempat viral di media sosial X milik @JeroPoint. Perpaduan antara nama besar aktor dan cerita yang sudah punya basis penggemar kuat membuat film ini jadi tontonan wajib untuk menutup tahun.\r\n\r\nTidak main-main produksi film in mengambil lokasi langsung di lereng Gunung Welirang. Amanda Manopo dan jajaran pemeran lainnya harus berjuang melawan cuaca ekstrem demi mendapatkan atmosfer yang autentik. Memberikan kisah yang dekat dengan mitos pendakian di Indonesia tentang sekelompok anak muda yang terjebak di desa gaib setelah tanpa sengaja karena melanggar adat setempat. Kamu akan diajak merasakan sensasi tersesat di dimensi lain yang penuh misteri yang menegangkan.\r\n\r\nDiperankan oleh nama-nama besar yang sudah tidak perlu lagi diragukan kemampuannya, langsung pesan tiket nonton Dusun Mayit kalian sekarang lewat aplikasi TIX ID untuk mendapatkan sensasi nonton terbaik dan jangan lupa un tuk memasukan film favorit kalian ke dalam watchlist!','2026-01-01 17:16:11');
 
 /*Table structure for table `product_media` */
 
 DROP TABLE IF EXISTS `product_media`;
 
 CREATE TABLE `product_media` (
-  `media_id` INT NOT NULL AUTO_INCREMENT,
-  `product_id` INT DEFAULT NULL,
-  `media_type` ENUM('poster','trailer','image','video') DEFAULT NULL,
-  `media_url` VARCHAR(255) DEFAULT NULL,
+  `media_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int DEFAULT NULL,
+  `media_type` enum('poster','trailer','image','video') DEFAULT NULL,
+  `media_url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`media_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_media_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`)
-) ENGINE=INNODB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `product_media` */
 
-INSERT  INTO `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) VALUES 
+insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) values 
 (1,1,'poster','posters/inside-out-2.jpg'),
 (2,1,'trailer','https://www.youtube.com/embed/LEjhY15eCx0'),
 (3,7,'poster','posters/minecraft-movie.jpg'),
@@ -106,27 +123,27 @@ INSERT  INTO `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) V
 DROP TABLE IF EXISTS `schedules`;
 
 CREATE TABLE `schedules` (
-  `schedule_id` INT NOT NULL AUTO_INCREMENT,
-  `product_id` INT DEFAULT NULL,
-  `studio_id` INT DEFAULT NULL,
-  `start_datetime` DATETIME DEFAULT NULL,
-  `end_datetime` DATETIME DEFAULT NULL,
+  `schedule_id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int DEFAULT NULL,
+  `studio_id` int DEFAULT NULL,
+  `start_datetime` datetime DEFAULT NULL,
+  `end_datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`schedule_id`),
   KEY `product_id` (`product_id`),
   KEY `studio_id` (`studio_id`),
   CONSTRAINT `schedules_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
   CONSTRAINT `schedules_ibfk_3` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`)
-) ENGINE=INNODB AUTO_INCREMENT=3712 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3981 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `schedules` */
 
-INSERT  INTO `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`,`end_datetime`) VALUES 
+insert  into `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`,`end_datetime`) values 
 (1,1,1,'2025-12-01 10:00:00','2025-12-01 11:45:00'),
 (2,4,NULL,'2025-11-21 14:00:00','2025-11-21 16:00:00'),
 (3,5,NULL,'2025-11-22 10:00:00','2025-11-22 11:00:00'),
 (4,6,8,'2025-12-01 19:00:00','2025-12-01 22:00:00'),
 (5,7,3,'2025-12-30 11:00:00','2025-12-30 12:50:00'),
-(6,12,5,'2025-12-31 18:00:00','2026-01-31 20:00:00'),
+(6,12,72,'2026-01-05 12:30:00','2026-01-31 14:30:00'),
 (9,15,2,'2026-02-11 21:00:00','2026-03-18 23:00:00'),
 (10,16,71,'2025-12-15 10:30:00','2025-12-15 13:05:00'),
 (13,19,76,'2025-05-01 15:00:00','2025-06-30 17:30:00'),
@@ -149,8 +166,8 @@ INSERT  INTO `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`
 (31,10,84,'2026-01-03 14:50:00','2026-01-03 19:30:00'),
 (32,11,86,'2026-01-10 12:30:00','2026-01-10 14:30:00'),
 (33,11,87,'2026-01-10 14:40:00','2026-01-10 16:40:00'),
-(34,12,5,'2025-12-19 17:00:00','2025-12-19 19:00:00'),
-(35,12,30,'2025-12-20 20:00:00','2025-12-20 22:00:00'),
+(34,12,73,'2026-01-05 14:40:00','2026-01-05 16:40:00'),
+(35,12,72,'2026-01-05 16:50:00','2025-12-20 18:50:00'),
 (40,15,2,'2025-12-25 10:00:00','2025-12-25 12:00:00'),
 (41,15,17,'2025-12-26 13:00:00','2025-12-26 15:00:00'),
 (42,16,9,'2025-12-15 13:10:00','2025-12-27 16:05:00'),
@@ -171,7 +188,7 @@ INSERT  INTO `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`
 (61,9,5,'2025-12-31 16:30:00','2025-12-31 18:20:00'),
 (62,10,83,'2026-01-03 19:40:00','2026-01-03 00:17:00'),
 (63,11,86,'2026-01-10 16:50:00','2026-01-13 18:50:00'),
-(64,12,5,'2026-01-14 17:00:00','2026-01-14 19:00:00'),
+(64,12,73,'2026-01-05 19:00:00','2026-01-05 21:00:00'),
 (67,15,2,'2026-01-17 10:00:00','2026-01-17 12:00:00'),
 (68,16,9,'2025-12-15 19:25:00','2026-01-18 22:25:00'),
 (72,20,NULL,'2026-01-22 10:00:00','2026-01-22 22:00:00'),
@@ -184,7 +201,7 @@ INSERT  INTO `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`
 (79,9,80,'2025-12-31 18:30:00','2025-12-31 20:20:00'),
 (80,10,83,'2026-01-04 10:00:00','2026-01-04 14:40:00'),
 (81,11,87,'2026-01-10 19:00:00','2026-01-31 21:00:00'),
-(82,12,30,'2026-02-01 20:00:00','2026-02-01 22:00:00'),
+(82,12,72,'2026-01-06 12:30:00','2026-01-06 14:30:00'),
 (85,15,17,'2026-02-04 13:00:00','2026-02-04 15:00:00'),
 (86,16,9,'2026-02-05 22:00:00','2026-02-06 00:00:00'),
 (89,19,31,'2026-02-08 21:00:00','2026-02-08 23:00:00'),
@@ -3195,18 +3212,6 @@ INSERT  INTO `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`
 (3673,11,87,'2026-01-15 14:40:00','2026-01-15 16:40:00'),
 (3674,11,86,'2026-01-15 16:50:00','2026-01-15 18:50:00'),
 (3675,11,87,'2026-01-15 19:00:00','2026-01-15 21:00:00'),
-(3676,11,87,'2026-01-12 12:30:00','2026-01-12 14:30:00'),
-(3677,11,87,'2026-01-12 14:40:00','2026-01-12 16:40:00'),
-(3678,11,86,'2026-01-12 16:50:00','2026-01-12 18:50:00'),
-(3679,11,87,'2026-01-12 19:00:00','2026-01-12 21:00:00'),
-(3680,11,87,'2026-01-13 12:30:00','2026-01-13 14:30:00'),
-(3681,11,87,'2026-01-13 14:40:00','2026-01-13 16:40:00'),
-(3682,11,86,'2026-01-13 16:50:00','2026-01-13 18:50:00'),
-(3683,11,87,'2026-01-13 19:00:00','2026-01-13 21:00:00'),
-(3684,11,87,'2026-01-14 12:30:00','2026-01-14 14:30:00'),
-(3685,11,87,'2026-01-14 14:40:00','2026-01-14 16:40:00'),
-(3686,11,86,'2026-01-14 16:50:00','2026-01-14 18:50:00'),
-(3687,11,87,'2026-01-14 19:00:00','2026-01-14 21:00:00'),
 (3688,11,87,'2026-01-15 12:30:00','2026-01-15 14:30:00'),
 (3689,11,87,'2026-01-15 14:40:00','2026-01-15 16:40:00'),
 (3690,11,86,'2026-01-15 16:50:00','2026-01-15 18:50:00'),
@@ -3230,27 +3235,195 @@ INSERT  INTO `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`
 (3708,11,87,'2026-01-20 12:30:00','2026-01-20 14:30:00'),
 (3709,11,87,'2026-01-20 14:40:00','2026-01-20 16:40:00'),
 (3710,11,86,'2026-01-20 16:50:00','2026-01-20 18:50:00'),
-(3711,11,87,'2026-01-20 19:00:00','2026-01-20 21:00:00');
+(3711,11,87,'2026-01-20 19:00:00','2026-01-20 21:00:00'),
+(3712,11,23,'2026-01-10 12:30:00','2026-01-10 14:30:00'),
+(3713,11,23,'2026-01-10 14:40:00','2026-01-10 16:40:00'),
+(3714,11,24,'2026-01-10 16:50:00','2026-01-10 18:50:00'),
+(3715,11,23,'2026-01-10 19:00:00','2026-01-10 21:00:00'),
+(3716,11,23,'2026-01-11 12:30:00','2026-01-11 14:30:00'),
+(3717,11,23,'2026-01-11 14:40:00','2026-01-11 16:40:00'),
+(3718,11,24,'2026-01-11 16:50:00','2026-01-11 18:50:00'),
+(3719,11,23,'2026-01-11 19:00:00','2026-01-11 21:00:00'),
+(3720,11,23,'2026-01-12 12:30:00','2026-01-12 14:30:00'),
+(3721,11,23,'2026-01-12 14:40:00','2026-01-12 16:40:00'),
+(3722,11,24,'2026-01-12 16:50:00','2026-01-12 18:50:00'),
+(3723,11,23,'2026-01-12 19:00:00','2026-01-12 21:00:00'),
+(3724,11,23,'2026-01-13 12:30:00','2026-01-13 14:30:00'),
+(3725,11,23,'2026-01-13 14:40:00','2026-01-13 16:40:00'),
+(3726,11,24,'2026-01-13 16:50:00','2026-01-13 18:50:00'),
+(3727,11,23,'2026-01-13 19:00:00','2026-01-13 21:00:00'),
+(3728,11,23,'2026-01-14 12:30:00','2026-01-14 14:30:00'),
+(3729,11,23,'2026-01-14 14:40:00','2026-01-14 16:40:00'),
+(3730,11,24,'2026-01-14 16:50:00','2026-01-14 18:50:00'),
+(3731,11,23,'2026-01-14 19:00:00','2026-01-14 21:00:00'),
+(3732,11,23,'2026-01-15 12:30:00','2026-01-15 14:30:00'),
+(3733,11,23,'2026-01-15 14:40:00','2026-01-15 16:40:00'),
+(3734,11,24,'2026-01-15 16:50:00','2026-01-15 18:50:00'),
+(3735,11,23,'2026-01-15 19:00:00','2026-01-15 21:00:00'),
+(3736,11,23,'2026-01-16 12:30:00','2026-01-16 14:30:00'),
+(3737,11,23,'2026-01-16 14:40:00','2026-01-16 16:40:00'),
+(3738,11,24,'2026-01-16 16:50:00','2026-01-16 18:50:00'),
+(3739,11,23,'2026-01-16 19:00:00','2026-01-16 21:00:00'),
+(3740,11,23,'2026-01-17 12:30:00','2026-01-17 14:30:00'),
+(3741,11,23,'2026-01-17 14:40:00','2026-01-17 16:40:00'),
+(3742,11,24,'2026-01-17 16:50:00','2026-01-17 18:50:00'),
+(3743,11,23,'2026-01-17 19:00:00','2026-01-17 21:00:00'),
+(3744,11,23,'2026-01-18 12:30:00','2026-01-18 14:30:00'),
+(3745,11,23,'2026-01-18 14:40:00','2026-01-18 16:40:00'),
+(3746,11,24,'2026-01-18 16:50:00','2026-01-18 18:50:00'),
+(3747,11,23,'2026-01-18 19:00:00','2026-01-18 21:00:00'),
+(3748,11,23,'2026-01-19 12:30:00','2026-01-19 14:30:00'),
+(3749,11,23,'2026-01-19 14:40:00','2026-01-19 16:40:00'),
+(3750,11,24,'2026-01-19 16:50:00','2026-01-19 18:50:00'),
+(3751,11,23,'2026-01-19 19:00:00','2026-01-19 21:00:00'),
+(3752,11,23,'2026-01-20 12:30:00','2026-01-20 14:30:00'),
+(3753,11,23,'2026-01-20 14:40:00','2026-01-20 16:40:00'),
+(3754,11,24,'2026-01-20 16:50:00','2026-01-20 18:50:00'),
+(3755,11,23,'2026-01-20 19:00:00','2026-01-20 21:00:00'),
+(3756,12,73,'2026-01-06 14:40:00','2026-01-06 16:40:00'),
+(3757,12,72,'2026-01-06 16:50:00','2026-01-06 18:50:00'),
+(3758,12,73,'2026-01-06 19:00:00','2026-01-01 21:00:00'),
+(3759,12,72,'2026-01-07 12:30:00','2026-01-07 14:30:00'),
+(3760,12,73,'2026-01-07 14:40:00','2026-01-07 16:40:00'),
+(3761,12,72,'2026-01-07 16:50:00','2026-01-07 18:50:00'),
+(3762,12,73,'2026-01-07 19:00:00','2026-01-07 21:00:00'),
+(3763,12,72,'2026-01-08 12:30:00','2026-01-08 14:30:00'),
+(3764,12,73,'2026-01-08 14:40:00','2026-01-08 16:40:00'),
+(3765,12,72,'2026-01-08 16:50:00','2026-01-08 18:50:00'),
+(3766,12,73,'2026-01-08 19:00:00','2026-01-08 21:00:00'),
+(3767,12,72,'2026-01-09 12:30:00','2026-01-09 14:30:00'),
+(3768,12,73,'2026-01-09 14:40:00','2026-01-09 16:40:00'),
+(3769,12,72,'2026-01-09 16:50:00','2026-01-09 18:50:00'),
+(3770,12,73,'2026-01-09 19:00:00','2026-01-09 21:00:00'),
+(3771,12,72,'2026-01-10 12:30:00','2026-01-10 14:30:00'),
+(3772,12,73,'2026-01-10 14:40:00','2026-01-10 16:40:00'),
+(3773,12,72,'2026-01-10 16:50:00','2026-01-10 18:50:00'),
+(3774,12,73,'2026-01-10 19:00:00','2026-01-10 21:00:00'),
+(3775,12,72,'2026-01-11 12:30:00','2026-01-11 14:30:00'),
+(3776,12,73,'2026-01-11 14:40:00','2026-01-11 16:40:00'),
+(3777,12,72,'2026-01-11 16:50:00','2026-01-11 18:50:00'),
+(3778,12,73,'2026-01-11 19:00:00','2026-01-11 21:00:00'),
+(3779,12,72,'2026-01-12 12:30:00','2026-01-12 14:30:00'),
+(3780,12,73,'2026-01-12 14:40:00','2026-01-12 16:40:00'),
+(3781,12,72,'2026-01-12 16:50:00','2026-01-12 18:50:00'),
+(3782,12,73,'2026-01-12 19:00:00','2026-01-12 21:00:00'),
+(3783,12,72,'2026-01-13 12:30:00','2026-01-13 14:30:00'),
+(3784,12,73,'2026-01-13 14:40:00','2026-01-13 16:40:00'),
+(3785,12,72,'2026-01-13 16:50:00','2026-01-13 18:50:00'),
+(3786,12,73,'2026-01-13 19:00:00','2026-01-13 21:00:00'),
+(3787,12,72,'2026-01-14 12:30:00','2026-01-14 14:30:00'),
+(3788,12,73,'2026-01-14 14:40:00','2026-01-14 16:40:00'),
+(3789,12,72,'2026-01-14 16:50:00','2026-01-14 18:50:00'),
+(3790,12,73,'2026-01-14 19:00:00','2026-01-14 21:00:00'),
+(3791,12,72,'2026-01-15 12:30:00','2026-01-15 14:30:00'),
+(3792,12,73,'2026-01-15 14:40:00','2026-01-15 16:40:00'),
+(3793,12,72,'2026-01-15 16:50:00','2026-01-15 18:50:00'),
+(3794,12,73,'2026-01-15 19:00:00','2026-01-15 21:00:00'),
+(3795,12,72,'2026-01-16 12:30:00','2026-01-16 14:30:00'),
+(3796,12,73,'2026-01-16 14:40:00','2026-01-16 16:40:00'),
+(3797,12,72,'2026-01-16 16:50:00','2026-01-16 18:50:00'),
+(3798,12,73,'2026-01-16 19:00:00','2026-01-16 21:00:00'),
+(3799,12,72,'2026-01-17 12:30:00','2026-01-17 14:30:00'),
+(3800,12,73,'2026-01-17 14:40:00','2026-01-17 16:40:00'),
+(3801,12,72,'2026-01-17 16:50:00','2026-01-17 18:50:00'),
+(3802,12,73,'2026-01-17 19:00:00','2026-01-17 21:00:00'),
+(3803,12,72,'2026-01-18 12:30:00','2026-01-18 14:30:00'),
+(3804,12,73,'2026-01-18 14:40:00','2026-01-18 16:40:00'),
+(3805,12,72,'2026-01-18 16:50:00','2026-01-18 18:50:00'),
+(3806,12,73,'2026-01-18 19:00:00','2026-01-18 21:00:00'),
+(3807,12,72,'2026-01-19 12:30:00','2026-01-19 14:30:00'),
+(3808,12,73,'2026-01-19 14:40:00','2026-01-19 16:40:00'),
+(3809,12,72,'2026-01-19 16:50:00','2026-01-19 18:50:00'),
+(3810,12,73,'2026-01-19 19:00:00','2026-01-19 21:00:00'),
+(3811,12,72,'2026-01-20 12:30:00','2026-01-20 14:30:00'),
+(3812,12,73,'2026-01-20 14:40:00','2026-01-20 16:40:00'),
+(3813,12,72,'2026-01-20 16:50:00','2026-01-20 18:50:00'),
+(3814,12,73,'2026-01-20 19:00:00','2026-01-20 21:00:00'),
+(3815,12,74,'2026-01-05 12:30:00','2026-01-05 14:30:00'),
+(3816,12,75,'2026-01-05 14:40:00','2026-01-05 16:40:00'),
+(3817,12,74,'2026-01-05 16:50:00','2026-01-05 18:50:00'),
+(3818,12,75,'2026-01-05 19:00:00','2026-01-05 21:00:00'),
+(3819,12,74,'2026-01-06 12:30:00','2026-01-06 14:30:00'),
+(3820,12,75,'2026-01-06 14:40:00','2026-01-06 16:40:00'),
+(3821,12,74,'2026-01-06 16:50:00','2026-01-06 18:50:00'),
+(3822,12,75,'2026-01-06 19:00:00','2026-01-06 21:00:00'),
+(3823,12,74,'2026-01-07 12:30:00','2026-01-07 14:30:00'),
+(3824,12,75,'2026-01-07 14:40:00','2026-01-07 16:40:00'),
+(3825,12,74,'2026-01-07 16:50:00','2026-01-07 18:50:00'),
+(3826,12,75,'2026-01-07 19:00:00','2026-01-07 21:00:00'),
+(3827,12,74,'2026-01-08 12:30:00','2026-01-08 14:30:00'),
+(3828,12,75,'2026-01-08 14:40:00','2026-01-08 16:40:00'),
+(3829,12,74,'2026-01-08 16:50:00','2026-01-08 18:50:00'),
+(3830,12,75,'2026-01-08 19:00:00','2026-01-08 21:00:00'),
+(3831,12,74,'2026-01-09 12:30:00','2026-01-09 14:30:00'),
+(3832,12,75,'2026-01-09 14:40:00','2026-01-09 16:40:00'),
+(3833,12,74,'2026-01-09 16:50:00','2026-01-09 18:50:00'),
+(3834,12,75,'2026-01-09 19:00:00','2026-01-09 21:00:00'),
+(3835,12,74,'2026-01-10 12:30:00','2026-01-10 14:30:00'),
+(3836,12,75,'2026-01-10 14:40:00','2026-01-10 16:40:00'),
+(3837,12,74,'2026-01-10 16:50:00','2026-01-10 18:50:00'),
+(3838,12,75,'2026-01-10 19:00:00','2026-01-10 21:00:00'),
+(3839,12,74,'2026-01-11 12:30:00','2026-01-11 14:30:00'),
+(3840,12,75,'2026-01-11 14:40:00','2026-01-11 16:40:00'),
+(3841,12,74,'2026-01-11 16:50:00','2026-01-11 18:50:00'),
+(3842,12,75,'2026-01-11 19:00:00','2026-01-11 21:00:00'),
+(3843,12,74,'2026-01-12 12:30:00','2026-01-12 14:30:00'),
+(3844,12,75,'2026-01-12 14:40:00','2026-01-12 16:40:00'),
+(3845,12,74,'2026-01-12 16:50:00','2026-01-12 18:50:00'),
+(3846,12,75,'2026-01-12 19:00:00','2026-01-12 21:00:00'),
+(3847,12,74,'2026-01-13 12:30:00','2026-01-13 14:30:00'),
+(3848,12,75,'2026-01-13 14:40:00','2026-01-13 16:40:00'),
+(3849,12,74,'2026-01-13 16:50:00','2026-01-13 18:50:00'),
+(3850,12,75,'2026-01-13 19:00:00','2026-01-13 21:00:00'),
+(3851,12,74,'2026-01-14 12:30:00','2026-01-14 14:30:00'),
+(3852,12,75,'2026-01-14 14:40:00','2026-01-14 16:40:00'),
+(3853,12,74,'2026-01-14 16:50:00','2026-01-14 18:50:00'),
+(3854,12,75,'2026-01-14 19:00:00','2026-01-14 21:00:00'),
+(3855,12,74,'2026-01-15 12:30:00','2026-01-15 14:30:00'),
+(3856,12,75,'2026-01-15 14:40:00','2026-01-15 16:40:00'),
+(3857,12,74,'2026-01-15 16:50:00','2026-01-15 18:50:00'),
+(3858,12,75,'2026-01-15 19:00:00','2026-01-15 21:00:00'),
+(3859,12,74,'2026-01-16 12:30:00','2026-01-16 14:30:00'),
+(3860,12,75,'2026-01-16 14:40:00','2026-01-16 16:40:00'),
+(3861,12,74,'2026-01-16 16:50:00','2026-01-16 18:50:00'),
+(3862,12,75,'2026-01-16 19:00:00','2026-01-16 21:00:00'),
+(3863,12,74,'2026-01-17 12:30:00','2026-01-17 14:30:00'),
+(3864,12,75,'2026-01-17 14:40:00','2026-01-17 16:40:00'),
+(3865,12,74,'2026-01-17 16:50:00','2026-01-17 18:50:00'),
+(3866,12,75,'2026-01-17 19:00:00','2026-01-17 21:00:00'),
+(3867,12,74,'2026-01-18 12:30:00','2026-01-18 14:30:00'),
+(3868,12,75,'2026-01-18 14:40:00','2026-01-18 16:40:00'),
+(3869,12,74,'2026-01-18 16:50:00','2026-01-18 18:50:00'),
+(3870,12,75,'2026-01-18 19:00:00','2026-01-18 21:00:00'),
+(3871,12,74,'2026-01-19 12:30:00','2026-01-19 14:30:00'),
+(3872,12,75,'2026-01-19 14:40:00','2026-01-19 16:40:00'),
+(3873,12,74,'2026-01-19 16:50:00','2026-01-19 18:50:00'),
+(3874,12,75,'2026-01-19 19:00:00','2026-01-19 21:00:00'),
+(3875,12,74,'2026-01-20 12:30:00','2026-01-20 14:30:00'),
+(3876,12,75,'2026-01-20 14:40:00','2026-01-20 16:40:00'),
+(3877,12,74,'2026-01-20 16:50:00','2026-01-20 18:50:00'),
+(3878,12,75,'2026-01-20 19:00:00','2026-01-20 21:00:00'),
+(3879,7,19,'2025-12-31 11:00:00','2025-12-31 12:50:00');
 
 /*Table structure for table `seats` */
 
 DROP TABLE IF EXISTS `seats`;
 
 CREATE TABLE `seats` (
-  `seat_id` INT NOT NULL AUTO_INCREMENT,
-  `studio_id` INT NOT NULL,
-  `row_letter` CHAR(1) NOT NULL,
-  `seat_number` INT NOT NULL,
-  `status` ENUM('available','reserved','maintenance') DEFAULT 'available',
+  `seat_id` int NOT NULL AUTO_INCREMENT,
+  `studio_id` int NOT NULL,
+  `row_letter` char(1) NOT NULL,
+  `seat_number` int NOT NULL,
+  `status` enum('available','reserved','maintenance') DEFAULT 'available',
   PRIMARY KEY (`seat_id`),
   UNIQUE KEY `uniq_studio_seat` (`studio_id`,`row_letter`,`seat_number`),
   KEY `studio_id` (`studio_id`),
   CONSTRAINT `seats_ibfk_studio` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`) ON DELETE CASCADE
-) ENGINE=INNODB AUTO_INCREMENT=4160 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4160 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `seats` */
 
-INSERT  INTO `seats`(`seat_id`,`studio_id`,`row_letter`,`seat_number`,`status`) VALUES 
+insert  into `seats`(`seat_id`,`studio_id`,`row_letter`,`seat_number`,`status`) values 
 (1,1,'A',1,'available'),
 (2,1,'A',2,'available'),
 (3,1,'A',3,'available'),
@@ -5433,18 +5606,18 @@ INSERT  INTO `seats`(`seat_id`,`studio_id`,`row_letter`,`seat_number`,`status`) 
 DROP TABLE IF EXISTS `studios`;
 
 CREATE TABLE `studios` (
-  `studio_id` INT NOT NULL AUTO_INCREMENT,
-  `venue_id` INT NOT NULL,
-  `studio_name` VARCHAR(50) NOT NULL,
-  `studio_type` VARCHAR(50) DEFAULT 'Regular',
+  `studio_id` int NOT NULL AUTO_INCREMENT,
+  `venue_id` int NOT NULL,
+  `studio_name` varchar(50) NOT NULL,
+  `studio_type` varchar(50) DEFAULT 'Regular',
   PRIMARY KEY (`studio_id`),
   KEY `venue_id` (`venue_id`),
   CONSTRAINT `studios_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`) ON DELETE CASCADE
-) ENGINE=INNODB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `studios` */
 
-INSERT  INTO `studios`(`studio_id`,`venue_id`,`studio_name`,`studio_type`) VALUES 
+insert  into `studios`(`studio_id`,`venue_id`,`studio_name`,`studio_type`) values 
 (1,1,'Studio 1','Regular'),
 (2,6,'Studio 1','Regular'),
 (3,7,'Studio 1','Regular'),
@@ -5536,15 +5709,15 @@ INSERT  INTO `studios`(`studio_id`,`venue_id`,`studio_name`,`studio_type`) VALUE
 DROP TABLE IF EXISTS `ticket_categories`;
 
 CREATE TABLE `ticket_categories` (
-  `category_id` INT NOT NULL AUTO_INCREMENT,
-  `category_name` VARCHAR(50) DEFAULT NULL,
-  `icons` VARCHAR(50) NOT NULL,
+  `category_id` int NOT NULL AUTO_INCREMENT,
+  `category_name` varchar(50) DEFAULT NULL,
+  `icons` varchar(50) NOT NULL,
   PRIMARY KEY (`category_id`)
-) ENGINE=INNODB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_categories` */
 
-INSERT  INTO `ticket_categories`(`category_id`,`category_name`,`icons`) VALUES 
+insert  into `ticket_categories`(`category_id`,`category_name`,`icons`) values 
 (1,'Movie','icons/watching-a-movie.png'),
 (2,'Zoo','icons/zoo.png'),
 (3,'Museum','icons/art-museum.png'),
@@ -5559,24 +5732,24 @@ INSERT  INTO `ticket_categories`(`category_id`,`category_name`,`icons`) VALUES
 DROP TABLE IF EXISTS `ticket_instances`;
 
 CREATE TABLE `ticket_instances` (
-  `ticket_instance_id` INT NOT NULL AUTO_INCREMENT,
-  `order_item_id` INT DEFAULT NULL,
-  `user_id` INT DEFAULT NULL,
-  `qr_code` VARCHAR(255) DEFAULT NULL,
-  `is_used` TINYINT(1) DEFAULT '0',
-  `status` ENUM('active','used','cancelled','expired') DEFAULT 'active',
-  `valid_until` DATETIME DEFAULT NULL,
-  `used_at` DATETIME DEFAULT NULL,
+  `ticket_instance_id` int NOT NULL AUTO_INCREMENT,
+  `order_item_id` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `qr_code` varchar(255) DEFAULT NULL,
+  `is_used` tinyint(1) DEFAULT '0',
+  `status` enum('active','used','cancelled','expired') DEFAULT 'active',
+  `valid_until` datetime DEFAULT NULL,
+  `used_at` datetime DEFAULT NULL,
   PRIMARY KEY (`ticket_instance_id`),
   KEY `order_item_id` (`order_item_id`),
   KEY `fk_ticket_instances_user` (`user_id`),
   CONSTRAINT `fk_ticket_instances_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `ticket_instances_ibfk_1` FOREIGN KEY (`order_item_id`) REFERENCES `order_items` (`order_item_id`)
-) ENGINE=INNODB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_instances` */
 
-INSERT  INTO `ticket_instances`(`ticket_instance_id`,`order_item_id`,`user_id`,`qr_code`,`is_used`,`status`,`valid_until`,`used_at`) VALUES 
+insert  into `ticket_instances`(`ticket_instance_id`,`order_item_id`,`user_id`,`qr_code`,`is_used`,`status`,`valid_until`,`used_at`) values 
 (1,1,1,'QR-MOVIE-A1',0,'active',NULL,NULL),
 (2,2,1,'QR-MOVIE-A2',0,'active',NULL,NULL),
 (3,3,2,'QR-CONCERT-VIP1',0,'active',NULL,NULL);
@@ -5586,26 +5759,26 @@ INSERT  INTO `ticket_instances`(`ticket_instance_id`,`order_item_id`,`user_id`,`
 DROP TABLE IF EXISTS `ticket_products`;
 
 CREATE TABLE `ticket_products` (
-  `product_id` INT NOT NULL AUTO_INCREMENT,
-  `category_id` INT DEFAULT NULL,
-  `name` VARCHAR(100) DEFAULT NULL,
-  `description` TEXT,
-  `base_price` DECIMAL(10,2) DEFAULT NULL,
-  `rating` DECIMAL(2,1) DEFAULT NULL,
-  `genre` VARCHAR(200) DEFAULT NULL,
-  `requires_schedule` TINYINT(1) DEFAULT NULL,
-  `requires_seat` TINYINT(1) DEFAULT NULL,
-  `duration_minutes` INT DEFAULT NULL,
-  `age_rating` VARCHAR(10) DEFAULT NULL,
+  `product_id` int NOT NULL AUTO_INCREMENT,
+  `category_id` int DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `description` text,
+  `base_price` decimal(10,2) DEFAULT NULL,
+  `rating` decimal(2,1) DEFAULT NULL,
+  `genre` varchar(200) DEFAULT NULL,
+  `requires_schedule` tinyint(1) DEFAULT NULL,
+  `requires_seat` tinyint(1) DEFAULT NULL,
+  `duration_minutes` int DEFAULT NULL,
+  `age_rating` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `ticket_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `ticket_categories` (`category_id`),
-  CONSTRAINT `ticket_products_chk_1` CHECK ((`rating` BETWEEN 0 AND 5.0))
-) ENGINE=INNODB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `ticket_products_chk_1` CHECK ((`rating` between 0 and 5.0))
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_products` */
 
-INSERT  INTO `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`rating`,`genre`,`requires_schedule`,`requires_seat`,`duration_minutes`,`age_rating`) VALUES 
+insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`rating`,`genre`,`requires_schedule`,`requires_seat`,`duration_minutes`,`age_rating`) values 
 (1,1,'Inside Out 2','Inside Out 2 returns to the mind of newly minted teenager Riley just as headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!',45000.00,4.6,'Animation, Comedy, Family',1,1,96,'SU'),
 (2,2,'Zoo Entrance Ticket','All-day zoo access',30000.00,NULL,NULL,0,0,NULL,NULL),
 (3,3,'Museum Ticket','Historical museum entry',25000.00,NULL,NULL,0,0,NULL,NULL),
@@ -5617,7 +5790,7 @@ INSERT  INTO `ticket_products`(`product_id`,`category_id`,`name`,`description`,`
 (9,1,'Five Nights At Freddys 2','One year after the nightmare at Freddy Fazbear’s Pizza, dark secrets resurface.',45000.00,3.9,'Horror, Thriller',1,1,110,'13+'),
 (10,1,'Avatar: Fire and Ash','Pandora faces a new conflict as a hostile Na’vi tribe emerges.',50000.00,4.5,'Science Fiction, Adventure',1,1,197,'13+'),
 (11,1,'Agak Laen: Menyala Pantiku!','Four detectives go undercover in a retirement home to solve a murder case.',40000.00,4.0,'Comedy, Mystery',1,1,NULL,NULL),
-(12,1,'Now You See Me: Now You Don\'t','The Four Horsemen return to steal the world’s largest diamond.',50000.00,4.3,'Crime, Thriller',1,1,NULL,NULL),
+(12,1,'Now You See Me: Now You Don\'t','The Four Horsemen return to steal the world’s largest diamond.',50000.00,4.3,'Crime, Thriller',1,1,113,'13+'),
 (15,1,'The SpongeBob Movie: Search for SquarePants','SpongeBob follows the Flying Dutchman on a pirate adventure.',50000.00,4.2,'Animation, Adventure, Comedy',1,1,NULL,NULL),
 (16,1,'KKN di Desa Penari','A community service project turns into a terrifying horror story.',40000.00,3.8,'Horror',1,1,175,'17+'),
 (19,1,'Final Destination Bloodlines','A college student attempts to stop the cycle of death.',50000.00,4.1,'Horror, Mystery, Thriller',1,1,NULL,NULL),
@@ -5631,156 +5804,37 @@ INSERT  INTO `ticket_products`(`product_id`,`category_id`,`name`,`description`,`
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-  `user_id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(100) DEFAULT NULL,
-  `email` VARCHAR(100) DEFAULT NULL,
-  `password` VARCHAR(100) DEFAULT NULL,
-  `role` ENUM('admin','user') DEFAULT 'user',
-  `points` INT DEFAULT 0,
-  `profile_picture` VARCHAR(500) DEFAULT NULL, -- can be NULL
-  `member_start` DATETIME DEFAULT NULL,
-  `phone_number` VARCHAR(20) DEFAULT NULL,
-  `two_factor_auth` TINYINT(1) DEFAULT 0,
-  `language_code` VARCHAR(10) DEFAULT 'en',
-
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `role` enum('admin','user') DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=INNODB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `users` */
 
-INSERT INTO `users`
-(`user_id`, `name`, `email`, `password`, `role`, `points`, `profile_picture`, `member_start`, `phone_number`, `two_factor_auth`, `language_code`)
-VALUES
-(1, 'Joni', 'joni@mail.com', '12345', 'user', 120,
- NULL, '2023-01-15 00:00:00', '081234567890', 0, 'id'),
-
-(2, 'Ferlinda', 'fer@mail.com', '12345', 'user', 340,
- 'profiles/ferlinda.png', '2022-11-03 00:00:00', '082198765432', 1, 'en'),
-
-(3, 'Admin', 'admin@gmail.com', '123', 'admin', 999,
- NULL, '2021-06-01 00:00:00', '089912345678', 1, 'en');
-
-/*Table structure for table `payment_method` */
-
-DROP TABLE IF EXISTS `payment_method`;
-
-CREATE TABLE `payment_method` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT NOT NULL,
-  `card_type` ENUM('visa', 'mastercard') NOT NULL,
-  `name` VARCHAR(100) NOT NULL,
-  `card_number` VARCHAR(25) NOT NULL,
-  `expire_date` DATE DEFAULT NULL,
-
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `card_number` (`card_number`),
-
-  CONSTRAINT `fk_payment_method_user`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`user_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=INNODB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_0900_ai_ci;
-
-/*Data for the table `payment_method` */
-
-INSERT INTO `payment_method`
-(`id`, `user_id`, `card_type`, `name`, `card_number`, `expire_date`)
-VALUES
-(1, 1, 'visa', 'Joni', '4111111111111111', '2026-05-01'),
-
-(2, 1, 'mastercard', 'Joni A.', '5500000000000004', '2027-09-01'),
-
-(3, 2, 'visa', 'Ferlinda', '4012888888881881', '2025-12-01'),
-
-(4, 2, 'mastercard', 'Ferlinda L.', '5105105105105100', '2028-03-01'),
-
-(5, 1, 'visa', 'Joni Personal', '4222222222222', '2029-01-01'),
-
-(6, 2, 'visa', 'Ferlinda Office', '4000056655665556', '2026-08-01');
-
-/*Table structure for table `notification_type` */
-
-CREATE TABLE notification_type (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  CODE VARCHAR(50) NOT NULL UNIQUE,
-  title VARCHAR(100) NOT NULL,
-  DESCRIPTION VARCHAR(255) DEFAULT NULL
-) ENGINE=INNODB;
-
-/*Data for the table `notification_type` */
-
-INSERT INTO notification_type (CODE, title, DESCRIPTION) VALUES
-('upcoming_movies', 'Upcoming Movies', 'Get notified about upcoming movies and premieres'),
-('new_products', 'New Products', 'Snacks, merchandise, and exclusive items'),
-('events', 'Events', 'Special events, premieres, and live shows'),
-('payments', 'Payments', 'Receipts, payment confirmations, and refunds');
-
-/*Table structure for table `user_notification_setting` */
-
-CREATE TABLE user_notification_setting (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  notification_type_id INT NOT NULL,
-
-  email_enabled TINYINT(1) DEFAULT 0,
-  push_enabled TINYINT(1) DEFAULT 0,
-
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-  UNIQUE KEY uq_user_notification (user_id, notification_type_id),
-
-  CONSTRAINT fk_user_notification_user
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-    ON DELETE CASCADE,
-
-  CONSTRAINT fk_user_notification_type
-    FOREIGN KEY (notification_type_id) REFERENCES notification_type(id)
-    ON DELETE CASCADE
-) ENGINE=INNODB;
-
-/*Data for the table `user_notification_setting` */
-
-INSERT INTO user_notification_setting
-(user_id, notification_type_id, email_enabled, push_enabled)
-VALUES
--- =====================
--- USER 1 (Joni)
--- =====================
-(1, 1, 1, 1), -- Upcoming Movies: Email + Push
-(1, 2, 1, 0), -- New Products: Email only
-(1, 3, 0, 1), -- Events: Push only
-(1, 4, 1, 1), -- Payments: Email + Push
-
--- =====================
--- USER 2 (Ferlinda)
--- =====================
-(2, 1, 0, 0), -- Upcoming Movies: All disabled
-(2, 2, 1, 1), -- New Products: Email + Push
-(2, 3, 0, 1), -- Events: Push only
-(2, 4, 1, 0); -- Payments: Email only
+insert  into `users`(`user_id`,`name`,`email`,`password`,`role`) values 
+(1,'Joni','joni@mail.com','12345','user'),
+(2,'Ferlinda','fer@mail.com','12345','user'),
+(3,'admin','admin@gmail.com','123','admin');
 
 /*Table structure for table `venues` */
 
 DROP TABLE IF EXISTS `venues`;
 
 CREATE TABLE `venues` (
-  `venue_id` INT NOT NULL AUTO_INCREMENT,
-  `venue_name` VARCHAR(100) DEFAULT NULL,
-  `venue_type` VARCHAR(50) DEFAULT NULL,
-  `location` VARCHAR(255) DEFAULT NULL,
+  `venue_id` int NOT NULL AUTO_INCREMENT,
+  `venue_name` varchar(100) DEFAULT NULL,
+  `venue_type` varchar(50) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`venue_id`)
-) ENGINE=INNODB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `venues` */
 
-INSERT  INTO `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) VALUES 
+insert  into `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) values 
 (1,'XXI Tunjungan Plaza','Cinema','Surabaya'),
 (2,'Surabaya Zoo','Zoo','Surabaya'),
 (3,'City Museum','Museum','Surabaya'),
@@ -5823,51 +5877,32 @@ INSERT  INTO `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) VALUES
 DROP TABLE IF EXISTS `vouchers`;
 
 CREATE TABLE `vouchers` (
-  `voucher_id` INT NOT NULL AUTO_INCREMENT,
-  `code` VARCHAR(50) NOT NULL,
-  `title` VARCHAR(100) NOT NULL,
-  `description` TEXT,
-  `discount_type` ENUM('percent','fixed') NOT NULL,
-  `discount_value` INT NOT NULL,
-  `start_date` DATE NOT NULL,
-  `end_date` DATE NOT NULL,
-  `max_usage` INT DEFAULT NULL,
-  `used_count` INT DEFAULT '0',
-  `is_active` TINYINT(1) DEFAULT '1',
-  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `voucher_id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `description` text,
+  `discount_type` enum('percent','fixed') NOT NULL,
+  `discount_value` int NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `max_usage` int DEFAULT NULL,
+  `used_count` int DEFAULT '0',
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`voucher_id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=INNODB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `vouchers` */
 
-INSERT  INTO `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type`,`discount_value`,`start_date`,`end_date`,`max_usage`,`used_count`,`is_active`,`created_at`,`updated_at`) VALUES 
+insert  into `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type`,`discount_value`,`start_date`,`end_date`,`max_usage`,`used_count`,`is_active`,`created_at`,`updated_at`) values 
 (1,'MOV01','Movie Voucher 10%',NULL,'percent',10,'2025-01-01','2025-02-01',NULL,0,1,'2025-12-23 10:17:44','2025-12-23 10:19:27'),
 (2,'FAMILYB3G1','Family Pack','Buy 3 get 1 free for Waterpark','fixed',1,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
 (3,'ARCADE2X','Arcade Mania','Double credits for every top-up','percent',100,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
 (4,'NIGHT5','Night Show','Special price for late night movies','fixed',5,'2025-01-01','2025-12-31',500,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
 (5,'STUDENT20','Student Special','20% discount for students on selected shows','percent',20,'2025-01-01','2025-12-31',300,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
 (6,'WEEKEND15','Weekend Deal','15% off for weekend attractions','percent',15,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23');
-
-
-DROP TABLE IF EXISTS `post`;
-
-CREATE TABLE Post (
-    post_id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255),
-    content TEXT,
-    created_at DATETIME DEFAULT NOW()
-);
-
-INSERT INTO `post`(title,content) VALUES
-("Rayakan Tahun Baru Bareng Film Dusun Mayit di Bioskop!",
-"Buat kamu para pemburu adrenalin, film Dusun Mayit resmi tayang perdana di seluruh bioskop pada hari ini, 31 Desember 2025! Film ini menjadi perbincangan hangat karena menandai kembalinya Amanda Manopo ke jagat sinema horor. Digarap oleh sutradara bertangan dingin, Rizal Mantovani, film ini bukan sekadar fiksi belaka, melainkan hasil adaptasi dari thread horor yang sempat viral di media sosial X milik @JeroPoint. Perpaduan antara nama besar aktor dan cerita yang sudah punya basis penggemar kuat membuat film ini jadi tontonan wajib untuk menutup tahun.
-
-Tidak main-main produksi film in mengambil lokasi langsung di lereng Gunung Welirang. Amanda Manopo dan jajaran pemeran lainnya harus berjuang melawan cuaca ekstrem demi mendapatkan atmosfer yang autentik. Memberikan kisah yang dekat dengan mitos pendakian di Indonesia tentang sekelompok anak muda yang terjebak di desa gaib setelah tanpa sengaja karena melanggar adat setempat. Kamu akan diajak merasakan sensasi tersesat di dimensi lain yang penuh misteri yang menegangkan.
-
-Diperankan oleh nama-nama besar yang sudah tidak perlu lagi diragukan kemampuannya, langsung pesan tiket nonton Dusun Mayit kalian sekarang lewat aplikasi TIX ID untuk mendapatkan sensasi nonton terbaik dan jangan lupa un tuk memasukan film favorit kalian ke dalam watchlist!"
-);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
