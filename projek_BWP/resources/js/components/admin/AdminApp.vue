@@ -256,12 +256,23 @@ const stats = [
 ]
 
 const movies = ref([])
+const foods = ref([])
 
 onMounted(() => {
   axios.get('/api/movies').then(res => {
     console.log(res.data[0])
     movies.value = res.data
   })
+})
+
+onMounted(async () => {
+    try {
+        const res = await axios.get('/api/food')
+        foods.value = res.data
+    } catch (err) {
+        console.error('Failed to load foods', err)
+        foods.value = []
+    }
 })
 
 const topMovies = computed(() => movies.value ? movies.value.slice(0, 4) : [])
@@ -277,6 +288,13 @@ onMounted(async () => {
         cinemaPartners.value = []
     }
 })
+
+const formatPrice = (price) => new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+}).format(price || 0)
 
 const menuItems = [
   { name: 'Dashboard', icon: '🏠', routeName: 'adminDashboard' },
@@ -413,8 +431,37 @@ const menuItems = [
                     </div>
                 </section>
 
+                <section v-if="activeTab === 'Food Catalog'" class="admin-section">
+                    <header class="section-header d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                        <div>
+                            <p class="eyebrow">Concessions</p>
+                            <h1 class="mb-1">Food &amp; Beverages</h1>
+                            <p class="text-muted mb-0">Total items: <strong>{{ foods.length }}</strong></p>
+                        </div>
+                    </header>
+
+                    <div class="row g-4">
+                        <div v-for="food in foods" :key="food.id" class="col-md-6 col-lg-4">
+                            <div class="panel-card catalog-card h-100">
+                                <div class="d-flex gap-3 align-items-center">
+                                    <img :src="food.imageUrl || '/images/food/default.jpg'" class="movie-poster" alt="Food Image" />
+                                    <div class="details">
+                                        <h5 class="fw-bold mb-1">{{ food.title }}</h5>
+                                        <p class="text-muted mb-2">{{ formatPrice(food.price) }}</p>
+                                        <button class="admin-pill-btn small ghost">Edit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="!foods.length" class="col-12 text-center text-muted py-4">
+                            No food items yet.
+                        </div>
+                    </div>
+                </section>
+
                 <section
-                    v-if="['Food Catalog','Blogs Lists','Transaction Log'].includes(activeTab)"
+                    v-if="['Blogs Lists','Transaction Log'].includes(activeTab)"
                     class="admin-section placeholder-section text-center py-5"
                 >
                     <h4 class="fw-bold mb-2">{{ activeTab }}</h4>
