@@ -86,7 +86,9 @@ class ScheduleController extends Controller
                 'st.studio_name',
                 'v.venue_name',
                 'v.location',
-                'p.name as movie_title'
+                'p.name as movie_title',
+                'p.product_id',
+                'p.base_price as price'
             )
             ->where('s.schedule_id', $scheduleId)
             ->first();
@@ -127,6 +129,7 @@ class ScheduleController extends Controller
                 'date'        => $start->toDateString(),
                 'start_time'  => $start->format('H:i'),
                 'end_time'    => $end->format('H:i'),
+                'price'       => $schedule->price,
             ],
             'rows' => $rows,
         ]);

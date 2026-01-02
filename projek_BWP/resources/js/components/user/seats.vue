@@ -160,6 +160,45 @@ const headerInfo = computed(() => ({
 	time: schedule.value ? `${schedule.value.start_time} - ${schedule.value.end_time}` : '',
 	movie: schedule.value?.movie_title ?? '',
 }))
+
+
+const totalPrice = computed(() => {
+	if (!schedule.value || selectedSeats.value.length === 0) return 0
+	console.log(schedule.value)
+
+	return schedule.value.price * selectedSeats.value.length
+})
+
+const formatPrice = (price) => {
+	return new Intl.NumberFormat('id-ID', {
+		style: 'currency',
+		currency: 'IDR',
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0,
+	}).format(price)
+}
+
+const handleCheckout = async () => {
+	if (selectedSeats.value.length === 0) {
+		alert('Please select at least one seat')
+		return
+	}
+
+	try {
+		// Send checkout data to backend
+		const { data } = await axios.post('/api/checkout', {
+			scheduleId: resolvedScheduleId.value,
+			seats: selectedSeats.value,
+			totalPrice: totalPrice.value,
+		})
+		
+		// Navigate to payment page or success page
+		router.push({ name: 'checkout', params: { orderId: data.orderId } })
+	} catch (err) {
+		console.error(err)
+		alert('Checkout failed. Please try again.')
+	}
+}
 </script>
 
 <template>
@@ -247,8 +286,20 @@ const headerInfo = computed(() => ({
 				</div>
 			</div>
 			<div class="card-body border-0 p-3 rounded-4 shadow-lg w-25 h-25">
-				<h4>Total Price</h4>
-				<h3 class="px-3 text-primary">Rp.</h3>
+				<div class="d-flex flex-column justify-content-between h-100">
+					<div>
+						<h4>Total Price</h4>
+						<h3 class="px-3 text-primary fw-bold">{{ formatPrice(totalPrice) }}</h3>
+						<p class="text-muted small px-3">{{ selectedSeats.length }} seat(s)</p>
+					</div>
+					<button 
+						class="btn btn-primary btn-lg fw-semibold w-100 mt-3" 
+						@click="handleCheckout"
+						:disabled="selectedSeats.length === 0"
+					>
+						Checkout
+					</button>
+				</div>
 			</div>
 
 
