@@ -5804,21 +5804,141 @@ insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-  `user_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL,
-  `role` enum('admin','user') DEFAULT NULL,
+  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) DEFAULT NULL,
+  `email` VARCHAR(100) DEFAULT NULL,
+  `password` VARCHAR(100) DEFAULT NULL,
+  `role` ENUM('admin','user') DEFAULT 'user',
+  `points` INT DEFAULT 0,
+  `profile_picture` VARCHAR(500) DEFAULT NULL, -- can be NULL
+  `member_start` DATETIME DEFAULT NULL,
+  `phone_number` VARCHAR(20) DEFAULT NULL,
+  `two_factor_auth` TINYINT(1) DEFAULT 0,
+  `language_code` VARCHAR(10) DEFAULT 'en',
+
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `users` */
 
-insert  into `users`(`user_id`,`name`,`email`,`password`,`role`) values 
-(1,'Joni','joni@mail.com','12345','user'),
-(2,'Ferlinda','fer@mail.com','12345','user'),
-(3,'admin','admin@gmail.com','123','admin');
+INSERT INTO `users`
+(`user_id`, `name`, `email`, `password`, `role`, `points`, `profile_picture`, `member_start`, `phone_number`, `two_factor_auth`, `language_code`)
+VALUES
+(1, 'Joni', 'joni@mail.com', '12345', 'user', 120,
+ NULL, '2023-01-15 00:00:00', '081234567890', 0, 'id'),
+
+(2, 'Ferlinda', 'fer@mail.com', '12345', 'user', 340,
+ 'profiles/ferlinda.png', '2022-11-03 00:00:00', '082198765432', 1, 'en'),
+
+(3, 'Admin', 'admin@gmail.com', '123', 'admin', 999,
+ NULL, '2021-06-01 00:00:00', '089912345678', 1, 'en');
+
+/*Table structure for table `payment_method` */
+
+DROP TABLE IF EXISTS `payment_method`;
+
+CREATE TABLE `payment_method` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `card_type` ENUM('visa', 'mastercard') NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `card_number` VARCHAR(25) NOT NULL,
+  `expire_date` DATE DEFAULT NULL,
+
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `card_number` (`card_number`),
+
+  CONSTRAINT `fk_payment_method_user`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `users` (`user_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=INNODB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `payment_method` */
+
+INSERT INTO `payment_method`
+(`id`, `user_id`, `card_type`, `name`, `card_number`, `expire_date`)
+VALUES
+(1, 1, 'visa', 'Joni', '4111111111111111', '2026-05-01'),
+
+(2, 1, 'mastercard', 'Joni A.', '5500000000000004', '2027-09-01'),
+
+(3, 2, 'visa', 'Ferlinda', '4012888888881881', '2025-12-01'),
+
+(4, 2, 'mastercard', 'Ferlinda L.', '5105105105105100', '2028-03-01'),
+
+(5, 1, 'visa', 'Joni Personal', '4222222222222', '2029-01-01'),
+
+(6, 2, 'visa', 'Ferlinda Office', '4000056655665556', '2026-08-01');
+
+/*Table structure for table `notification_type` */
+
+CREATE TABLE notification_type (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  CODE VARCHAR(50) NOT NULL UNIQUE,
+  title VARCHAR(100) NOT NULL,
+  DESCRIPTION VARCHAR(255) DEFAULT NULL
+) ENGINE=INNODB;
+
+/*Data for the table `notification_type` */
+
+INSERT INTO notification_type (CODE, title, DESCRIPTION) VALUES
+('upcoming_movies', 'Upcoming Movies', 'Get notified about upcoming movies and premieres'),
+('new_products', 'New Products', 'Snacks, merchandise, and exclusive items'),
+('events', 'Events', 'Special events, premieres, and live shows'),
+('payments', 'Payments', 'Receipts, payment confirmations, and refunds');
+
+/*Table structure for table `user_notification_setting` */
+
+CREATE TABLE user_notification_setting (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  notification_type_id INT NOT NULL,
+
+  email_enabled TINYINT(1) DEFAULT 0,
+  push_enabled TINYINT(1) DEFAULT 0,
+
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uq_user_notification (user_id, notification_type_id),
+
+  CONSTRAINT fk_user_notification_user
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_user_notification_type
+    FOREIGN KEY (notification_type_id) REFERENCES notification_type(id)
+    ON DELETE CASCADE
+) ENGINE=INNODB;
+
+/*Data for the table `user_notification_setting` */
+
+INSERT INTO user_notification_setting
+(user_id, notification_type_id, email_enabled, push_enabled)
+VALUES
+-- =====================
+-- USER 1 (Joni)
+-- =====================
+(1, 1, 1, 1), -- Upcoming Movies: Email + Push
+(1, 2, 1, 0), -- New Products: Email only
+(1, 3, 0, 1), -- Events: Push only
+(1, 4, 1, 1), -- Payments: Email + Push
+
+-- =====================
+-- USER 2 (Ferlinda)
+-- =====================
+(2, 1, 0, 0), -- Upcoming Movies: All disabled
+(2, 2, 1, 1), -- New Products: Email + Push
+(2, 3, 0, 1), -- Events: Push only
+(2, 4, 1, 0); -- Payments: Email only
+
 
 /*Table structure for table `venues` */
 
