@@ -266,11 +266,17 @@ onMounted(() => {
 
 const topMovies = computed(() => movies.value ? movies.value.slice(0, 4) : [])
 
-const cinemaPartners = [
-  { name: 'XXI Premium', city: 'Surakarta' },
-  { name: 'CGV Starlight', city: 'Atlantis' },
-  { name: 'Cineplex Max', city: 'Surabaya' }
-]
+const cinemaPartners = ref([])
+
+onMounted(async () => {
+    try {
+        const res = await axios.get('/api/cinema-partners')
+        cinemaPartners.value = res.data
+    } catch (err) {
+        console.error('Failed to load cinema partners', err)
+        cinemaPartners.value = []
+    }
+})
 
 const menuItems = [
   { name: 'Dashboard', icon: '🏠', routeName: 'adminDashboard' },
@@ -392,12 +398,12 @@ const menuItems = [
                     </header>
 
                     <div class="row g-4">
-                        <div v-for="(c, i) in cinemaPartners" :key="i" class="col-md-6 col-lg-4">
+                        <div v-for="(c, i) in cinemaPartners" :key="c.venue_id || i" class="col-md-6 col-lg-4">
                             <div class="panel-card partner-card h-100">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
-                                        <h5 class="fw-bold mb-1">{{ c.name }}</h5>
-                                        <p class="text-muted small mb-0">{{ c.city }}</p>
+                                        <h5 class="fw-bold mb-1">{{ c.venue_name }}</h5>
+                                        <p class="text-muted small mb-0">{{ c.location }}</p>
                                     </div>
                                     <span class="badge bg-primary">Active</span>
                                 </div>
