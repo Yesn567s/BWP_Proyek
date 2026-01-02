@@ -37,16 +37,16 @@ import { reactive, onMounted, ref, computed } from 'vue'
 import axios from 'axios'
 
 // Redirect to login if session not present (use full-page navigation)
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('/current-user')
-//     if (!res.data || !res.data.authenticated) {
-//       window.location.href = '/login'
-//     }
-//   } catch (e) {
-//     window.location.href = '/login'
-//   }
-// })
+onMounted(async () => {
+  try {
+    const res = await axios.get('/current-user')
+    if (!res.data || !res.data.authenticated) {
+      window.location.href = '/login'
+    }
+  } catch (e) {
+    window.location.href = '/login'
+  }
+})
 
 // hidden file input ref
 const avatarInput = ref(null)
@@ -295,6 +295,32 @@ const promoVouchers = reactive([
 const copyPromoCode = (code) => {
   navigator.clipboard.writeText(code)
   alert(`Promo code "${code}" copied!`)
+}
+
+// Logout: call backend to destroy session, clear client storage, then redirect
+const logout = async () => {
+  try {
+    // Laravel default logout route
+    await axios.post('/logout')
+  } catch (e) {
+    // ignore network/server errors and continue clearing client state
+    console.warn('logout request failed', e)
+  }
+
+  // Clear any client-side auth/session data (if used)
+  try {
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('current_user')
+    // remove any other app-specific keys
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('app_') || k.startsWith('user_')) localStorage.removeItem(k)
+    })
+  } catch (e) {
+    // ignore
+  }
+
+  // Redirect to login (full page navigation ensures session cookie change is applied)
+  window.location.href = '/login'
 }
 
 </script>
@@ -1019,7 +1045,7 @@ const copyPromoCode = (code) => {
     </div>
 
     <!-- LOGOUT -->
-    <button style="margin-top: 3%;" class="btn btn-danger bg-opacity-10 text-danger w-100 py-3 fw-bold rounded-4 logout-btn text-white">
+    <button type="button" style="margin-top: 3%;" class="btn btn-danger bg-opacity-10 text-danger w-100 py-3 fw-bold rounded-4 logout-btn text-white" @click="logout">
       Log Out Account
     </button>
 

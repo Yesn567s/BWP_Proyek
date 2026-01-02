@@ -327,6 +327,16 @@
             </div>
 
             <div class="form-group">
+              <label>Phone Number</label>
+              <input
+                type="tel"
+                name="phone"
+                placeholder="+62 812 3456 7890"
+                required
+              >
+            </div>
+
+            <div class="form-group">
             <label>Password</label>
 
             <div class="password-wrapper">
@@ -455,7 +465,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
 });
 </script>
 
-<script> // Login Script
+<script> // Login Form Submission Script
 document.getElementById("loginForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -470,30 +480,36 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     },
     body: formData
   })
-  // .then(res => res.text())
-  // .then(result => {
-  //   if (result === "success") {
-  //     // ✅ Redirect to dummy.blade.php
-  //     window.location.href = "/";
-  //   } else {
-  //     alert("Invalid email or password");
-  //   }
-  // });
   .then(res => res.json())
-.then(result => {
-  if (result.status === "success") {
-    if (result.role === "admin") {
-      window.location.href = "/admin";
-    } else {
-      window.location.href = "/";
-    }
-  } else {
-    alert("Invalid email or password");
-  }
-});
+  .then(result => {
+    if (result.status === "success") {
 
+      // Show session info alert (bisa di comment kalau gak perlu)
+      alert(
+        "Login successful!\n\n" +
+        "User ID: " + result.user_id + "\n" +
+        "Name: " + result.user_name + "\n" +
+        "Role: " + result.role
+      );
+
+      // Role-based redirect
+      if (result.role === "admin") {
+        window.location.href = "/admin"; // Redirect to admin dashboard
+      } else {
+        window.location.href = "/"; // Redirect to user homepage
+      }
+
+    } else {
+      alert("Invalid email or password");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Login error occurred");
+  });
 });
 </script>
+
 
 </body>
 </html>
