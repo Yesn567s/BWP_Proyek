@@ -57,11 +57,10 @@ const triggerAvatarUpload = () => {
 }
 
 // handle image selection
-const onAvatarChange = (event) => {
+const onAvatarChange = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // basic validation
   if (!file.type.startsWith('image/')) {
     alert('Please select a valid image')
     return
@@ -72,22 +71,74 @@ const onAvatarChange = (event) => {
     return
   }
 
-  // preview image
+  // Preview immediately
   const reader = new FileReader()
   reader.onload = () => {
     CURRENT_USER.avatar = reader.result
   }
   reader.readAsDataURL(file)
 
-  // 🔥 later you can upload file to backend here
+  // Upload to backend
+  const formData = new FormData()
+  formData.append('avatar', file)
+
+  try {
+    const res = await axios.post('/api/profile/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    // Replace preview with stored image path
+    CURRENT_USER.avatar = '/' + res.data.path
+
+  } catch (err) {
+    console.error(err)
+    alert('Failed to upload avatar')
+  }
 }
 
+// const CURRENT_USER = reactive({
+//   name: 'John Doe',
+//   email: 'john@example.com',
+//   avatar: 'https://i.pravatar.cc/300',
+//   loyaltyPoints: 1200,
+//   memberSince: '2023'
+// })
+
 const CURRENT_USER = reactive({
-  name: 'John Doe',
-  email: 'john@example.com',
-  avatar: 'https://i.pravatar.cc/300',
-  loyaltyPoints: 1200,
-  memberSince: '2023'
+  name: '',
+  email: '',
+  phone: '',
+  avatar: '',
+  loyaltyPoints: 0,
+  memberSince: ''
+})
+
+// Fetch logged-in user
+onMounted(async () => {
+  try {
+    const res = await axios.get('/api/profile')
+
+    CURRENT_USER.name = res.data.name
+    CURRENT_USER.email = res.data.email
+    CURRENT_USER.phone = res.data.phone_number
+    CURRENT_USER.loyaltyPoints = res.data.points
+    CURRENT_USER.memberSince = new Date(res.data.member_start).getFullYear()
+
+    CURRENT_USER.avatar = res.data.profile_picture
+      ? `/${res.data.profile_picture}`
+      : 'https://i.pravatar.cc/300'
+
+    // Initialize form
+    formPersonal.name = CURRENT_USER.name
+    formPersonal.email = CURRENT_USER.email
+    formPersonal.phone = CURRENT_USER.phone
+
+  } catch (err) {
+    alert('You are not logged in')
+    window.location.href = '/login'
+  }
 })
 
 const menuItems = [
@@ -109,12 +160,28 @@ const formPersonal = reactive({
   phone: CURRENT_USER.phone
 })
 
-const savePersonalInfo = () => {
-  CURRENT_USER.name = formPersonal.name
-  CURRENT_USER.email = formPersonal.email
-  CURRENT_USER.phone = formPersonal.phone
+const savePersonalInfo = async () => {
+  try {
+    const res = await axios.post('/api/profile/personal', {
+      name: formPersonal.name,
+      email: formPersonal.email,
+      phone: formPersonal.phone
+    })
 
-  alert('Personal information updated successfully!')
+    // Update local user state
+    CURRENT_USER.name = formPersonal.name
+    CURRENT_USER.email = formPersonal.email
+    CURRENT_USER.phone = formPersonal.phone
+
+    alert('Personal information updated successfully!')
+
+  } catch (err) {
+    if (err.response?.status === 409) {
+      alert('Email already in use')
+    } else {
+      alert('Failed to update profile')
+    }
+  }
 }
 
 // PAYMENT METHODS (for demonstration)
