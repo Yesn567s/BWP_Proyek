@@ -47,19 +47,21 @@ class AdminMovieController extends Controller
                 'media_url'  => $path
             ]);
 
-            /* 3️⃣ Generate schedules */
-            $this->generateSchedules(
+            $insertedSchedules = $this->generateSchedules(
                 $productId,
-                (int) $request->playingTime,
-                (int) $request->duration_minutes
+                $request->playingTime,
+                $request->duration_minutes
             );
 
+            if ($insertedSchedules === 0) {
+                DB::rollBack();
 
-            DB::commit();
+                return response()->json([
+                    'type'    => 'studio_full',
+                    'message' => 'All studios are fully booked. Please create a new studio.'
+                ], 409);
+            }
 
-            return response()->json([
-                'message' => 'Movie created successfully'
-            ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -72,26 +74,57 @@ class AdminMovieController extends Controller
     }
     private function generateSchedules($productId, $days, $duration)
     {
-        $studios = DB::table('studios')->pluck('studio_id');
-        $startDate = Carbon::now()->startOfDay()->addDays(1);
+        $days = (int) $days;
+        $duration = (int) $duration;
 
-        foreach (range(0, $days - 1) as $day) {
-            foreach ($studios as $studioId) {
-                $time = $startDate->copy()->addDays($day)->setTime(10, 0);
+        $cinemaVenueIds = [1,6,7,8,9,10,11,12,13,14];
+
+        $studios = DB::table('studios')
+            ->whereIn('venue_id', $cinemaVenueIds)
+            ->pluck('studio_id');
+
+        $startDate = \Carbon\Carbon::now()->startOfDay()->addDays(1);
+
+        $inserted = 0;
+
+        foreach ($studios as $studioId) {
+            foreach (range(0, $days - 1) as $day) {
+
+                $time = $startDate
+                    ->copy()
+                    ->addDays($day)
+                    ->setTime(10, 0);
 
                 while ($time->hour < 22) {
-                    DB::table('schedules')->insert([
-                        'product_id'    => $productId,
-                        'studio_id'     => $studioId,
-                        'start_datetime'=> $time,
-                        'end_datetime'  => $time->copy()->addMinutes($duration)
-                    ]);
 
-                    // 20 min cleaning buffer
+                    $start = $time->copy();
+                    $end   = $time->copy()->addMinutes($duration);
+
+                    $isOccupied = DB::table('schedules')
+                        ->where('studio_id', $studioId)
+                        ->where(function ($q) use ($start, $end) {
+                            $q->where('start_datetime', '<', $end)
+                            ->where('end_datetime',   '>', $start);
+                        })
+                        ->exists();
+
+                    if (!$isOccupied) {
+                        DB::table('schedules')->insert([
+                            'product_id'     => $productId,
+                            'studio_id'      => $studioId,
+                            'start_datetime' => $start,
+                            'end_datetime'   => $end,
+                        ]);
+                        $inserted++;
+                    }
+
                     $time->addMinutes($duration + 20);
                 }
             }
         }
+
+        return $inserted;
     }
+
 }
 

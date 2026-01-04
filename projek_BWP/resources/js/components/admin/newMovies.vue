@@ -186,14 +186,24 @@ const handleSubmit = async () => {
   formData.append('poster', posterFile.value)
 
   try {
-    await axios.post('/api/admin/movies', formData)
+  await axios.post('/api/admin/movies', formData)
 
-    alert('Movie created successfully')
-    emit('cancel')
-  } catch (error) {
-    console.error(error.response?.data || error)
+  alert('Movie created successfully')
+  emit('cancel')
+
+} catch (error) {
+  const res = error.response
+
+  if (res?.status === 409 && res.data?.type === 'studio_full') {
+    alert(
+      '⚠️ All studios are currently full.\n' +
+      'Please create a new studio before adding this movie.'
+    )
+  } else {
     alert('Failed to create movie')
   }
+}
+
 }
 </script>
 
