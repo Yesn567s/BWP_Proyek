@@ -112,7 +112,8 @@ class AuthController extends Controller
             'status'    => 'success',
             'user_id'   => $user->user_id,
             'user_name' => $user->name,
-            'role'      => $user->role
+            'role'      => $user->role,
+            'language_code' => $user->language_code,
         ]);
     }
 

@@ -485,12 +485,12 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     if (result.status === "success") {
 
       // Show session info alert (bisa di comment kalau gak perlu)
-      alert(
-        "Login successful!\n\n" +
-        "User ID: " + result.user_id + "\n" +
-        "Name: " + result.user_name + "\n" +
-        "Role: " + result.role
-      );
+      // alert(
+      //   "Login successful!\n\n" +
+      //   "User ID: " + result.user_id + "\n" +
+      //   "Name: " + result.user_name + "\n" +
+      //   "Role: " + result.role
+      // );
 
       // Role-based redirect
       if (result.role === "admin") {

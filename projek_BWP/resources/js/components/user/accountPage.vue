@@ -184,35 +184,54 @@ const savePersonalInfo = async () => {
   }
 }
 
-// PAYMENT METHODS (for demonstration)
-const paymentMethods = reactive([
-  // {
-  //   id: 1,
-  //   type: 'Visa',
-  //   last4: '4242',
-  //   expiry: '08/28',
-  //   isDefault: true
-  // },
-  // {
-  //   id: 2,
-  //   type: 'Mastercard',
-  //   last4: '1881',
-  //   expiry: '11/27',
-  //   isDefault: false
-  // }
-])
+// PAYMENT METHODS DATA
+const paymentMethods = reactive([])
+const errors = reactive({})
+
+onMounted(async () => {
+  try {
+    const res = await axios.get('/api/payment-methods')
+    paymentMethods.value = res.data.map(p => ({
+      id: p.id,
+      type: (p.card_type || 'CARD').toUpperCase(),
+      last4: p.card_number ? p.card_number.slice(-4) : '****',
+      expiry: p.expire_date ? new Date(p.expire_date).toLocaleDateString('en-US', {
+        month: '2-digit',
+        year: '2-digit'
+      }) : 'N/A',
+      isDefault: p.is_default === 1
+    }))
+  } catch (err) {
+    console.error(err)
+  }
+})
 
 const setDefaultPayment = (id) => {
   paymentMethods.forEach(p => (p.isDefault = p.id === id))
 }
 
-const removePayment = (id) => {
-  const index = paymentMethods.findIndex(p => p.id === id)
-  if (index !== -1) paymentMethods.splice(index, 1)
+const removePayment = async (id) => {
+  if (!confirm('Remove this payment method?')) return
+
+  await axios.delete(`/api/payment-methods/${id}`)
+  await fetchPaymentMethods()
 }
 
-const showAddPayment = ref(false)
+const fetchPaymentMethods = async () => {
+  try {
+    const res = await axios.get('/api/payment-methods')
+    paymentMethods.splice(0, paymentMethods.length, ...res.data)
+  } catch (err) {
+    console.error(err)
+  }
+}
 
+onMounted(() => {
+  fetchPaymentMethods()
+})
+
+// ADD PAYMENT METHOD MODAL
+const showAddPayment = ref(false)
 const newPayment = reactive({
   type: 'Visa',
   cardNumber: '',
@@ -220,29 +239,41 @@ const newPayment = reactive({
   name: ''
 })
 
-const addPaymentMethod = () => {
-  if (!newPayment.cardNumber || !newPayment.expiry || !newPayment.name) {
-    alert('Please complete all fields')
-    return
+const addPaymentMethod = async () => {
+  // reset errors
+  Object.keys(errors).forEach(k => delete errors[k])
+
+  // frontend validation
+  if (!newPayment.name) errors.name = 'Cardholder name is required'
+  if (!/^\d{13,16}$/.test(newPayment.cardNumber))
+    errors.cardNumber = 'Card number must be 13–16 digits'
+  if (!/^\d{2}\/\d{2}$/.test(newPayment.expiry))
+    errors.expiry = 'Expiry must be MM/YY'
+
+  if (Object.keys(errors).length) return
+
+  try {
+    const [month, year] = newPayment.expiry.split('/')
+
+    await axios.post('/api/payment-methods', {
+      type: newPayment.type,          
+      name: newPayment.name,
+      cardNumber: newPayment.cardNumber,
+      expiry: newPayment.expiry
+    })
+
+    showAddPayment.value = false
+    await fetchPaymentMethods()
+
+  } catch (err) {
+    if (err.response?.status === 422) {
+      Object.assign(errors, err.response.data.errors)
+    } else if (err.response?.status === 409) {
+      errors.cardNumber = err.response.data.message
+    } else {
+      alert('Something went wrong. Please try again.')
+    }
   }
-
-  const last4 = newPayment.cardNumber.slice(-4)
-
-  paymentMethods.push({
-    id: Date.now(),
-    type: newPayment.type,
-    last4,
-    expiry: newPayment.expiry,
-    isDefault: paymentMethods.length === 0
-  })
-
-  // reset form
-  newPayment.type = 'Visa'
-  newPayment.cardNumber = ''
-  newPayment.expiry = ''
-  newPayment.name = ''
-
-  showAddPayment.value = false
 }
 
 // LANGUAGE SETTINGS
@@ -254,15 +285,40 @@ const availableLanguages = [
 ]
 
 // Load saved language or default
-const selectedLanguage = ref(
-  localStorage.getItem('app_language') || 'en'
-)
+const selectedLanguage = ref('en')
 
-const saveLanguage = () => {
-  localStorage.setItem('app_language', selectedLanguage.value)
+// Load language from DB when page opens
+onMounted(async () => {
+  try {
+    const res = await axios.get('/api/language')
 
-  // Reload UI to apply changes
-  window.location.reload()
+    selectedLanguage.value = res.data.language_code || 'en'
+
+    // cache locally
+    localStorage.setItem('app_language', selectedLanguage.value)
+  } catch (err) {
+    console.error(err)
+
+    // fallback
+    selectedLanguage.value =
+      localStorage.getItem('app_language') || 'en'
+  }
+})
+
+// Save language to DB
+const saveLanguage = async () => {
+  try {
+    await axios.post('/api/language', {
+      language_code: selectedLanguage.value
+    })
+
+    localStorage.setItem('app_language', selectedLanguage.value)
+
+    alert('Language updated successfully')
+    window.location.reload()
+  } catch (err) {
+    alert('Failed to update language')
+  }
 }
 
 // SECURITY SETTINGS
@@ -279,6 +335,15 @@ const showPassword = reactive({
   confirm: false
 })
 
+onMounted(async () => {
+  try {
+    const res = await axios.get('/api/security')
+    securityForm.twoFactorEnabled = res.data.two_factor_auth === 1
+  } catch (err) {
+    console.error(err)
+  }
+})
+
 const passwordStrength = computed(() => {
   const p = securityForm.newPassword
   if (p.length < 6) return { label: 'Weak', color: 'danger' }
@@ -287,45 +352,108 @@ const passwordStrength = computed(() => {
   return { label: 'Medium', color: 'warning' }
 })
 
-const saveSecuritySettings = () => {
-  if (securityForm.newPassword !== securityForm.confirmPassword) {
-    alert('New password does not match')
-    return
+const saveSecuritySettings = async () => {
+  Object.keys(errors).forEach(k => delete errors[k])
+
+  // Frontend validation (instant feedback)
+  if (securityForm.newPassword) {
+
+    if (securityForm.newPassword.length < 3) {
+      errors.newPassword = 'Password must be at least 3 characters'
+    }
+
+    if (securityForm.newPassword === securityForm.currentPassword) {
+      errors.newPassword = 'New password must be different from current password'
+    }
+
+    if (securityForm.newPassword !== securityForm.confirmPassword) {
+      errors.confirmPassword = 'New password does not match confirmation'
+    }
   }
 
-  alert('Security settings updated successfully')
+  if (Object.keys(errors).length) return
 
-  // Reset form
-  securityForm.currentPassword = ''
-  securityForm.newPassword = ''
-  securityForm.confirmPassword = ''
+  try {
+    await axios.post('/api/security', {
+      currentPassword: securityForm.currentPassword,
+      newPassword: securityForm.newPassword,
+      confirmPassword: securityForm.confirmPassword,
+      twoFactorEnabled: securityForm.twoFactorEnabled
+    })
+
+    alert('Security settings updated successfully')
+
+    // reset password fields
+    securityForm.currentPassword = ''
+    securityForm.newPassword = ''
+    securityForm.confirmPassword = ''
+
+  } catch (err) {
+    if (err.response?.status === 422) {
+      Object.assign(errors, err.response.data.errors)
+    } else {
+      alert('Failed to update security settings')
+    }
+  }
 }
 
 // NOTIFICATION SETTINGS
 const notificationSettings = reactive({
-  upcomingMovie: {
-    email: true,
-    push: true
-  },
-  newProduct: {
-    email: true,
-    push: false
-  },
-  events: {
-    email: false,
-    push: true
-  },
-  payments: {
-    email: true,
-    push: true
+  upcoming_movies: { email: false, push: false },
+  new_products: { email: false, push: false },
+  events: { email: false, push: false },
+  payments: { email: false, push: false }
+})
+
+// Load notification settings from database
+onMounted(async () => {
+  console.log('Current notificationSettings:', notificationSettings)
+
+  try {
+    const res = await axios.get('/api/notifications')
+    
+    console.log('API Response:', res.data)
+    console.log('Response keys:', Object.keys(res.data))
+    
+    // Simply overwrite the reactive object with the response
+    Object.assign(notificationSettings, res.data)
+    
+    console.log('After assign, notificationSettings:', notificationSettings)
+    
+  } catch (err) {
+    console.error('Error in notification onMounted:', err)
+    if (err.response?.status === 401) {
+      console.warn('User not authenticated. Notification settings will use defaults.')
+    } else {
+      console.error('Failed to load notification settings', err)
+    }
   }
 })
 
-const saveNotificationSettings = () => {
-  // Example: send to backend
-  // axios.post('/user/notifications', notificationSettings)
-
-  alert('Notification preferences saved successfully!')
+const saveNotificationSettings = async () => {
+  try {
+    console.log('Saving notification settings:', notificationSettings)
+    
+    // Send the current notification settings to the backend
+    const response = await axios.post('/api/notifications', notificationSettings)
+    
+    console.log('Save response:', response.data)
+    
+    if (response.data.status === 'success') {
+      alert('Notification preferences saved successfully!')
+    } else {
+      alert('Failed to save notification settings')
+    }
+  } catch (err) {
+    console.error('Error saving notification settings:', err)
+    if (err.response?.status === 401) {
+      alert('You must be logged in to save notification preferences')
+    } else if (err.response?.status === 422) {
+      alert('Some notification settings failed to save. Please try again.')
+    } else {
+      alert('Failed to save notification settings: ' + (err.response?.data?.message || err.message))
+    }
+  }
 }
 
 // PROMOS & VOUCHERS
@@ -703,6 +831,9 @@ const logout = async () => {
                   👁️
                 </button>
               </div>
+              <small v-if="errors.currentPassword" class="text-danger">
+                  {{ errors.currentPassword }}
+              </small>
             </div>
 
             <!-- NEW PASSWORD -->
@@ -721,7 +852,9 @@ const logout = async () => {
                   👁️
                 </button>
               </div>
-
+              <small v-if="errors.newPassword" class="text-danger">
+                  {{ errors.newPassword }}
+              </small>
               <small
                 class="fw-bold mt-1 d-inline-block"
                 :class="`text-${passwordStrength.color}`"
@@ -746,6 +879,9 @@ const logout = async () => {
                   👁️
                 </button>
               </div>
+              <small v-if="errors.confirmPassword" class="text-danger">
+                  {{ errors.confirmPassword }}
+              </small>
             </div>
 
           </div>
@@ -827,7 +963,7 @@ const logout = async () => {
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    v-model="notificationSettings.upcomingMovie.email"
+                    v-model="notificationSettings.upcoming_movies.email"
                   />
                   <label class="form-check-label small">Email</label>
                 </div>
@@ -835,7 +971,7 @@ const logout = async () => {
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    v-model="notificationSettings.upcomingMovie.push"
+                    v-model="notificationSettings.upcoming_movies.push"
                   />
                   <label class="form-check-label small">Push</label>
                 </div>
@@ -857,7 +993,7 @@ const logout = async () => {
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    v-model="notificationSettings.newProduct.email"
+                    v-model="notificationSettings.new_products.email"
                   />
                   <label class="form-check-label small">Email</label>
                 </div>
@@ -865,7 +1001,7 @@ const logout = async () => {
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    v-model="notificationSettings.newProduct.push"
+                    v-model="notificationSettings.new_products.push"
                   />
                   <label class="form-check-label small">Push</label>
                 </div>
@@ -1069,6 +1205,7 @@ const logout = async () => {
               placeholder="John Doe"
               v-model="newPayment.name"
             />
+            <small v-if="errors.name" class="text-danger">{{ errors.name }}</small>
           </div>
 
           <div class="mb-3">
@@ -1080,6 +1217,9 @@ const logout = async () => {
               maxlength="16"
               v-model="newPayment.cardNumber"
             />
+            <small v-if="errors.cardNumber" class="text-danger">
+              {{ errors.cardNumber }}
+            </small>
           </div>
 
           <div class="mb-4">
@@ -1090,6 +1230,9 @@ const logout = async () => {
               placeholder="MM/YY"
               v-model="newPayment.expiry"
             />
+            <small v-if="errors.expiry" class="text-danger">
+              {{ errors.expiry }}
+            </small>
           </div>
 
           <div class="d-flex gap-2">
