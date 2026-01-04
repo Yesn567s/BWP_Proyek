@@ -26,4 +26,9 @@ class Schedule extends Model
     {
         return $this->belongsTo(TicketProduct::class, 'product_id', 'product_id');
     }
+
+    public function studio()
+    {
+        return $this->belongsTo(Studio::class, 'studio_id', 'studio_id');
+    }
 }

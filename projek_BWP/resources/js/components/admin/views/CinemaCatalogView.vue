@@ -16,7 +16,9 @@
             </div>
             <span class="badge bg-primary">Active</span>
           </div>
-          <button class="admin-pill-btn small ghost">Manage</button>
+          <router-link :to="{ name: 'cinemaPage', params: { id: c.venue_id } }" class="stretched-link">
+        <button class="admin-pill-btn small ghost">Manage</button></router-link>
+          
         </div>
       </div>
     </div>

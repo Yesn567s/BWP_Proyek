@@ -50,4 +50,6 @@ Route::get('/cinema-partners', [VenueController::class, 'partners']);
 
 Route::post('/admin/movies', [AdminMovieController::class, 'store']);
 Route::get('/cinema-partners', [VenueController::class, 'partners']);
+Route::get('/venues/{id}', [VenueController::class, 'show']);
+
 

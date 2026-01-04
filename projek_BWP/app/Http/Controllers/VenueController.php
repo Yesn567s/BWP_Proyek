@@ -33,4 +33,14 @@ class VenueController extends Controller
                 ->get()
         );
     }
+
+    public function show($id)
+    {
+        return response()->json(
+            Venue::with('studios.schedules')
+                ->where('venue_id', $id)
+                ->firstOrFail()
+        );
+    }
+
 }
