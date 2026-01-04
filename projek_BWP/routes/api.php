@@ -49,5 +49,6 @@ Route::get('/cinema-partners', [VenueController::class, 'partners']);
 
 
 Route::post('/admin/movies', [AdminMovieController::class, 'store']);
+Route::put('/admin/movies/{product}', [AdminMovieController::class, 'update']);
 Route::get('/cinema-partners', [VenueController::class, 'partners']);
 

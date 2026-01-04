@@ -50,8 +50,11 @@ class MovieController extends Controller
             'id'     => $movie->product_id,
             'title'  => $movie->name,
             'desc'   => $movie->description,
+            'genre'  => $movie->genre,
             'price'  => $movie->base_price,
             'rating' => $movie->rating,
+            'duration' => $movie->duration_minutes,
+            'age_rating' => $movie->age_rating,
             'poster' => $movie->poster
                 ? Storage::url($movie->poster->media_url)
                 : asset('images/posters/default.jpg'),

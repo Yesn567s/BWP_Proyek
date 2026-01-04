@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminMovieController extends Controller
 {
@@ -13,12 +14,12 @@ class AdminMovieController extends Controller
         $request->validate([
             'title'            => 'required|string|max:100',
             'genre'            => 'required|string|max:200',
-            'description'      => 'required|string|max:255',
+            'description'      => 'required|string|max:1000',
             'releaseDate'      => 'required|string',
             'playingTime'      => 'required|integer|min:1|max:30',
             'duration_minutes' => 'required|integer|min:60|max:240',
             'ageRating'        => 'required|in:SU,13+,17+',
-            'price'            => 'required|integer|min:10000|max:100000',
+            'price'            => 'required|numeric|min:1000|max:100000000',
             'poster'           => 'required|image|mimes:jpg,jpeg,png'
         ]);
 
@@ -68,6 +69,80 @@ class AdminMovieController extends Controller
 
             return response()->json([
                 'error' => 'Failed to create movie',
+                'detail' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update(Request $request, int $productId)
+    {
+        $request->validate([
+            'title'            => 'required|string|max:100',
+            'genre'            => 'required|string|max:200',
+            'description'      => 'required|string|max:1000',
+            'duration_minutes' => 'required|integer|min:60|max:240',
+            'ageRating'        => 'required|in:SU,13+,17+',
+            'price'            => 'required|numeric|min:1000|max:100000000',
+            'poster'           => 'nullable|image|mimes:jpg,jpeg,png'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $movie = DB::table('ticket_products')
+                ->where('product_id', $productId)
+                ->where('category_id', 1)
+                ->first();
+
+            if (!$movie) {
+                DB::rollBack();
+
+                return response()->json([
+                    'error' => 'Movie not found or not a category 1 product'
+                ], 404);
+            }
+
+            // Run the update even if values are unchanged so a no-op still counts as success
+            DB::table('ticket_products')
+                ->where('product_id', $productId)
+                ->update([
+                    'name'             => $request->title,
+                    'description'      => $request->description,
+                    'genre'            => $request->genre,
+                    'base_price'       => $request->price,
+                    'duration_minutes' => $request->duration_minutes,
+                    'age_rating'       => $request->ageRating,
+                ]);
+
+            if ($request->hasFile('poster')) {
+                $path = $request->file('poster')->store('posters', 'public');
+
+                $existing = DB::table('product_media')
+                    ->where('product_id', $productId)
+                    ->where('media_type', 'poster')
+                    ->first();
+
+                if ($existing) {
+                    DB::table('product_media')
+                        ->where('id', $existing->id)
+                        ->update(['media_url' => $path]);
+                } else {
+                    DB::table('product_media')->insert([
+                        'product_id' => $productId,
+                        'media_type' => 'poster',
+                        'media_url'  => $path,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Movie updated']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'error' => 'Failed to update movie',
                 'detail' => $e->getMessage()
             ], 500);
         }
