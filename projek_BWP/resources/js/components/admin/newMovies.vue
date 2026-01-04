@@ -36,48 +36,47 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-semibold text-uppercase small">
-              Genre
-            </label>
-            <input
-              v-model="movie.genre"
-              type="text"
-              class="form-control form-control-lg"
-              placeholder="e.g. Action, Adventure"
-              required
-            />
+            <label class="form-label fw-semibold text-uppercase small">Genre</label>
+            <input v-model="movie.genre" type="text" class="form-control form-control-lg" placeholder="e.g. Action, Adventure" required/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-uppercase small">Description</label>
+            <input v-model="movie.description" type="text" class="form-control form-control-lg" placeholder="Description of the Movie" required/>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-uppercase small">Age Rating</label>
+              <select v-model="movie.ageRating" class="form-select form-select-lg" >
+                <option>SU</option>
+                <option>13+</option>
+                <option>17+</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-uppercase small">Price</label>
+              <input v-model="movie.price" type="number" class="form-control form-control-lg" placeholder="45000" required step="5000"/>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-uppercase small">Movie Duration</label>
+              <input v-model="movie.durationMinutes" type="number" class="form-control form-control-lg" placeholder="120 minutes" required step="15"/>
+            </div>
           </div>
 
           <div class="row g-3 mb-3">
             <div class="col-6">
-              <label class="form-label fw-semibold text-uppercase small">
-                Rating
-              </label>
-              <select
-                v-model="movie.rating"
-                class="form-select form-select-lg"
-              >
-                <option>G</option>
-                <option>PG</option>
-                <option>PG-13</option>
-                <option>R</option>
-                <option>NC-17</option>
-              </select>
+              <label class="form-label fw-semibold text-uppercase small">Release Date</label>
+              <input v-model="movie.releaseDate" type="date" class="form-control form-control-lg" placeholder="Dec 20, 2024" required/>
             </div>
 
             <div class="col-6">
-              <label class="form-label fw-semibold text-uppercase small">
-                Release Date
-              </label>
-              <input
-                v-model="movie.releaseDate"
-                type="text"
-                class="form-control form-control-lg"
-                placeholder="Dec 20, 2024"
-                required
-              />
+              <label class="form-label fw-semibold text-uppercase small">Main di Bioskop Brp Hari</label>
+              <input v-model="movie.playingTime" type="number" class="form-control form-control-lg" placeholder="30 days" required/>
             </div>
-          </div>
+          </div> 
 
           <div class="mb-3">
             <label class="form-label fw-semibold text-uppercase small">
@@ -149,15 +148,24 @@ const emit = defineEmits(['cancel'])
 const movie = reactive({
   title: '',
   genre: '',
-  rating: 'G',
+  description: '',
   releaseDate: '',
+  playingTime: 7,          // days
+  ageRating: '13+',
+  price: 45000,
+  durationMinutes: 120     // movie duration
 })
 
 const posterFile = ref(null)
+const posterPreview = ref(null)
 
-/* capture file */
+/* capture file + preview */
 const handleFileChange = (e) => {
-  posterFile.value = e.target.files[0]
+  const file = e.target.files[0]
+  if (!file) return
+
+  posterFile.value = file
+  posterPreview.value = URL.createObjectURL(file)
 }
 
 const handleSubmit = async () => {
@@ -169,23 +177,24 @@ const handleSubmit = async () => {
   const formData = new FormData()
   formData.append('title', movie.title)
   formData.append('genre', movie.genre)
+  formData.append('description', movie.description)
   formData.append('releaseDate', movie.releaseDate)
+  formData.append('playingTime', movie.playingTime)
+  formData.append('ageRating', movie.ageRating)
+  formData.append('price', movie.price)
+  formData.append('duration_minutes', movie.durationMinutes)
   formData.append('poster', posterFile.value)
 
   try {
-    await axios.post('/api/admin/movies', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+    await axios.post('/api/admin/movies', formData)
 
     alert('Movie created successfully')
     emit('cancel')
-
   } catch (error) {
-    console.error(error)
+    console.error(error.response?.data || error)
     alert('Failed to create movie')
   }
 }
 </script>
+
 
