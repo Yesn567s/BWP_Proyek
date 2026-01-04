@@ -44,9 +44,10 @@ Route::post('/admin/schedules', [AdminScheduleController::class, 'store']);
 
 Route::get('/food/venues', [VenueController::class, 'foodVenues']);
 Route::get('/food', [FoodController::class, 'allFood']);
+Route::get('/cinema-partners', [VenueController::class, 'partners']);
 
 
 
 Route::post('/admin/movies', [AdminMovieController::class, 'store']);
+Route::get('/cinema-partners', [VenueController::class, 'partners']);
 
-    

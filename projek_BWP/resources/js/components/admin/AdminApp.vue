@@ -256,6 +256,7 @@ const stats = [
 ]
 
 const movies = ref([])
+const foods = ref([])
 
 onMounted(() => {
   axios.get('/api/movies').then(res => {
@@ -264,13 +265,36 @@ onMounted(() => {
   })
 })
 
+onMounted(async () => {
+    try {
+        const res = await axios.get('/api/food')
+        foods.value = res.data
+    } catch (err) {
+        console.error('Failed to load foods', err)
+        foods.value = []
+    }
+})
+
 const topMovies = computed(() => movies.value ? movies.value.slice(0, 4) : [])
 
-const cinemaPartners = [
-  { name: 'XXI Premium', city: 'Surakarta' },
-  { name: 'CGV Starlight', city: 'Atlantis' },
-  { name: 'Cineplex Max', city: 'Surabaya' }
-]
+const cinemaPartners = ref([])
+
+onMounted(async () => {
+    try {
+        const res = await axios.get('/api/cinema-partners')
+        cinemaPartners.value = res.data
+    } catch (err) {
+        console.error('Failed to load cinema partners', err)
+        cinemaPartners.value = []
+    }
+})
+
+const formatPrice = (price) => new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+}).format(price || 0)
 
 const menuItems = [
   { name: 'Dashboard', icon: '🏠', routeName: 'adminDashboard' },
@@ -392,12 +416,12 @@ const menuItems = [
                     </header>
 
                     <div class="row g-4">
-                        <div v-for="(c, i) in cinemaPartners" :key="i" class="col-md-6 col-lg-4">
+                        <div v-for="(c, i) in cinemaPartners" :key="c.venue_id || i" class="col-md-6 col-lg-4">
                             <div class="panel-card partner-card h-100">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
-                                        <h5 class="fw-bold mb-1">{{ c.name }}</h5>
-                                        <p class="text-muted small mb-0">{{ c.city }}</p>
+                                        <h5 class="fw-bold mb-1">{{ c.venue_name }}</h5>
+                                        <p class="text-muted small mb-0">{{ c.location }}</p>
                                     </div>
                                     <span class="badge bg-primary">Active</span>
                                 </div>
@@ -407,8 +431,37 @@ const menuItems = [
                     </div>
                 </section>
 
+                <section v-if="activeTab === 'Food Catalog'" class="admin-section">
+                    <header class="section-header d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                        <div>
+                            <p class="eyebrow">Concessions</p>
+                            <h1 class="mb-1">Food &amp; Beverages</h1>
+                            <p class="text-muted mb-0">Total items: <strong>{{ foods.length }}</strong></p>
+                        </div>
+                    </header>
+
+                    <div class="row g-4">
+                        <div v-for="food in foods" :key="food.id" class="col-md-6 col-lg-4">
+                            <div class="panel-card catalog-card h-100">
+                                <div class="d-flex gap-3 align-items-center">
+                                    <img :src="food.imageUrl || '/images/food/default.jpg'" class="movie-poster" alt="Food Image" />
+                                    <div class="details">
+                                        <h5 class="fw-bold mb-1">{{ food.title }}</h5>
+                                        <p class="text-muted mb-2">{{ formatPrice(food.price) }}</p>
+                                        <button class="admin-pill-btn small ghost">Edit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="!foods.length" class="col-12 text-center text-muted py-4">
+                            No food items yet.
+                        </div>
+                    </div>
+                </section>
+
                 <section
-                    v-if="['Food Catalog','Blogs Lists','Transaction Log'].includes(activeTab)"
+                    v-if="['Blogs Lists','Transaction Log'].includes(activeTab)"
                     class="admin-section placeholder-section text-center py-5"
                 >
                     <h4 class="fw-bold mb-2">{{ activeTab }}</h4>
