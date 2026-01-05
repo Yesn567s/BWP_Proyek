@@ -8,6 +8,7 @@ class Seat extends Model
 {
     protected $table = 'seats';
     protected $primaryKey = 'seat_id';
+    public $timestamps = false;
 
     protected $fillable = [
         'studio_id',
@@ -34,5 +35,10 @@ class Seat extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class, 'seat_id', 'seat_id');
+    }
+
+    public function seats()
+    {
+        return $this->hasMany(Seat::class, 'studio_id');
     }
 }

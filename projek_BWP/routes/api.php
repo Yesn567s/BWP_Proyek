@@ -14,6 +14,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\StudioController;
 
 Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/now-playing', [MovieController::class, 'nowPlaying']);
@@ -33,6 +34,7 @@ Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
 Route::get('/yourTickets', [TicketInstanceController::class, 'index']);
 Route::get('/blogs', [BlogController::class, 'index']);
+Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
 // Route::get('/movies/{id}/dates', [ScheduleController::class, 'datesByMovie']);
 // Route::get('/movies/{id}/dates', [MovieController::class, 'dates']);
@@ -51,4 +53,6 @@ Route::get('/cinema-partners', [VenueController::class, 'partners']);
 Route::post('/admin/movies', [AdminMovieController::class, 'store']);
 Route::put('/admin/movies/{product}', [AdminMovieController::class, 'update']);
 Route::get('/cinema-partners', [VenueController::class, 'partners']);
+Route::get('/venues/{id}', [VenueController::class, 'show']);
+Route::post('venues/{venue}/studios',[StudioController::class, 'store']);
 

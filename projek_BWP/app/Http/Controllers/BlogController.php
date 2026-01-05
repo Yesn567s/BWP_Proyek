@@ -13,4 +13,14 @@ class BlogController extends Controller
         $data = Post::all();
         return response()->json($data);
     }
+
+    public function show($id)
+    {
+        $data = Post::find($id);
+        if ($data) {
+            return response()->json($data);
+        } else {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+    }
 }

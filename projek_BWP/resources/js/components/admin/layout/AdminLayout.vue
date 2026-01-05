@@ -79,6 +79,7 @@ function handleSelect(item) {
 }
 
 .panel-card {
+    position: relative;
     background: #ffffff;
     border-radius: 24px;
     border: 1px solid rgba(15, 23, 42, 0.06);

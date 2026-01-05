@@ -16,7 +16,13 @@
             </div>
             <span class="badge bg-primary">Active</span>
           </div>
-          <button class="admin-pill-btn small ghost">Manage</button>
+          <router-link
+  :to="{ name: 'adminCinemaPage', params: { id: c.venue_id } }"
+  class="stretched-link"
+>
+
+            <span class="admin-pill-btn small ghost">Manage</span>
+          </router-link>
         </div>
       </div>
     </div>
@@ -33,6 +39,7 @@ onMounted(async () => {
   try {
     const res = await axios.get('/api/cinema-partners')
     cinemaPartners.value = res.data
+    console.log('cinemaPartners loaded', res.data)
   } catch (err) {
     console.error('Failed to load cinema partners', err)
     cinemaPartners.value = []
