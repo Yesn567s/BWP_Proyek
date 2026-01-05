@@ -1,0 +1,8 @@
+[
+  { "name": "Dashboard", "icon": "🏠", "routeName": "adminDashboard" },
+  { "name": "Movie Catalog", "icon": "🎬", "routeName": "adminMovieCatalog" },
+  { "name": "Cinema Catalog", "icon": "🎟️", "routeName": "adminCinemaCatalog" },
+  { "name": "Food Catalog", "icon": "🍿", "routeName": "adminFoodCatalog" },
+  { "name": "Blogs Lists", "icon": "📝", "routeName": "adminBlogList" },
+  { "name": "Transaction Log", "icon": "📈", "routeName": "adminTransactionLog" }
+]
