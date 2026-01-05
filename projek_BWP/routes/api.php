@@ -14,6 +14,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\StudioController;
 
 Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/now-playing', [MovieController::class, 'nowPlaying']);
@@ -52,5 +53,5 @@ Route::get('/cinema-partners', [VenueController::class, 'partners']);
 Route::post('/admin/movies', [AdminMovieController::class, 'store']);
 Route::get('/cinema-partners', [VenueController::class, 'partners']);
 Route::get('/venues/{id}', [VenueController::class, 'show']);
-
+Route::post('venues/{venue}/studios',[StudioController::class, 'store']);
 

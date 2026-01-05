@@ -1,24 +1,69 @@
+<style scoped>
+.cinema-page {
+  background: #f6f8fc;
+}
+
+.soft-card {
+  border-radius: 18px;
+  border: none;
+}
+
+.studio-card {
+  background: #f9fbff;
+  border-radius: 14px;
+}
+
+.schedule-row {
+  background: #f9fbff;
+  border-radius: 14px;
+}
+
+.time-pill {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid #e2e6f0;
+  font-size: 0.8rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.security-card {
+  background: linear-gradient(135deg, #5b5ce2, #4c4ddc);
+  color: white;
+  border-radius: 20px;
+  padding: 20px;
+}
+</style>
+
+
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import AddStudioModal from './ModalAddStudio.vue'
 
 const route = useRoute()
+const router = useRouter()
 
+const showAddStudioModal = ref(false)
 const venue = ref(null)
 
-onMounted(async () => {
-  try {
-    console.log('adminCinemaPage route id:', route.params.id)
-    const id = Number(route.params.id)
-    if (!id) throw new Error('Invalid venue id')
-    const res = await axios.get(`/api/venues/${id}`)
-    venue.value = res.data
-  } catch (err) {
-    console.error('Failed to load venue', err)
-    venue.value = null
-  }
-})
+const goBack = () => {
+  router.back()
+}
+
+const fetchVenue = async () => {
+  const res = await axios.get(`/api/venues/${route.params.id}`)
+  venue.value = res.data
+}
+
+onMounted(fetchVenue)
 
 const totalSchedules = computed(() => {
   return venue.value
@@ -38,27 +83,39 @@ const formatTime = (datetime) => {
 </script>
 
 
+
 <template>
-  <div class="container py-4" v-if="venue">
+  <div v-if="venue" class="container py-4 cinema-page">
 
     <!-- HEADER -->
-    <div class="mb-4">
-      <h4 class="fw-bold mb-1">{{ venue.venue_name }}</h4>
-      <small class="text-muted">
-        {{ venue.location }}
-      </small>
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <button class="btn btn-light rounded-circle" @click="goBack">
+        ←
+      </button>
+      <div>
+        <h4 class="fw-bold mb-0">{{ venue.venue_name }}</h4>
+        <small class="text-muted">
+          {{ venue.location }}
+        </small>
+      </div>
     </div>
 
     <div class="row g-4">
-      <!-- LEFT SIDE -->
+
+      <!-- LEFT -->
       <div class="col-lg-8">
 
         <!-- STUDIOS -->
-        <div class="card mb-4">
+        <div class="card soft-card mb-4">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="fw-bold mb-0">Studios & Rooms</h6>
-              <button class="btn btn-primary btn-sm">
+              <div>
+                <h6 class="fw-bold mb-1">Studios & Rooms</h6>
+                <small class="text-muted">
+                  Total studios: {{ venue.studios.length }}
+                </small>
+              </div>
+              <button class="btn btn-primary btn-sm rounded-pill" @click="showAddStudioModal = true">
                 + Add Studio
               </button>
             </div>
@@ -69,31 +126,32 @@ const formatTime = (datetime) => {
                 :key="studio.studio_id"
                 class="col-md-6"
               >
-                <div class="border rounded p-3 h-100">
+                <div class="studio-card p-3 h-100">
                   <div class="d-flex justify-content-between">
-                    <div class="fw-semibold">
-                      {{ studio.studio_name }}
+                    <div>
+                      <div class="fw-semibold">{{ studio.studio_name }}</div>
+                      <span class="badge bg-light text-primary mt-1">
+                        {{ studio.studio_type }}
+                      </span>
                     </div>
-                    <span class="badge bg-primary">
-                      {{ studio.studio_type }}
-                    </span>
-                  </div>
 
-                  <small class="text-muted d-block mt-1">
-                    {{ studio.schedules.length }} schedules
-                  </small>
+                    <div class="text-end small text-muted">
+                      {{ studio.schedules.length }} schedules
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
 
         <!-- AIRING SCHEDULE -->
-        <div class="card">
+        <div class="card soft-card">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="fw-bold mb-0">Airing Schedule</h6>
-              <button class="btn btn-outline-primary btn-sm">
+              <button class="btn btn-outline-primary btn-sm rounded-pill">
                 Edit Schedule
               </button>
             </div>
@@ -106,56 +164,75 @@ const formatTime = (datetime) => {
               <div
                 v-for="schedule in studio.schedules"
                 :key="schedule.schedule_id"
-                class="mb-2"
+                class="schedule-row p-3 mb-2"
               >
                 <div class="fw-semibold">
                   {{ schedule.product?.product_name ?? 'Unknown Movie' }}
                 </div>
 
-                <small class="text-muted">
-                  {{ studio.studio_name }} •
-                  {{ formatTime(schedule.start_datetime) }} -
-                  {{ formatTime(schedule.end_datetime) }}
+                <small class="text-muted d-block mb-2">
+                  {{ studio.studio_name }}
                 </small>
+
+                <div class="d-flex gap-2">
+                  <span class="time-pill">
+                    {{ formatTime(schedule.start_datetime) }}
+                  </span>
+                  <span class="time-pill">
+                    {{ formatTime(schedule.end_datetime) }}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div v-if="totalSchedules === 0" class="text-muted text-center">
+            <div
+              v-if="totalSchedules === 0"
+              class="text-muted text-center py-4"
+            >
               No schedules available
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- RIGHT SIDE -->
+      <!-- RIGHT -->
       <div class="col-lg-4">
 
         <!-- VENUE INFO -->
-        <div class="card mb-3">
+        <div class="card soft-card mb-3">
           <div class="card-body">
-            <h6 class="fw-bold">Venue Info</h6>
+            <h6 class="fw-bold mb-3">Venue Info</h6>
 
-            <p class="mb-1">
-              <strong>Type:</strong> {{ venue.venue_type }}
-            </p>
-            <p class="mb-1">
-              <strong>Location:</strong> {{ venue.location }}
-            </p>
+            <div class="info-row">
+              <span>Operator</span>
+              <strong>PT. Nusantara Sejahtera</strong>
+            </div>
 
-            <button class="btn btn-light w-100 mt-2">
+            <div class="info-row">
+              <span>Total Studios</span>
+              <strong>{{ venue.studios.length }} Registered</strong>
+            </div>
+
+            <div class="info-row">
+              <span>Location Type</span>
+              <strong>Premium Cinema Mall</strong>
+            </div>
+
+            <!-- <button class="btn btn-light w-100 mt-3 rounded-pill">
               Update Information
-            </button>
+            </button> -->
           </div>
         </div>
 
-        <!-- SECURITY STATUS -->
-        <div class="card text-white bg-primary">
-          <div class="card-body">
-            <h6 class="fw-bold">Security Status</h6>
-            <small>
-              This venue is verified for high-density occupancy.
-            </small>
-          </div>
+        <!-- SECURITY -->
+        <div class="security-card">
+          <h6 class="fw-bold">Security Status</h6>
+          <small>
+            This venue is verified for high-density occupancy.
+            <br />
+            Last inspection: Dec 20, 2024
+          </small>
         </div>
 
       </div>
@@ -165,4 +242,14 @@ const formatTime = (datetime) => {
   <div v-else class="text-center py-5">
     Loading venue data...
   </div>
+
+  <AddStudioModal
+    v-if="showAddStudioModal"
+    :venue-id="venue.venue_id"
+    @close="showAddStudioModal = false"
+    @saved="fetchVenue"
+  />
+
+
 </template>
+
