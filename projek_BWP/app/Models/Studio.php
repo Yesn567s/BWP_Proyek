@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Seat;
 
 class Studio extends Model
 {
@@ -16,24 +17,27 @@ class Studio extends Model
     ];
 
     protected static function booted()
-{
-    static::created(function ($studio) {
+    {
+        static::created(function (Studio $studio) {
+            $rows = ['A', 'B', 'C', 'D'];
+            $seatsPerRow = 8;
 
-        $rows = ['A', 'B', 'C', 'D'];
-        $seatsPerRow = 8;
-
-        foreach ($rows as $row) {
-            for ($i = 1; $i <= $seatsPerRow; $i++) {
-                Seat::create([
-                    'studio_id'  => $studio->studio_id,
-                    'row_letter' => $row,        // ✅ EXACT column name
-                    'seat_number'=> $i,          // ✅ EXACT column name
-                    'status'     => 'available', // optional
-                ]);
+            $seatsToInsert = [];
+            foreach ($rows as $row) {
+                for ($i = 1; $i <= $seatsPerRow; $i++) {
+                    $seatsToInsert[] = [
+                        'studio_id'   => $studio->studio_id,
+                        'row_letter'  => $row,
+                        'seat_number' => $i,
+                        'status'      => 'available',
+                    ];
+                }
             }
-        }
-    });
-}
+
+            // Bulk insert so all seats are created together after the studio is saved.
+            Seat::insert($seatsToInsert);
+        });
+    }
 
     public function schedules()
     {
