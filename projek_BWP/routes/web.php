@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dummy;
 use Illuminate\Support\Facades\DB;
@@ -466,6 +467,9 @@ Route::post('/api/notifications', function (Request $request) {
         ], 500);
     }
 });
+
+// User Vouchers Route
+Route::get('/api/user-vouchers', [VoucherController::class, 'getUserVouchers']);
 
 // Logout route
 Route::post('/logout', function () {

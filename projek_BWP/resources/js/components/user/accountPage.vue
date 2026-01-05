@@ -147,7 +147,15 @@ const menuItems = [
   { key: 'payment', icon: '💳', title: 'Payment Methods', sub: 'Cards and digital wallets' },
   { key: 'notifications', icon: '🔔', title: 'Notifications', sub: 'Email and push alerts' },
   { key: 'language', icon: '🌍', title: 'Language', sub: 'English (US)' },
-  { key: 'promo', icon: '🎁', title: 'Promos & Vouchers', sub: '3 active vouchers available' }
+  { 
+    key: 'promo', 
+    icon: '🎁', 
+    title: 'Promos & Vouchers', 
+    sub: computed(() => {
+      const activeCount = promoVouchers.filter(v => !v.is_expired && v.is_active).length
+      return `${activeCount} active ${activeCount === 1 ? 'voucher' : 'vouchers'} available`
+    })
+  }
 ]
 
 
@@ -457,39 +465,64 @@ const saveNotificationSettings = async () => {
 }
 
 // PROMOS & VOUCHERS
-const promoVouchers = reactive([
-  {
-    id: 1,
-    title: '50% Off Movie Tickets',
-    description: 'Valid for all movies on weekdays',
-    code: 'MOVIE50',
-    expiry: '30 Jun 2025',
-    type: 'discount',
-    used: false
-  },
-  {
-    id: 2,
-    title: 'Free Popcorn Combo',
-    description: 'Get a free popcorn with any ticket purchase',
-    code: 'POPCORNFREE',
-    expiry: '15 Jul 2025',
-    type: 'freebie',
-    used: false
-  },
-  {
-    id: 3,
-    title: 'Cashback Rp25.000',
-    description: 'Cashback for payments using e-wallet',
-    code: 'CASHBACK25',
-    expiry: '31 Aug 2025',
-    type: 'cashback',
-    used: true
-  }
-])
+const promoVouchers = reactive([])
+const loadingVouchers = ref(false)
 
-const copyPromoCode = (code) => {
-  navigator.clipboard.writeText(code)
-  alert(`Promo code "${code}" copied!`)
+const fetchUserVouchers = async () => {
+  loadingVouchers.value = true
+  try {
+    const res = await axios.get('/api/user-vouchers')
+    
+    promoVouchers.splice(0, promoVouchers.length, ...res.data.map(voucher => ({
+      id: voucher.id,
+      title: voucher.title,
+      description: voucher.description,
+      code: voucher.code,
+      expiry: new Date(voucher.end_date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }),
+      type: 'discount',
+      used: voucher.used,
+      is_active: voucher.is_active,
+      is_expired: voucher.is_expired,
+      remaining_use: voucher.remaining_use,
+      usage_count: voucher.usage_count
+    })))
+    
+  } catch (err) {
+    console.error('Failed to fetch user vouchers:', err)
+  } finally {
+    loadingVouchers.value = false
+  }
+}
+
+// Fetch user vouchers when component mounts
+onMounted(() => {
+  fetchUserVouchers()
+})
+
+// Filter to show only non-expired vouchers
+const activeVouchers = computed(() => {
+  return promoVouchers.filter(v => !v.is_expired)
+})
+
+const copyPromoCode = async (code) => {
+  try {
+    await navigator.clipboard.writeText(code)
+    alert(`Promo code "${code}" copied to clipboard!`)
+  } catch (err) {
+    console.error('Failed to copy:', err)
+    // Fallback for older browsers or HTTPS issues
+    const textArea = document.createElement('textarea')
+    textArea.value = code
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+    alert(`Promo code "${code}" copied!`)
+  }
 }
 
 // Logout: call backend to destroy session, clear client storage, then redirect
@@ -1090,26 +1123,41 @@ const logout = async () => {
           </p>
         </div>
 
+        <!-- LOADING STATE -->
+        <div v-if="loadingVouchers" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
         <!-- PROMO LIST -->
-        <div class="row g-4">
+        <div v-else class="row g-4">
 
           <div
             class="col-md-6"
-            v-for="promo in promoVouchers"
+            v-for="promo in activeVouchers"
             :key="promo.id"
           >
             <div
               class="border rounded-4 p-4 h-100 position-relative"
-              :class="promo.used ? 'bg-light text-muted' : 'hover-shadow'"
+              :class="[
+                promo.is_expired ? 'bg-light text-muted' : 'hover-shadow',
+                !promo.is_active ? 'opacity-50' : ''
+              ]"
             >
 
               <!-- STATUS BADGE -->
-              <span
-                class="position-absolute top-0 end-0 m-3 badge rounded-pill"
-                :class="promo.used ? 'bg-secondary' : 'bg-success'"
-              >
-                {{ promo.used ? 'Used' : 'Active' }}
-              </span>
+              <div class="position-absolute top-0 end-0 m-3 d-flex gap-2">
+                <span
+                  class="badge rounded-pill"
+                  :class="promo.used ? 'bg-secondary' : promo.is_expired ? 'bg-danger' : 'bg-success'"
+                >
+                  {{ promo.is_expired ? 'Expired' : promo.used ? 'Used' : 'Active' }}
+                </span>
+                <span v-if="!promo.is_active" class="badge bg-warning">
+                  Inactive
+                </span>
+              </div>
 
               <!-- TITLE -->
               <h6 class="fw-bold mb-2">
@@ -1118,7 +1166,7 @@ const logout = async () => {
 
               <!-- DESCRIPTION -->
               <p class="small mb-3">
-                {{ promo.description }}
+                {{ promo.description || 'No description available' }}
               </p>
 
               <!-- PROMO CODE -->
@@ -1133,20 +1181,32 @@ const logout = async () => {
 
                 <button
                   class="btn btn-sm btn-outline-primary rounded-pill"
-                  :disabled="promo.used"
+                  :disabled="promo.used || promo.is_expired || !promo.is_active"
                   @click="copyPromoCode(promo.code)"
                 >
                   Copy
                 </button>
               </div>
 
+              <!-- REMAINING USES -->
+              <div v-if="promo.remaining_use !== null" class="mb-3 small">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="fw-semibold">Remaining Uses:</span>
+                  <span class="badge bg-info">{{ promo.remaining_use > 0 ? promo.remaining_use : 'No uses left' }}</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                  <div
+                    class="progress-bar"
+                    :style="{ width: promo.remaining_use > 0 ? '100%' : '0%' }"
+                    :class="promo.remaining_use > 0 ? 'bg-success' : 'bg-danger'"
+                  ></div>
+                </div>
+              </div>
+
               <!-- FOOTER -->
               <div class="d-flex justify-content-between align-items-center small text-muted">
                 <span>
                   ⏰ Expires {{ promo.expiry }}
-                </span>
-                <span>
-                  🎁 {{ promo.type }}
                 </span>
               </div>
 
@@ -1157,10 +1217,10 @@ const logout = async () => {
 
         <!-- EMPTY STATE -->
         <div
-          v-if="promoVouchers.length === 0"
+          v-if="!loadingVouchers && activeVouchers.length === 0"
           class="text-center py-5 text-muted"
         >
-          <h6 class="fw-bold mb-2">No active promos</h6>
+          <h6 class="fw-bold mb-2">No active vouchers</h6>
           <p>Check back later for exciting offers</p>
         </div>
 

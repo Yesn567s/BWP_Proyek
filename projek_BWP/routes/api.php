@@ -33,6 +33,7 @@ Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
 Route::get('/yourTickets', [TicketInstanceController::class, 'index']);
 Route::get('/blogs', [BlogController::class, 'index']);
+Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
 // Route::get('/movies/{id}/dates', [ScheduleController::class, 'datesByMovie']);
 // Route::get('/movies/{id}/dates', [MovieController::class, 'dates']);

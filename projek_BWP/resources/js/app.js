@@ -72,7 +72,10 @@ const routes=[
     {
         path: '/blog',
         name: 'blog',
-        component: Blog
+        component: Blog,
+        props: route => ({
+            postId: route.query.id ? Number(route.query.id) : null
+        })
     },
     {
         path: '/seats/:scheduleId',
