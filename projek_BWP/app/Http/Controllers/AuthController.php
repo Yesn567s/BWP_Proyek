@@ -54,6 +54,38 @@ class AuthController extends Controller
                 ],
             ]);
 
+            // 3️⃣ Assign 2 random vouchers to new user
+            $allVouchers = DB::table('vouchers')
+                ->where('is_active', 1)
+                ->pluck('voucher_id')
+                ->toArray();
+
+            if (count($allVouchers) >= 2) {
+                // Get 2 random vouchers
+                $randomVouchers = array_slice(
+                    $allVouchers,
+                    0,
+                    min(2, count($allVouchers)),
+                    true
+                );
+                shuffle($randomVouchers);
+                $randomVouchers = array_slice($randomVouchers, 0, 2);
+
+                $voucherAssignments = [];
+                foreach ($randomVouchers as $voucherId) {
+                    $voucherAssignments[] = [
+                        'user_id' => $userId,
+                        'voucher_id' => $voucherId,
+                        'usage_count' => 0,
+                        'max_usage_per_user' => rand(1, 10),
+                        'assigned_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                DB::table('user_vouchers')->insert($voucherAssignments);
+            }
+
             DB::commit();
             return response('success', 200);
 
