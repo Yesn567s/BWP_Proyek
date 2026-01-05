@@ -1,19 +1,23 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 
-const props = defineProps({
-  venueId: {
-    type: Number,
-    required: true
-  }
-})
+const route = useRoute()
 
 const venue = ref(null)
 
 onMounted(async () => {
-  const res = await axios.get(`/api/venues/${props.venueId}`)
-  venue.value = res.data
+  try {
+    console.log('adminCinemaPage route id:', route.params.id)
+    const id = Number(route.params.id)
+    if (!id) throw new Error('Invalid venue id')
+    const res = await axios.get(`/api/venues/${id}`)
+    venue.value = res.data
+  } catch (err) {
+    console.error('Failed to load venue', err)
+    venue.value = null
+  }
 })
 
 const totalSchedules = computed(() => {

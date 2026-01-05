@@ -29,7 +29,7 @@ const router = createRouter({
         { path: 'blogList', name: 'adminBlogList', component: PlaceholderView, props: { title: 'Blogs Lists' } },
         { path: 'transactionLog', name: 'adminTransactionLog', component: PlaceholderView, props: { title: 'Transaction Log' } },
         { path: 'newMovies', name: 'adminNewMovies', component: NewMovieView },
-        { path: 'cinemaPage', name: 'cinemaPage', component: CinemaPage},
+        { path: 'cinemas/:id', name: 'adminCinemaPage', component: CinemaPage }
       ]
     }
   ]
