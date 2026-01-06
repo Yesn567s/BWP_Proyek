@@ -16,6 +16,8 @@ import CinemaPage from './components/admin/views/CinemaPage.vue';
 import NewVenue from './components/admin/views/NewVenue.vue';
 import TixFunCatalogView from './components/admin/views/TixFunCatalog.vue';
 import AddTixFunView from './components/admin/views/AddTixFunView.vue';
+import BlogPage from './components/admin/views/blogPage.vue';
+import BlogEdit from './components/admin/views/blogEdit.vue';
 
 const router = createRouter({
   history: createWebHistory('/admin'),
@@ -31,11 +33,12 @@ const router = createRouter({
         { path: 'tixFunCatalog', name: 'adminTixFunCatalog', component: TixFunCatalogView },
         { path: 'addTixFun', name: 'adminAddTixFun', component: AddTixFunView },
         { path: 'foodCatalog', name: 'adminFoodCatalog', component: FoodCatalogView },
-        { path: 'blogList', name: 'adminBlogList', component: PlaceholderView, props: { title: 'Blogs Lists' } },
+        { path: 'blogList', name: 'adminBlogList', component: BlogPage },
         { path: 'transactionLog', name: 'adminTransactionLog', component: PlaceholderView, props: { title: 'Transaction Log' } },
         { path: 'newMovies', name: 'adminNewMovies', component: NewMovieView },
         { path: 'cinemas/:id', name: 'adminCinemaPage', component: CinemaPage },
         { path: 'newVenue', name: 'adminNewVenue', component: NewVenue },
+        { path: '/admin/blog/:id', name: 'adminBlogEdit', component: BlogEdit },
       ]
     }
   ]

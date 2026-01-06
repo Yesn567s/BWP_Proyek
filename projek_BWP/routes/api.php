@@ -17,6 +17,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\StudioController;
 
 Route::get('/movies', [MovieController::class, 'index']);
@@ -63,3 +64,8 @@ Route::post('venues/{venue}/studios',[StudioController::class, 'store']);
 Route::get('/admin/venues-with-studios', [AdminVenueController::class, 'venuesWithStudios']);
 Route::post('/admin/venues', [AdminVenueController::class, 'store']);
 Route::post('/admin/tixfun', [AdminTixFunController::class, 'store']);
+Route::get('/posts', [PostController::class, 'index']);
+Route::post('/posts', [PostController::class, 'store']);
+Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+Route::get('/posts/{id}', [PostController::class, 'show']);
+Route::put('/posts/{id}', [PostController::class, 'update']);
