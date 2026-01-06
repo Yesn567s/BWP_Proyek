@@ -162,38 +162,36 @@ class AdminMovieController extends Controller
             ], 500);
         }
     }
-    private function generateSchedules($productId, $days, $duration)
-    {
-        $days = (int) $days;
-        $duration = (int) $duration;
-        return response()->json([
-            'error'  => 'Failed to create movie',
-            'detail' => $e->getMessage()
-        ], 500);
-    }
-}
-
+    // private function generateSchedules($productId, $days, $duration)
+    // {
+    //     $days = (int) $days;
+    //     $duration = (int) $duration;
+    //     return response()->json([
+    //         'error'  => 'Failed to create movie',
+    //         'detail' => $e->getMessage()
+    //     ], 500);
+    // }
     private function generateSchedules($productId, $studioIds, $days, $duration)
-{
+    {
     $days     = (int) $days;
     $duration = (int) $duration;
-
+    
     $startDate = Carbon::now()->startOfDay()->addDays(1);
     $inserted = 0;
-
+    
     foreach ($studioIds as $studioId) {
         foreach (range(0, $days - 1) as $day) {
-
+    
             $time = $startDate
                 ->copy()
                 ->addDays($day)
                 ->setTime(10, 0);
-
+    
             while ($time->hour < 22) {
-
+    
                 $start = $time->copy();
                 $end   = $time->copy()->addMinutes($duration);
-
+    
                 $isOccupied = DB::table('schedules')
                     ->where('studio_id', $studioId)
                     ->where(function ($q) use ($start, $end) {
@@ -201,7 +199,7 @@ class AdminMovieController extends Controller
                           ->where('end_datetime',   '>', $start);
                     })
                     ->exists();
-
+    
                 if (!$isOccupied) {
                     DB::table('schedules')->insert([
                         'product_id'     => $productId,
@@ -211,16 +209,13 @@ class AdminMovieController extends Controller
                     ]);
                     $inserted++;
                 }
-
+    
                 $time->addMinutes($duration + 20);
             }
         }
     }
-
+    
     return $inserted;
-}
-
-
-
+    }
 }
 
