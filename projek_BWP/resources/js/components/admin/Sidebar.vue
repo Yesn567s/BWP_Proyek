@@ -38,6 +38,7 @@ const props = defineProps({
         { name: 'Dashboard', icon: '🏠' },
         { name: 'Movie Catalog', icon: '🎬' },
         { name: 'Cinema Catalog', icon: '🎟️' },
+        { name: 'TixFun Catalog', icon: '🎉' },
         { name: 'Food Catalog', icon: '🍿' },
         { name: 'Blogs Lists', icon: '📝' },
         { name: 'Transaction Log', icon: '📈' }
