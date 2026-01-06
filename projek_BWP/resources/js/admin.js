@@ -13,6 +13,7 @@ import FoodCatalogView from './components/admin/views/FoodCatalogView.vue';
 import PlaceholderView from './components/admin/views/PlaceholderView.vue';
 import NewMovieView from './components/admin/views/NewMovieView.vue';
 import CinemaPage from './components/admin/views/CinemaPage.vue';
+import NewVenue from './components/admin/views/NewVenue.vue';
 
 const router = createRouter({
   history: createWebHistory('/admin'),
@@ -29,7 +30,8 @@ const router = createRouter({
         { path: 'blogList', name: 'adminBlogList', component: PlaceholderView, props: { title: 'Blogs Lists' } },
         { path: 'transactionLog', name: 'adminTransactionLog', component: PlaceholderView, props: { title: 'Transaction Log' } },
         { path: 'newMovies', name: 'adminNewMovies', component: NewMovieView },
-        { path: 'cinemas/:id', name: 'adminCinemaPage', component: CinemaPage }
+        { path: 'cinemas/:id', name: 'adminCinemaPage', component: CinemaPage },
+        { path: 'newVenue', name: 'adminNewVenue', component: NewVenue },
       ]
     }
   ]
