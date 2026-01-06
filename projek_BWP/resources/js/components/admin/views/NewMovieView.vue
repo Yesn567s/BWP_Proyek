@@ -313,7 +313,6 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* Poster Preview */
 .poster-preview-box {
   width: 220px;
   height: 320px;
@@ -549,7 +548,6 @@ const handleSubmit = async () => {
   font-size: 12px;
 }
 
-/* Selection Summary */
 .selection-summary {
   display: flex;
   align-items: center;
@@ -562,7 +560,6 @@ const handleSubmit = async () => {
   color: #065f46;
 }
 
-/* Accordion Transition */
 .accordion-enter-active {
   transition: all 0.25s ease-out;
 }

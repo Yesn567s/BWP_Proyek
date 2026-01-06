@@ -6,6 +6,7 @@
         <h1 class="mb-1">Food &amp; Beverages</h1>
         <p class="text-muted mb-0">Total items: <strong>{{ foods.length }}</strong></p>
       </div>
+      <button class="btn btn-primary" @click="goAdd">Add Food</button>
     </header>
 
     <div class="row g-4">
@@ -16,7 +17,7 @@
             <div class="details">
               <h5 class="fw-bold mb-1">{{ food.title }}</h5>
               <p class="text-muted mb-2">{{ formatPrice(food.price) }}</p>
-              <button class="admin-pill-btn small ghost">Edit</button>
+              <button class="admin-pill-btn small ghost btn-primary" @click="goEdit(food.id)">Edit</button>
             </div>
           </div>
         </div>
@@ -31,9 +32,13 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const foods = ref([])
+const router = useRouter()
+const goAdd = () => router.push({ name: 'adminAddFood' })
+const goEdit = (id) => router.push({ name: 'adminEditFood', params: { id } })
 
 onMounted(async () => {
   try {
