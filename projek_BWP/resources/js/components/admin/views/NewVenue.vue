@@ -81,6 +81,10 @@ const submitVenue = async () => {
 const cancel = () => {
   router.back()
 }
+
+const goBack = () => {
+  router.push({ name: 'adminMovieCatalog' })
+}
 </script>
 
 
@@ -89,7 +93,7 @@ const cancel = () => {
     <div class="venue-card">
       <!-- Header -->
       <div class="d-flex align-items-center mb-4">
-        <button class="btn btn-light btn-back me-3">
+        <button class="btn btn-light btn-back me-3" @click="goBack">
           ←
         </button>
         <div>

@@ -19,7 +19,7 @@
             <div class="details">
               <h5 class="fw-bold mb-1">{{ movie.title }}</h5>
               <p class="text-muted mb-3">{{ movie.genre }}</p>
-              <button type="button" class="btn btn-primary" @click="openMovie(movie)">Vies Details</button>
+              <button type="button" class="btn btn-primary" @click="openMovie(movie)">View Details</button>
 
             </div>
           </div>
