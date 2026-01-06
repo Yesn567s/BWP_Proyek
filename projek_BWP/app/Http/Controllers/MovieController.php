@@ -20,16 +20,20 @@ class MovieController extends Controller
     }
 
     public function nowPlaying()
-{
-    return TicketProduct::with('poster')
-        ->where('category_id', 1) // movie only
-        ->whereHas('schedules', function ($q) {
-            $q->where('start_datetime', '<=', now())
-              ->where('end_datetime', '>=', now());
-        })
-        ->get()
-        ->map(fn ($movie) => $this->formatMovie($movie));
-}
+    {
+        // Treat "now playing" as anything scheduled recently or in the near future
+        // so the list stays populated even when the demo seed dates are slightly old.
+        $windowStart = now()->subDays(30);
+        $windowEnd   = now()->addDays(30);
+
+        return TicketProduct::with('poster')
+            ->where('category_id', 1)
+            ->whereHas('schedules', function ($q) use ($windowStart, $windowEnd) {
+                $q->whereBetween('start_datetime', [$windowStart, $windowEnd]);
+            })
+            ->get()
+            ->map(fn ($movie) => $this->formatMovie($movie));
+    }
 
 
     public function coomingSoon()
@@ -50,8 +54,11 @@ class MovieController extends Controller
             'id'     => $movie->product_id,
             'title'  => $movie->name,
             'desc'   => $movie->description,
+            'genre'  => $movie->genre,
             'price'  => $movie->base_price,
             'rating' => $movie->rating,
+            'duration' => $movie->duration_minutes,
+            'age_rating' => $movie->age_rating,
             'poster' => $movie->poster
                 ? Storage::url($movie->poster->media_url)
                 : asset('images/posters/default.jpg'),
