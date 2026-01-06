@@ -183,17 +183,26 @@ const handleCheckout = async () => {
 		alert('Please select at least one seat')
 		return
 	}
-
+	
 	try {
+		localStorage.clear();
 		// Send checkout data to backend
-		const { data } = await axios.post('/api/checkout', {
-			scheduleId: resolvedScheduleId.value,
-			seats: selectedSeats.value,
-			totalPrice: totalPrice.value,
-		})
+		const data = {
+			'scheduleId': resolvedScheduleId.value,
+			'seats': selectedSeats.value,
+			'totalPrice': totalPrice.value,
+		};
+
+		console.log('Checkout data:', data);
+		localStorage.setItem('cart', JSON.stringify(data));
+		// const { data } = await axios.post('/api/checkout', {
+		// 	scheduleId: resolvedScheduleId.value,
+		// 	seats: selectedSeats.value,
+		// 	totalPrice: totalPrice.value,
+		// })
 		
 		// Navigate to payment page or success page
-		router.push({ name: 'checkout', params: { orderId: data.orderId } })
+		router.push({ name: 'checkout' });	
 	} catch (err) {
 		console.error(err)
 		alert('Checkout failed. Please try again.')

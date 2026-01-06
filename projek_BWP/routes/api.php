@@ -42,7 +42,8 @@ Route::get('/movies/{id}/dates', [ScheduleController::class, 'availableDates']);
 Route::get('/schedules/{schedule}/seats', [ScheduleController::class, 'seats']);
 Route::post('/admin/schedules', [AdminScheduleController::class, 'store']);
 
-
+Route::get('/checkout', [CheckoutController::class, 'index']);
+Route::get('/orders', [CheckoutController::class, 'orders']);
 
 Route::get('/food/venues', [VenueController::class, 'foodVenues']);
 Route::get('/food', [FoodController::class, 'allFood']);

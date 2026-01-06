@@ -16,6 +16,7 @@ import Fun from './components/user/fun.vue';
 import FoodMenu from './components/user/foodMenu.vue';
 import Seats from './components/user/seats.vue';
 import Blog from './components/user/blog.vue';
+import Checkout from './components/user/checkout.vue';
 
 const routes=[
     {
@@ -76,6 +77,11 @@ const routes=[
         props: route => ({
             postId: route.query.id ? Number(route.query.id) : null
         })
+    },
+    {
+        path: '/checkout',
+        name: 'checkout',
+        component: Checkout
     },
     {
         path: '/seats/:scheduleId',
