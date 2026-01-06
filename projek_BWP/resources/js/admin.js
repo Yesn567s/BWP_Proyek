@@ -19,6 +19,7 @@ import NewVenue from './components/admin/views/NewVenue.vue';
 import TixFunCatalogView from './components/admin/views/TixFunCatalog.vue';
 import AddTixFunView from './components/admin/views/AddTixFunView.vue';
 import TixFunDetailView from './components/admin/views/TixFunDetailView.vue';
+import TransactionLogView from './components/admin/views/TransactionLogView.vue';
 
 const router = createRouter({
   history: createWebHistory('/admin'),
@@ -38,7 +39,7 @@ const router = createRouter({
         { path: 'foodCatalog/add', name: 'adminAddFood', component: AddFoodView },
         { path: 'foodCatalog/:id/edit', name: 'adminEditFood', component: EditFoodView, props: true },
         { path: 'blogList', name: 'adminBlogList', component: PlaceholderView, props: { title: 'Blogs Lists' } },
-        { path: 'transactionLog', name: 'adminTransactionLog', component: PlaceholderView, props: { title: 'Transaction Log' } },
+        { path: 'transactionLog', name: 'adminTransactionLog', component: TransactionLogView },
         { path: 'newMovies', name: 'adminNewMovies', component: NewMovieView },
         { path: 'cinemas/:id', name: 'adminCinemaPage', component: CinemaPage },
         { path: 'newVenue', name: 'adminNewVenue', component: NewVenue },
