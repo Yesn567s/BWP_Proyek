@@ -72,7 +72,7 @@
 							<small class="text-muted text-uppercase fw-semibold">Price from</small>
 							<div class="fs-5 fw-bold text-primary">{{ formatPrice(item.price) }}</div>
 						</div>
-						<button class="admin-pill-btn solid">Manage</button>
+						<button class="admin-pill-btn solid btn btn-primary" @click="goManage(item.id)">View Details</button>
 					</div>
 				</div>
 			</div>
@@ -89,14 +89,16 @@
 </template>
 
 <script setup>
-    import { computed, onMounted, ref } from 'vue'
-    import axios from 'axios'
+	import { computed, onMounted, ref } from 'vue'
+	import { useRouter } from 'vue-router'
+	import axios from 'axios'
 
-    const tickets = ref([])
-    const categories = ref([])
-    const search = ref('')
-    const activeCategory = ref(null)
-    const loading = ref(true)
+	const tickets = ref([])
+	const categories = ref([])
+	const search = ref('')
+	const activeCategory = ref(null)
+	const loading = ref(true)
+	const router = useRouter()
 
     onMounted(async () => {
         try {
@@ -147,6 +149,10 @@
     const setCategory = (id) => {
         activeCategory.value = id
     }
+
+	const goManage = (id) => {
+		router.push({ name: 'adminTixFunDetail', params: { id } })
+	}
 
     const formatPrice = (price) => new Intl.NumberFormat('id-ID', {
         style: 'currency',

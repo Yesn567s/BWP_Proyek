@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminFoodController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminTransactionController;
 use App\Http\Controllers\AdminMovieController;
 use App\Http\Controllers\AdminScheduleController;
 use App\Http\Controllers\AdminTixFunController;
@@ -58,12 +61,20 @@ Route::get('/cinema-partners', [VenueController::class, 'partners']);
 Route::post('/admin/movies', [AdminMovieController::class, 'store']);
 Route::put('/admin/movies/{product}', [AdminMovieController::class, 'update']);
 Route::delete('/admin/movies/{product}', [AdminMovieController::class, 'destroy']);
+Route::post('/admin/food', [AdminFoodController::class, 'store']);
+Route::get('/admin/food/{id}', [AdminFoodController::class, 'show']);
+Route::put('/admin/food/{id}', [AdminFoodController::class, 'update']);
 Route::get('/cinema-partners', [VenueController::class, 'partners']);
 Route::get('/venues/{id}', [VenueController::class, 'show']);
 Route::post('venues/{venue}/studios',[StudioController::class, 'store']);
 Route::get('/admin/venues-with-studios', [AdminVenueController::class, 'venuesWithStudios']);
 Route::post('/admin/venues', [AdminVenueController::class, 'store']);
 Route::post('/admin/tixfun', [AdminTixFunController::class, 'store']);
+Route::get('/admin/tixfun/{id}', [AdminTixFunController::class, 'show']);
+Route::put('/admin/tixfun/{id}', [AdminTixFunController::class, 'update']);
+Route::delete('/admin/tixfun/{id}', [AdminTixFunController::class, 'destroy']);
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index']);
+Route::get('/admin/transactions', [AdminTransactionController::class, 'index']);
 Route::get('/posts', [PostController::class, 'index']);
 Route::post('/posts', [PostController::class, 'store']);
 Route::delete('/posts/{id}', [PostController::class, 'destroy']);
