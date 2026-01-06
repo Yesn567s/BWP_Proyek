@@ -1,9 +1,14 @@
 <template>
   <section class="admin-section">
-    <header class="section-header">
-      <p class="eyebrow">Partners</p>
-      <h1 class="mb-1">Cinema Network</h1>
-      <p class="text-muted mb-0">Manage your partner cinemas.</p>
+    <header class="section-header d-flex justify-content-between align-items-center">
+      <div>
+        <p class="eyebrow">Partners</p>
+        <h1 class="mb-1">Cinema Network</h1>
+        <p class="text-muted mb-0">Manage your partner cinemas.</p>
+      </div>
+      <router-link :to="{ name: 'adminNewVenue' }">
+        <button class="admin-pill-btn btn btn-primary">+ New Venue</button>
+      </router-link>
     </header>
 
     <div class="row g-4">

@@ -24,4 +24,24 @@ class AdminVenueController extends Controller
             ];
         })->values();
     }
+
+    public function store(Request $request)
+    {
+        // dd($request->all());
+        $data = $request->validate([
+            'venue_name'    => 'required|string|max:100',
+            'location'      => 'required|string|max:100'
+        ]);
+
+        Venue::create([
+        'venue_name' => $data['venue_name'],
+        'location'   => $data['location'],
+        'venue_type' => 'Cinema', 
+        ]);
+
+        return response()->json([
+            'message' => 'Venue created successfully'
+        ], 201);
+    }
+
 }

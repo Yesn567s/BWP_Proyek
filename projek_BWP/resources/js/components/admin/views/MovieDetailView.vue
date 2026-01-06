@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <section class="admin-section">
     <header class="section-header d-flex align-items-center justify-content-between flex-wrap gap-3">
       <div>
@@ -93,7 +93,62 @@
       </div>
     </div>
   </section>
+</template> -->
+
+<template>
+  <section class="admin-section">
+    <header class="section-header d-flex justify-content-between align-items-center">
+      <div>
+        <p class="eyebrow">Movie</p>
+        <h1 class="mb-1">{{ movie?.title || 'Movie Details' }}</h1>
+        <p class="text-muted mb-0">Manage movie information.</p>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" @click="goBack">← Back</button>
+        <button class="btn btn-danger" @click="deleteMovie">Delete</button>
+      </div>
+    </header>
+
+    <div v-if="loading">Loading...</div>
+
+    <div v-else class="panel-card">
+      <form @submit.prevent="updateMovie">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Title</label>
+            <input class="form-control" v-model="form.title" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Genre</label>
+            <input class="form-control" v-model="form.genre" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Base Price</label>
+            <input type="number" class="form-control" v-model="form.base_price" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Age Rating</label>
+            <input class="form-control" v-model="form.age_rating" />
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" rows="4" v-model="form.description"></textarea>
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-end gap-3">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </section>
 </template>
+
 
 <script setup>
 import { onMounted, ref, reactive, computed } from 'vue'
