@@ -10,12 +10,15 @@ import MovieCatalogView from './components/admin/views/MovieCatalogView.vue';
 import MovieDetailView from './components/admin/views/MovieDetailView.vue';
 import CinemaCatalogView from './components/admin/views/CinemaCatalogView.vue';
 import FoodCatalogView from './components/admin/views/FoodCatalogView.vue';
+import AddFoodView from './components/admin/views/AddFoodView.vue';
+import EditFoodView from './components/admin/views/EditFoodView.vue';
 import PlaceholderView from './components/admin/views/PlaceholderView.vue';
 import NewMovieView from './components/admin/views/NewMovieView.vue';
 import CinemaPage from './components/admin/views/CinemaPage.vue';
 import NewVenue from './components/admin/views/NewVenue.vue';
 import TixFunCatalogView from './components/admin/views/TixFunCatalog.vue';
 import AddTixFunView from './components/admin/views/AddTixFunView.vue';
+import TixFunDetailView from './components/admin/views/TixFunDetailView.vue';
 
 const router = createRouter({
   history: createWebHistory('/admin'),
@@ -30,7 +33,10 @@ const router = createRouter({
         { path: 'cinemaCatalog', name: 'adminCinemaCatalog', component: CinemaCatalogView },
         { path: 'tixFunCatalog', name: 'adminTixFunCatalog', component: TixFunCatalogView },
         { path: 'addTixFun', name: 'adminAddTixFun', component: AddTixFunView },
+        { path: 'tixFunCatalog/:id', name: 'adminTixFunDetail', component: TixFunDetailView },
         { path: 'foodCatalog', name: 'adminFoodCatalog', component: FoodCatalogView },
+        { path: 'foodCatalog/add', name: 'adminAddFood', component: AddFoodView },
+        { path: 'foodCatalog/:id/edit', name: 'adminEditFood', component: EditFoodView, props: true },
         { path: 'blogList', name: 'adminBlogList', component: PlaceholderView, props: { title: 'Blogs Lists' } },
         { path: 'transactionLog', name: 'adminTransactionLog', component: PlaceholderView, props: { title: 'Transaction Log' } },
         { path: 'newMovies', name: 'adminNewMovies', component: NewMovieView },
