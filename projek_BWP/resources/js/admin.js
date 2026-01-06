@@ -18,6 +18,7 @@ import TixFunCatalogView from './components/admin/views/TixFunCatalog.vue';
 import AddTixFunView from './components/admin/views/AddTixFunView.vue';
 import BlogPage from './components/admin/views/blogPage.vue';
 import BlogEdit from './components/admin/views/blogEdit.vue';
+import NewBlogPage from './components/admin/views/newBlogPage.vue';
 
 const router = createRouter({
   history: createWebHistory('/admin'),
@@ -39,6 +40,7 @@ const router = createRouter({
         { path: 'cinemas/:id', name: 'adminCinemaPage', component: CinemaPage },
         { path: 'newVenue', name: 'adminNewVenue', component: NewVenue },
         { path: '/admin/blog/:id', name: 'adminBlogEdit', component: BlogEdit },
+        { path: '/admin/blog/new', name: 'adminBlogNew', component: NewBlogPage },
       ]
     }
   ]

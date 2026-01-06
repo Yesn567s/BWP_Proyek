@@ -15,7 +15,6 @@ class PostController extends Controller
         );
     }
 
-    // POST create new post
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -38,19 +37,19 @@ class PostController extends Controller
     }
 
     public function show($id)
-    {
-        $post = DB::table('post')
-            ->where('post_id', $id)
-            ->first();
+{
+    $post = DB::table('post')
+        ->where('post_id', $id)
+        ->first();
 
-        if (!$post) {
-            return response()->json([
-                'message' => 'Post not found'
-            ], 404);
-        }
-
-        return response()->json($post);
+    if (!$post) {
+        return response()->json([
+            'message' => 'Post not found'
+        ], 404);
     }
+
+    return response()->json($post);
+}
 
 
     public function update(Request $request, $id)

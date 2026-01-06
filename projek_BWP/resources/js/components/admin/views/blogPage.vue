@@ -9,9 +9,11 @@
         </p>
       </div>
 
-      <button class="btn btn-primary rounded-pill">
-        + Write New Post
-      </button>
+      <router-link :to="{ name: 'adminBlogNew' }">
+        <button class="btn btn-primary rounded-pill">
+          + Write New Post
+        </button>
+      </router-link>
     </div>
 
     <!-- BLOG GRID -->
