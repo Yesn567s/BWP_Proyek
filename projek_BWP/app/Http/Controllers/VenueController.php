@@ -37,10 +37,30 @@ class VenueController extends Controller
     public function show($id)
     {
         return response()->json(
-            Venue::with('studios.schedules')
+            Venue::with('studios.schedules.product')
                 ->where('venue_id', $id)
                 ->firstOrFail()
         );
     }
+
+//     public function show($id)
+// {
+//     $venue = Venue::with('studios.schedules.product')
+//         ->where('venue_id', $id)
+//         ->firstOrFail();
+
+//     foreach ($venue->studios as $studio) {
+//         foreach ($studio->schedules as $schedule) {
+//             logger([
+//                 'schedule_id' => $schedule->schedule_id,
+//                 'product_id' => $schedule->product_id,
+//                 'product' => $schedule->product,
+//             ]);
+//         }
+//     }
+
+//     return response()->json($venue);
+// }
+
 
 }
