@@ -44,6 +44,19 @@ const fetchSeats = async () => {
 		schedule.value = data.schedule
 		seatRows.value = data.rows || {}
 		pruneSelectedSeats()
+		if (schedule.value.category_id > 1 && schedule.value.category_id != 7) {
+			localStorage.clear();
+			const data = {
+			'scheduleId': resolvedScheduleId.value,
+			'id': schedule.value.product_id,
+			'name': schedule.value.name,
+			'totalPrice': schedule.value.price*1,
+		};
+
+		console.log('Checkout data:', data);
+		localStorage.setItem('cart', JSON.stringify(data));
+		router.push({ name: 'checkout' });	
+		}
 	} catch (err) {
 		console.error(err)
 		error.value = 'Unable to load seat availability right now.'

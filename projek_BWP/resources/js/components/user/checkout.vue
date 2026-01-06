@@ -16,14 +16,18 @@
                 <p>Your cart is empty</p>
               </div>
               <div v-else>
-                <div v-for="(seat, index) in cartItems" :key="index" class="d-flex justify-content-between align-items-center pb-3 border-bottom">
+                <div v-for="(item, index) in cartItems" :key="index" class="d-flex justify-content-between align-items-center pb-3 border-bottom">
                   <div>
-                    <h6 class="fw-bold mb-1">Seat Booking</h6>
-                    <small class="text-muted">
-                      Seat: {{ seat.row }}{{ seat.number }} (ID: {{ seat.id }})
+                    <h6 class="fw-bold mb-1" v-if="item.type === 'seat'">Seat Booking</h6>
+                    <h6 class="fw-bold mb-1" v-else>Ticket Booking</h6>
+                    <small class="text-muted" v-if="item.type === 'seat'">
+                      Seat: {{ item.row }}{{ item.number }} (ID: {{ item.id }})
+                    </small>
+                    <small class="text-muted" v-else>
+                      {{ item.name }} (ID: {{ item.id }})
                     </small>
                   </div>
-                  <span class="fw-bold">Rp {{ formatPrice(pricePerSeat) }}</span>
+                  <span class="fw-bold">Rp {{ formatPrice(item.price || pricePerSeat) }}</span>
                 </div>
 
                 <!-- Subtotal, Tax, Total -->
@@ -171,6 +175,7 @@ const successOrderId = ref(null);
 // Computed properties
 const pricePerSeat = computed(() => {
   if (!cart.value || cartItems.value.length === 0) return 0;
+  console.log('Calculating pricePerSeat:', cartItems.value.length);
   return cart.value.totalPrice / cartItems.value.length;
 });
 
@@ -193,6 +198,12 @@ const discountAmount = computed(() => {
 });
 
 const totalPrice = computed(() => {
+  console.log('Calculating totalPrice:', {
+    subtotal: subtotal.value,
+    tax: tax.value,
+    discount: discountAmount.value,
+    total: subtotal.value + tax.value - discountAmount.value
+  });
   return subtotal.value + tax.value - discountAmount.value;
 });
 
@@ -306,7 +317,27 @@ onMounted(() => {
     try {
       cart.value = JSON.parse(savedCart);
       scheduleId.value = cart.value.scheduleId;
-      cartItems.value = cart.value.seats || [];
+      
+      // Handle both seat and ticket items
+      let items = [];
+      if (cart.value.seats && Array.isArray(cart.value.seats) && cart.value.seats.length > 0) {
+        // Seats from seat booking
+        items = cart.value.seats.map(seat => ({
+          ...seat,
+          type: 'seat'
+        }));
+      } else if (cart.value.id && cart.value.name) {
+        // Single ticket item
+        items = [{
+          id: cart.value.id,
+          name: cart.value.name,
+          type: 'item',
+          price: cart.value.totalPrice
+        }];
+      }
+      
+      cartItems.value = items;
+      console.log('Loaded cart items:', cartItems.value);
     } catch (err) {
       console.error('Error parsing cart:', err);
       alert('Invalid cart data');
@@ -317,7 +348,7 @@ onMounted(() => {
   // If no items in cart, redirect
   if (cartItems.value.length === 0) {
     setTimeout(() => {
-      alert('Your cart is empty. Please select seats first.');
+      alert('Your cart is empty. Please select items first.');
       router.push('/');
     }, 500);
   }
