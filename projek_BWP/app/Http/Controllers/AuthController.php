@@ -132,6 +132,15 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Safeguard: Clear conflicting sessions based on user role
+        if ($user->role === 'admin') {
+            // Admin logging in - clear any user sessions
+            session()->forget(['user_id', 'user_name']);
+        } else {
+            // Regular user logging in - clear any admin sessions
+            session()->forget(['user_id', 'user_name']);
+        }
+
         // Store session
         session([
             'user_id'   => $user->user_id,

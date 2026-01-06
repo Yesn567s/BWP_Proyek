@@ -12,7 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Register route middleware for authentication and role checking
+        $middleware->alias([
+            'auth' => \App\Http\Middleware\AuthMiddleware::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
+            'user' => \App\Http\Middleware\CheckUserRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
