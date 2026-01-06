@@ -22,7 +22,7 @@ class AdminMovieController extends Controller
         'poster'           => 'required|image|mimes:jpg,jpeg,png',
 
         // ✅ NEW
-        'venue_id'         => 'required|exists:venues,id',
+        'venue_id'         => 'required|exists:venues,venue_id',
         'studio_ids'       => 'required|array|min:1',
         'studio_ids.*'     => 'exists:studios,studio_id',
     ]);
@@ -90,6 +90,9 @@ class AdminMovieController extends Controller
 
     private function generateSchedules($productId, $studioIds, $days, $duration)
 {
+    $days     = (int) $days;
+    $duration = (int) $duration;
+
     $startDate = Carbon::now()->startOfDay()->addDays(1);
     $inserted = 0;
 
