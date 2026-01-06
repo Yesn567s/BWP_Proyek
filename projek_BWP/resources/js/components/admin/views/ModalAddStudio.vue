@@ -46,8 +46,7 @@
               type="number"
               v-model="form.capacity"
               class="form-control"
-              placeholder="e.g. 120"
-            />
+              placeholder="e.g. 32" step="8" max="56" min="8"/>
           </div>
 
         </div>
