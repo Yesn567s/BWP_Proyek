@@ -15,6 +15,7 @@ import NewMovieView from './components/admin/views/NewMovieView.vue';
 import CinemaPage from './components/admin/views/CinemaPage.vue';
 import NewVenue from './components/admin/views/NewVenue.vue';
 import TixFunCatalogView from './components/admin/views/TixFunCatalog.vue';
+import AddTixFunView from './components/admin/views/AddTixFunView.vue';
 
 const router = createRouter({
   history: createWebHistory('/admin'),
@@ -28,6 +29,7 @@ const router = createRouter({
         { path: 'movies/:id', name: 'adminMovieDetail', component: MovieDetailView },
         { path: 'cinemaCatalog', name: 'adminCinemaCatalog', component: CinemaCatalogView },
         { path: 'tixFunCatalog', name: 'adminTixFunCatalog', component: TixFunCatalogView },
+        { path: 'addTixFun', name: 'adminAddTixFun', component: AddTixFunView },
         { path: 'foodCatalog', name: 'adminFoodCatalog', component: FoodCatalogView },
         { path: 'blogList', name: 'adminBlogList', component: PlaceholderView, props: { title: 'Blogs Lists' } },
         { path: 'transactionLog', name: 'adminTransactionLog', component: PlaceholderView, props: { title: 'Transaction Log' } },

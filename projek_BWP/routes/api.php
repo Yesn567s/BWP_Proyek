@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminMovieController;
 use App\Http\Controllers\AdminScheduleController;
+use App\Http\Controllers\AdminTixFunController;
 use App\Http\Controllers\AdminVenueController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodController;
@@ -55,8 +56,10 @@ Route::get('/cinema-partners', [VenueController::class, 'partners']);
 
 Route::post('/admin/movies', [AdminMovieController::class, 'store']);
 Route::put('/admin/movies/{product}', [AdminMovieController::class, 'update']);
+Route::delete('/admin/movies/{product}', [AdminMovieController::class, 'destroy']);
 Route::get('/cinema-partners', [VenueController::class, 'partners']);
 Route::get('/venues/{id}', [VenueController::class, 'show']);
 Route::post('venues/{venue}/studios',[StudioController::class, 'store']);
 Route::get('/admin/venues-with-studios', [AdminVenueController::class, 'venuesWithStudios']);
 Route::post('/admin/venues', [AdminVenueController::class, 'store']);
+Route::post('/admin/tixfun', [AdminTixFunController::class, 'store']);

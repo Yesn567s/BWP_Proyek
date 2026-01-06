@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <section class="admin-section">
     <header class="section-header d-flex align-items-center justify-content-between flex-wrap gap-3">
       <div>
@@ -28,6 +28,7 @@
             <span class="badge bg-secondary">Price: {{ formatPrice(currentPrice) }}</span>
             <div class="ms-auto d-flex gap-2">
               <button v-if="!editing" type="button" class="btn btn-primary btn-sm" @click="startEditing">Edit</button>
+              <button v-if="!editing" type="button" class="btn btn-danger btn-sm" @click="confirmDelete">Delete</button>
               <div v-else class="d-flex gap-2">
                 <button type="button" class="btn btn-light btn-sm" @click="cancelEditing">Cancel</button>
                 <button type="button" class="btn btn-success btn-sm" :disabled="saving" @click="handleSave">
@@ -91,60 +92,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </section>
-</template> -->
-
-<template>
-  <section class="admin-section">
-    <header class="section-header d-flex justify-content-between align-items-center">
-      <div>
-        <p class="eyebrow">Movie</p>
-        <h1 class="mb-1">{{ movie?.title || 'Movie Details' }}</h1>
-        <p class="text-muted mb-0">Manage movie information.</p>
-      </div>
-
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary" @click="goBack">← Back</button>
-        <button class="btn btn-danger" @click="deleteMovie">Delete</button>
-      </div>
-    </header>
-
-    <div v-if="loading">Loading...</div>
-
-    <div v-else class="panel-card">
-      <form @submit.prevent="updateMovie">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Title</label>
-            <input class="form-control" v-model="form.title" />
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Genre</label>
-            <input class="form-control" v-model="form.genre" />
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Base Price</label>
-            <input type="number" class="form-control" v-model="form.base_price" />
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Age Rating</label>
-            <input class="form-control" v-model="form.age_rating" />
-          </div>
-
-          <div class="col-12">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" rows="4" v-model="form.description"></textarea>
-          </div>
-        </div>
-
-        <div class="mt-4 d-flex justify-content-end gap-3">
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-      </form>
     </div>
   </section>
 </template>
@@ -273,6 +220,26 @@ const handleSave = async () => {
     alert('Failed to update movie')
   } finally {
     saving.value = false
+  }
+}
+
+const confirmDelete = () => {
+  if (!movie.value) return
+  const confirmed = confirm(`Are you sure you want to delete "${movie.value.title}"? This action cannot be undone.`)
+  if (confirmed) {
+    deleteMovie()
+  }
+}
+
+const deleteMovie = async () => {
+  if (!movie.value) return
+  try {
+    await axios.delete(`/api/admin/movies/${movie.value.id}`)
+    alert('Movie deleted successfully')
+    router.push({ name: 'adminMovieCatalog' })
+  } catch (err) {
+    console.error('Failed to delete movie', err)
+    alert('Failed to delete movie')
   }
 }
 </script>

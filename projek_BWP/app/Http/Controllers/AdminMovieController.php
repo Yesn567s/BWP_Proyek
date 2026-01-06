@@ -218,5 +218,49 @@ class AdminMovieController extends Controller
     
     return $inserted;
     }
+
+    public function destroy(int $productId)
+    {
+        DB::beginTransaction();
+
+        try {
+            $movie = DB::table('ticket_products')
+                ->where('product_id', $productId)
+                ->where('category_id', 1)
+                ->first();
+
+            if (!$movie) {
+                return response()->json([
+                    'error' => 'Movie not found'
+                ], 404);
+            }
+
+            DB::table('schedules')
+                ->where('product_id', $productId)
+                ->delete();
+
+            DB::table('product_media')
+                ->where('product_id', $productId)
+                ->delete();
+
+            DB::table('ticket_products')
+                ->where('product_id', $productId)
+                ->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Movie deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'error' => 'Failed to delete movie',
+                'detail' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
 

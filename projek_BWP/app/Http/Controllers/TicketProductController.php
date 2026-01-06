@@ -38,7 +38,7 @@ class TicketProductController extends Controller
             ->join('ticket_categories as tc', 'tp.category_id', '=', 'tc.category_id')
             ->leftJoin('product_media as pm', function ($join) {
                 $join->on('pm.product_id', '=', 'tp.product_id')
-                    ->where('pm.media_type', 'poster');
+                    ->whereIn('pm.media_type', ['poster', 'image']);
             })
             ->select(
                 'tp.product_id as id',
