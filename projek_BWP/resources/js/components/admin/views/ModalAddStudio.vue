@@ -14,10 +14,8 @@
           <button class="close-btn" @click="close">×</button>
         </div>
 
-        <!-- BODY -->
         <div class="modal-body">
 
-          <!-- STUDIO NAME -->
           <div class="form-group">
             <label>Studio Name</label>
             <input
@@ -28,7 +26,6 @@
             />
           </div>
 
-          <!-- TYPE (DEFAULT & DISABLED) -->
           <div class="form-group">
             <label>Type</label>
             <input
@@ -39,7 +36,6 @@
             />
           </div>
 
-          <!-- CAPACITY -->
           <div class="form-group">
             <label>Capacity (Seats)</label>
             <input
@@ -51,7 +47,6 @@
 
         </div>
 
-        <!-- FOOTER -->
         <div class="modal-footer">
           <button
             class="btn btn-light rounded-pill"

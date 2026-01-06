@@ -15,7 +15,6 @@ class AdminMovieController extends Controller
         'title'            => 'required|string|max:100',
         'genre'            => 'required|string|max:200',
         'description'      => 'required|string|max:1000',
-        'description'      => 'required|string|max:1000',
         'releaseDate'      => 'required|string',
         'playingTime'      => 'required|integer|min:1|max:30',
         'duration_minutes' => 'required|integer|min:60|max:240',
@@ -23,8 +22,6 @@ class AdminMovieController extends Controller
         'price'            => 'required|integer|min:1000|max:100000000',
         'poster'           => 'required|image|mimes:jpg,jpeg,png',
 
-        // ✅ NEW
-        'venue_id'         => 'required|exists:venues,venue_id',
         'studio_ids'       => 'required|array|min:1',
         'studio_ids.*'     => 'exists:studios,studio_id',
     ]);
