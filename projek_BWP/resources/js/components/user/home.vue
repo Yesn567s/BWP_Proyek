@@ -445,21 +445,21 @@ onMounted(async () => {
   categories.value = res.data
 })
 
-const scrollRef = ref(null)
+const nowPlayingRef = ref(null)
+const upcomingRef = ref(null)
 
-const scroll = (direction) => {
-  if (!scrollRef.value) return
-
-  const el = scrollRef.value
+const scrollList = (targetRef, direction) => {
+  if (!targetRef?.value) return
+  const el = targetRef.value
   const amount = el.clientWidth / 2
-
   el.scrollTo({
-    left: direction === 'left'
-      ? el.scrollLeft - amount
-      : el.scrollLeft + amount,
+    left: direction === 'left' ? el.scrollLeft - amount : el.scrollLeft + amount,
     behavior: 'smooth'
   })
 }
+
+const scrollNow = (direction) => scrollList(nowPlayingRef, direction)
+const scrollUpcoming = (direction) => scrollList(upcomingRef, direction)
 
 const coomingSoon = ref([])
 
@@ -604,9 +604,9 @@ onMounted(async () => {
 
     <div class="position-relative deals-carousel">
       <!-- LEFT ARROW -->
-      <button class="carousel-arrow left" @click="scroll('left')">‹</button>
+      <button class="carousel-arrow left" @click="scrollNow('left')">‹</button>
       <!-- SCROLL AREA -->
-      <div ref="scrollRef" class="d-flex gap-3 overflow-auto pb-3 deals-track"
+      <div ref="nowPlayingRef" class="d-flex gap-3 overflow-auto pb-3 deals-track"
       >
         <div class="col-md-3" v-for="movie in movies" :key="movie.id">
           <div class="card shadow-sm mb-4 movie-card">
@@ -623,7 +623,7 @@ onMounted(async () => {
       </div>
 
       <!-- RIGHT ARROW -->
-      <button class="carousel-arrow right" @click="scroll('right')">›</button>
+      <button class="carousel-arrow right" @click="scrollNow('right')">›</button>
     </div>
 
     <!-- upcoming movies -->
@@ -632,11 +632,11 @@ onMounted(async () => {
     <div class="position-relative deals-carousel">
 
       <!-- LEFT -->
-      <button class="carousel-arrow left" @click="scroll('left')">‹</button>
+      <button class="carousel-arrow left" @click="scrollUpcoming('left')">‹</button>
 
       <!-- SCROLL -->
-      <div ref="scrollRef" class="d-flex gap-3 overflow-auto pb-3 deals-track">
-        <div class="col-md-3" v-for="movie in coomingSoon":key="movie.product_id">
+      <div ref="upcomingRef" class="d-flex gap-3 overflow-auto pb-3 deals-track">
+        <div class="col-md-3" v-for="movie in coomingSoon" :key="movie.product_id">
           <div class="card shadow-sm mb-4 movie-card">
             <div class="poster-wrapper">
               <img :src="movie.poster || '/images/posters/default.jpg'" class="movie-poster" alt="Movie Poster"/>
@@ -655,7 +655,7 @@ onMounted(async () => {
       </div>
 
       <!-- RIGHT -->
-      <button class="carousel-arrow right" @click="scroll('right')">›</button>
+      <button class="carousel-arrow right" @click="scrollUpcoming('right')">›</button>
     </div>
   </div>
 
