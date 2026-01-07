@@ -15,7 +15,7 @@ class VenueController extends Controller
                 'venue_name',
                 'venue_type',
                 'location'
-            )->where('venue_type', 'Food & Beverage')
+            )->where('venue_type', 'Cinema')
             ->get()
         );
     }
