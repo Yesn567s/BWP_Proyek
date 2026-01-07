@@ -202,6 +202,7 @@ const handleCheckout = async () => {
 		// Send checkout data to backend
 		const data = {
 			'scheduleId': resolvedScheduleId.value,
+			'id': schedule.value.product_id,
 			'seats': selectedSeats.value,
 			'totalPrice': totalPrice.value,
 		};

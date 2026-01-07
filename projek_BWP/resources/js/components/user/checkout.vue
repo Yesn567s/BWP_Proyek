@@ -175,7 +175,6 @@ const successOrderId = ref(null);
 // Computed properties
 const pricePerSeat = computed(() => {
   if (!cart.value || cartItems.value.length === 0) return 0;
-  console.log('Calculating pricePerSeat:', cartItems.value.length);
   return cart.value.totalPrice / cartItems.value.length;
 });
 
@@ -198,12 +197,6 @@ const discountAmount = computed(() => {
 });
 
 const totalPrice = computed(() => {
-  console.log('Calculating totalPrice:', {
-    subtotal: subtotal.value,
-    tax: tax.value,
-    discount: discountAmount.value,
-    total: subtotal.value + tax.value - discountAmount.value
-  });
   return subtotal.value + tax.value - discountAmount.value;
 });
 
@@ -251,8 +244,9 @@ const generatePayment = async () => {
     // Prepare seat items with schedule and seat information
     const seatItems = cartItems.value.map(seat => ({
       schedule_id: scheduleId.value,
+      product_id: seat.product_id || cart.value.id,
       seat_id: seat.id,
-      price: pricePerSeat.value
+      price: seat.price || pricePerSeat.value
     }));
 
     // Create order data
@@ -281,27 +275,31 @@ const completeCheckout = async () => {
     // Prepare seat items with schedule and seat information
     const seatItems = cartItems.value.map(seat => ({
       schedule_id: scheduleId.value,
+      product_id: cart.value.id,
       seat_id: seat.id,
-      price: pricePerSeat.value
+      price: seat.price || pricePerSeat.value
     }));
-
     // Submit order to database
     const response = await axios.post('/api/orders', { //API di CheckoutController nanti
       items: seatItems,
-      total_price: cart.value.totalPrice,
+      total_price: cart.value.totalPrice
     }); // Return order_id baru
 
     successOrderId.value = response.data.order_id;
-    showSuccessModal.value = true;
+    console.log(response.data);
+    showSuccessModal.value = response.data.success;
 
     // Clear cart from localStorage
     localStorage.removeItem('cart');
     cartItems.value = [];
     qrCodeUrl.value = null;
 
-    setTimeout(() => {
+    if(showSuccessModal.value){
+      setTimeout(() => {
       router.push('/userTickets'); // Ke userTickets atau ke home
-    }, 3000);
+    },5000);
+    }
+    
   } catch (error) {
     console.error('Error completing checkout:', error);
     alert('Failed to complete order. Please try again.');

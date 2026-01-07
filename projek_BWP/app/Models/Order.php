@@ -15,10 +15,11 @@ class Order extends Model
         'total_price',
     ];
 
+    public $timestamps = false;
     protected $dates = [
         'order_date',
-        'created_at',
-        'updated_at',
+        // 'created_at',
+        // 'updated_at',
     ];
 
     public function user()
