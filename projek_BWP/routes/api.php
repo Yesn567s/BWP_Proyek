@@ -51,6 +51,7 @@ Route::post('/admin/schedules', [AdminScheduleController::class, 'store']);
 
 Route::get('/checkout', [CheckoutController::class, 'index']);
 Route::post('/orders', [CheckoutController::class, 'orders']);
+Route::get('/vouchers/{id}', [CheckoutController::class, 'voucher']);
 
 Route::get('/food/venues', [VenueController::class, 'foodVenues']);
 Route::get('/food', [FoodController::class, 'allFood']);

@@ -223,6 +223,7 @@ const applyVoucher = async () => {
     loading.value = true;
     const res = await axios.get(`/api/vouchers/${voucherCode.value}`);
     appliedVoucher.value = res.data;
+    console.log('Applied voucher:', res.data);
     voucherMessage.value = 'Voucher applied successfully!';
   } catch (error) {
     voucherMessage.value = 'Invalid voucher code';

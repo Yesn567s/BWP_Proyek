@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Session;
+use function Laravel\Prompts\error;
 
 
 
@@ -21,10 +22,20 @@ class CheckoutController extends Controller
         return null;
     }
 
-    // function cart(Request $request){
-    //     $cart = $request->input('cart');
-    //     return response()->json(['cart' => $cart]);
-    // }
+    function voucher($id){
+        $voucher = DB::table('vouchers')->where('code', $id)->first();
+        if($voucher){
+            return response()->json([
+                'voucher_id' => $voucher->voucher_id,
+                'code' => $voucher->code,
+                'description' => $voucher->description,
+                'discount_type' => $voucher->discount_type,
+                'discount_value' => $voucher->discount_value,
+                'is_active' => $voucher->is_active,
+            ]);
+        }
+        return throw new \Exception('Voucher not found');
+    }
 
     private function generateQRCode()
     {
