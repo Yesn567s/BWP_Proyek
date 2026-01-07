@@ -50,6 +50,10 @@ class MovieController extends Controller
 
     private function formatMovie($movie)
     {
+        $firstSchedule = $movie->schedules()
+            ->orderBy('start_datetime')
+            ->first();
+
         return [
             'id'     => $movie->product_id,
             'title'  => $movie->name,
@@ -59,11 +63,13 @@ class MovieController extends Controller
             'rating' => $movie->rating,
             'duration' => $movie->duration_minutes,
             'age_rating' => $movie->age_rating,
+            'release_date' => $firstSchedule?->start_datetime,
             'poster' => $movie->poster
                 ? Storage::url($movie->poster->media_url)
                 : asset('images/posters/default.jpg'),
         ];
     }
+
 
     public function trailers()
     {

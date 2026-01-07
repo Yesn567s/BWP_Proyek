@@ -388,6 +388,32 @@
   height: 50px;
 }
 
+/* Trailer Modal Styles */
+.trailer-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.trailer-content {
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  position: relative;
+}
+
+.trailer-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+}
+
 </style>
 
 <script setup>
@@ -490,8 +516,10 @@ const getYoutubeId = (url) => {
 }
 
 const openTrailer = (youtubeUrl) => {
-  activeVideo.value = getYoutubeId(youtubeUrl)
+  const id = getYoutubeId(youtubeUrl)
+  activeVideo.value = id
 }
+
 
 const blogs = ref([]);
 
@@ -647,7 +675,12 @@ onMounted(async () => {
               <p class="text-muted small movie-desc">{{ movie.desc }}</p>
 
               <!-- RELEASE DATE -->
-              <small class="text-primary fw-bold">📅: {{ new Date(movie.release_date).toLocaleDateString() }}</small>
+              <small class="text-primary fw-bold" v-if="movie.release_date">
+                📅: {{ formatDate(movie.release_date) }}
+              </small>
+              <small class="text-muted" v-else>
+                📅: TBA
+              </small>
             </div>
 
           </div>
@@ -664,9 +697,9 @@ onMounted(async () => {
   <h3 class="fw-bold mb-3 mt-5">Latest Trailers</h3>
 
   <div class="d-flex gap-4 overflow-auto pb-3">
-    <div v-for="movie in trailers" :key="movie.id" class="trailer-card" @click="openTrailer(movie.youtube_url)">
+    <div v-for="movie in trailers" :key="movie.id" class="trailer-card" @click="movie.youtube_url && openTrailer(movie.youtube_url)">
       <div class="trailer-thumb">
-        <img :src="`https://img.youtube.com/vi/${getYoutubeId(movie.youtube_url)}/hqdefault.jpg`" class="trailer-img"/>
+        <img v-if="getYoutubeId(movie.youtube_url)" :src="`https://img.youtube.com/vi/${getYoutubeId(movie.youtube_url)}/hqdefault.jpg`" class="trailer-img"/>
 
         <div class="overlay">
           <div class="play-btn"><i class="bi bi-play-fill" style="opacity: 1;"></i></div>
@@ -677,6 +710,19 @@ onMounted(async () => {
       <p class="text-muted small trailer-desc">{{ movie.description }}</p>
     </div>
   </div>
+
+  <!-- Trailer Modal -->
+  <div v-if="activeVideo" class="trailer-modal" @click.self="activeVideo = null">
+    <div class="trailer-content">
+      <iframe
+        :src="`https://www.youtube.com/embed/${activeVideo}?autoplay=1`"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+
 </div>
 
 <!-- blog -->
