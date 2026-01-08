@@ -115,7 +115,7 @@ const filteredUpcoming = computed(() =>
       <!-- advance ticket sales -->
       <div class="row align-items-center mb-4 g-3">
         <div class="col-md">
-          <h1 class="fw-bold">Advance Ticket Sales</h1>
+          <h1 class="fw-bold">Upcoming Ticket Sales</h1>
           <p class="text-muted mb-0">yuhu beli tiket yg mo tayang disini </p>
         </div>
       </div>

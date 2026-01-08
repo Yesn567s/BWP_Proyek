@@ -19,15 +19,15 @@
                 <div v-for="(item, index) in cartItems" :key="index" class="d-flex justify-content-between align-items-center pb-3 border-bottom">
                   <div>
                     <h6 class="fw-bold mb-1" v-if="item.type === 'seat'">Seat Booking</h6>
-                    <h6 class="fw-bold mb-1" v-else>Ticket Booking</h6>
+                    <h6 class="fw-bold mb-1" v-else>Item</h6>
                     <small class="text-muted" v-if="item.type === 'seat'">
                       Seat: {{ item.row }}{{ item.number }} (ID: {{ item.id }})
                     </small>
                     <small class="text-muted" v-else>
-                      {{ item.name }} (ID: {{ item.id }})
+                      {{ item.title || item.name }} (Qty: {{ item.quantity || 1 }}) (ID: {{ item.id }})
                     </small>
                   </div>
-                  <span class="fw-bold">Rp {{ formatPrice(item.price || pricePerSeat) }}</span>
+                  <span class="fw-bold">Rp {{ formatPrice((item.price ?? pricePerSeat) * (item.quantity || 1)) }}</span>
                 </div>
 
                 <!-- Subtotal, Tax, Total -->
@@ -156,10 +156,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
+const route = useRoute();
 const router = useRouter();
 const cart = ref(null);
 const cartItems = ref([]);
@@ -171,15 +172,31 @@ const voucherMessage = ref('');
 const appliedVoucher = ref(null);
 const showSuccessModal = ref(false);
 const successOrderId = ref(null);
+const checkoutSource = ref(null); // 'seat' or 'food'
+
+// Ensure axios sends session cookie + CSRF for web middleware
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+if (csrfToken) {
+  axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+}
+axios.defaults.withCredentials = true;
+
+const seatCount = computed(() => cartItems.value.filter(item => item.type === 'seat').length);
 
 // Computed properties
 const pricePerSeat = computed(() => {
-  if (!cart.value || cartItems.value.length === 0) return 0;
-  return cart.value.totalPrice / cartItems.value.length;
+  const seatWithPrice = cartItems.value.find(item => item.type === 'seat' && item.price);
+  if (seatWithPrice) return seatWithPrice.price;
+  if (!cart.value || seatCount.value === 0) return 0;
+  return cart.value.totalPrice / seatCount.value;
 });
 
 const subtotal = computed(() => {
-  return cart.value?.totalPrice || 0;
+  return cartItems.value.reduce((sum, item) => {
+    const qty = item.quantity ?? 1;
+    const unitPrice = item.price ?? pricePerSeat.value;
+    return sum + unitPrice * qty;
+  }, 0);
 });
 
 const tax = computed(() => {
@@ -233,6 +250,22 @@ const applyVoucher = async () => {
   }
 };
 
+const buildOrderItems = () => {
+  return cartItems.value.flatMap(item => {
+    const qty = item.quantity ?? 1;
+    const unitPrice = item.price ?? pricePerSeat.value;
+    const isSeat = item.type === 'seat';
+
+    return Array.from({ length: qty }).map(() => ({
+      schedule_id: isSeat ? scheduleId.value : null,
+      product_id: !isSeat ? item.id : null,
+      seat_id: isSeat ? item.id : null,
+      price: unitPrice,
+      quantity: 1
+    }));
+  });
+};
+
 const generatePayment = async () => {
   if (cartItems.value.length === 0) {
     alert('Your cart is empty');
@@ -241,25 +274,15 @@ const generatePayment = async () => {
 
   try {
     loading.value = true;
+    const orderItems = buildOrderItems();
 
-    // Prepare seat items with schedule and seat information
-    const seatItems = cartItems.value.map(seat => ({
-      schedule_id: scheduleId.value,
-      product_id: seat.product_id || cart.value.id,
-      seat_id: seat.id,
-      price: seat.price || pricePerSeat.value
-    }));
-
-    // Create order data
     const orderData = {
-      items: seatItems,
-      total_price: cart.value.totalPrice,
-      voucher_id: appliedVoucher.value?.voucher_id || null,
+      items: orderItems,
+      total_price: totalPrice.value,
+      voucher_id: appliedVoucher.value?.voucher_id || appliedVoucher.value?.id || null,
       discount_amount: discountAmount.value
     };
 
-    // Generate payment QR code
-    // const response = await axios.post('/api/orders/generate-payment', orderData);
     qrCodeUrl.value = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=Current_Order_${Date.now()}`;
   } catch (error) {
     console.error('Error generating payment:', error);
@@ -273,19 +296,20 @@ const completeCheckout = async () => {
   try {
     loading.value = true;
 
-    // Prepare seat items with schedule and seat information
-    const seatItems = cartItems.value.map(seat => ({
-      schedule_id: scheduleId.value,
-      product_id: cart.value.id,
-      seat_id: seat.id,
-      price: seat.price || pricePerSeat.value
-    }));
+    const orderItems = buildOrderItems();
+
+    if (!orderItems.length) {
+      alert('Your cart is empty');
+      return;
+    }
+
     // Submit order to database
-    const response = await axios.post('/api/orders', { //API di CheckoutController nanti
-      items: seatItems,
-      total_price: cart.value.totalPrice,
-      user_id: sessionStorage.getItem('user_id'),
-    }); // Return order_id baru
+    const response = await axios.post('/api/orders', {
+      items: orderItems,
+      total_price: totalPrice.value,
+      voucher_id: appliedVoucher.value?.voucher_id || appliedVoucher.value?.id || null,
+      discount_amount: discountAmount.value
+    });
 
     successOrderId.value = response.data.order_id;
     console.log(response.data);
@@ -304,40 +328,72 @@ const completeCheckout = async () => {
     
   } catch (error) {
     console.error('Error completing checkout:', error);
-    alert('Failed to complete order. Please try again.');
+    const status = error?.response?.status;
+    if (status === 401) {
+      alert('Please log in before completing your purchase.');
+      router.push('/login');
+    } else {
+      const message = error?.response?.data?.error || error?.response?.data?.message || 'Failed to complete order. Please try again.';
+      alert(message);
+    }
   } finally {
     loading.value = false;
   }
 };
 
 onMounted(() => {
-  // Load cart from localStorage (set by seats.vue)
+  // Decide single checkout source to avoid mixing seat tickets and food
   const savedCart = localStorage.getItem('cart');
-  if (savedCart) {
+  const hasQueryItems = !!route.query.items;
+
+  if (hasQueryItems) {
+    // Prioritize food checkout if query items exist
+    try {
+      const parsed = JSON.parse(route.query.items);
+      if (Array.isArray(parsed)) {
+        cartItems.value = parsed.map(item => ({
+          id: item.id,
+          name: item.title || item.name,
+          title: item.title,
+          price: Number(item.price) || 0,
+          quantity: item.quantity ?? 1,
+          type: 'food'
+        }));
+        checkoutSource.value = 'food';
+      }
+    } catch (err) {
+      console.error('Error parsing query items:', err);
+    }
+
+    // Food checkout should not keep previous seat cart
+    localStorage.removeItem('cart');
+  } else if (savedCart) {
     try {
       cart.value = JSON.parse(savedCart);
       scheduleId.value = cart.value.scheduleId;
-      
-      // Handle both seat and ticket items
-      let items = [];
+
       if (cart.value.seats && Array.isArray(cart.value.seats) && cart.value.seats.length > 0) {
-        // Seats from seat booking
-        items = cart.value.seats.map(seat => ({
+        const seatPrice = cart.value.totalPrice && cart.value.seats.length
+          ? cart.value.totalPrice / cart.value.seats.length
+          : 0;
+
+        cartItems.value = cart.value.seats.map(seat => ({
           ...seat,
-          type: 'seat'
+          type: 'seat',
+          price: seat.price ?? seatPrice,
+          quantity: 1
         }));
+        checkoutSource.value = 'seat';
       } else if (cart.value.id && cart.value.name) {
-        // Single ticket item
-        items = [{
+        cartItems.value = [{
           id: cart.value.id,
           name: cart.value.name,
           type: 'item',
-          price: cart.value.totalPrice
+          price: cart.value.totalPrice,
+          quantity: 1
         }];
+        checkoutSource.value = 'seat';
       }
-      
-      cartItems.value = items;
-      console.log('Loaded cart items:', cartItems.value);
     } catch (err) {
       console.error('Error parsing cart:', err);
       alert('Invalid cart data');
@@ -352,6 +408,12 @@ onMounted(() => {
       router.push('/');
     }, 500);
   }
+});
+
+// Leaving checkout should clear cart so it does not accumulate
+onBeforeUnmount(() => {
+  localStorage.removeItem('cart');
+  cartItems.value = [];
 });
 </script>
 

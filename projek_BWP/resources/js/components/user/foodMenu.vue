@@ -74,11 +74,6 @@
 
             <h5 class="fw-bold mt-1">{{ item.title }}</h5>
 
-            <p class="text-muted small mb-3">
-              <i class="bi bi-geo-alt me-1"></i>
-              {{ item.location }}
-            </p>
-
             <div class="d-flex justify-content-between align-items-center pt-3 border-top">
               <div>
                 <small class="text-muted fw-bold text-uppercase">Price from</small>
@@ -87,18 +82,39 @@
                 </div>
               </div>
 
-              <router-link
-                :to="{ path: '/schedule', query: { productId: item.id } }"
-              >
-                <button class="btn btn-primary rounded-pill fw-bold px-3">
-                  Order
+              <div class="quantity-stepper">
+                <button
+                  type="button"
+                  class="stepper-btn"
+                  @click="changeQuantity(item, -1)"
+                >
+                  –
                 </button>
-              </router-link>
+                <span class="stepper-value">{{ item.quantity || 0 }}</span>
+                <button
+                  type="button"
+                  class="stepper-btn"
+                  @click="changeQuantity(item, 1)"
+                >
+                  +
+                </button>
+              </div>
             </div>
 
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- CHECKOUT ACTION -->
+    <div class="d-flex justify-content-end mt-4">
+      <button
+        class="btn btn-primary btn-lg rounded-pill px-4 fw-bold"
+        :disabled="selectedItems.length === 0"
+        @click="checkout"
+      >
+        Checkout
+      </button>
     </div>
 
   </div>
@@ -130,7 +146,9 @@ onMounted(async () => {
     imageUrl: item.imageUrl,
     category: 'Food & Beverage',
     location: 'All venues',
-    category_id: 1
+    category_id: 1,
+    hasSchedule: false, // Food & Bev items don't have schedules
+    quantity: 0
   }))
 })
 
@@ -151,4 +169,59 @@ const filteredItems = computed(() => {
 
   return result
 })
+
+const selectedItems = computed(() =>
+  foods.value.filter(item => (item.quantity || 0) > 0)
+)
+
+const checkout = () => {
+  if (!selectedItems.value.length) return
+
+  router.push({ name: 'checkout', query: { items: JSON.stringify(selectedItems.value) } })
+}
+
+const changeQuantity = (item, delta) => {
+  const next = Math.max(0, (item.quantity || 0) + delta)
+  item.quantity = next
+}
 </script>
+
+<style scoped>
+.quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepper-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #dcdcdc;
+  background: #f5f5f5;
+  color: #6c6c6c;
+  font-weight: 600;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stepper-btn:hover {
+  background: #e9e9e9;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.stepper-btn:active {
+  background: #dedede;
+}
+
+.stepper-value {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+}
+</style>

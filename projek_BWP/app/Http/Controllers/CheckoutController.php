@@ -42,59 +42,111 @@ class CheckoutController extends Controller
         return 'QR-' . strtoupper(Str::random(16));
     }
 
-    public function Orders(Request $request)
+    public function orders()
     {
-        $user_id = $request->user_id;
-        try {
-            DB::beginTransaction();
+        $userId = Auth::id() ?: session('user_id');
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
 
-            // Create order
-            $order = new Order([
-                'user_id' => $user_id,
-                'order_date' => now(),
-                'total_price' => $request->total_price,
+        $orders = DB::table('orders')
+            ->where('user_id', $userId)
+            ->orderBy('order_date', 'desc')
+            ->orderBy('order_id', 'desc')
+            ->get();
+
+        return response()->json(['orders' => $orders]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'items'                  => 'required|array|min:1',
+            'items.*.schedule_id'    => 'nullable|integer|required_without:items.*.product_id',
+            'items.*.product_id'     => 'nullable|integer|required_without:items.*.schedule_id',
+            'items.*.seat_id'        => 'nullable|integer',
+            'items.*.price'          => 'required|numeric|min:0',
+            'items.*.quantity'       => 'nullable|integer|min:1',
+            'total_price'            => 'required|numeric|min:0',
+            'voucher_id'             => 'nullable|integer',
+            'discount_amount'        => 'nullable|numeric|min:0',
+        ]);
+
+        $userId = Auth::id() ?: session('user_id');
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $itemsCollection = collect($validated['items']);
+
+        $scheduleIds = $itemsCollection
+            ->pluck('schedule_id')
+            ->filter()
+            ->unique()
+            ->all();
+
+        $productIds = $itemsCollection
+            ->pluck('product_id')
+            ->filter()
+            ->unique()
+            ->all();
+
+        $scheduleProducts = DB::table('schedules')
+            ->whereIn('schedule_id', $scheduleIds)
+            ->pluck('product_id', 'schedule_id');
+
+        foreach ($scheduleIds as $sid) {
+            if (!isset($scheduleProducts[$sid])) {
+                return response()->json(['error' => 'Invalid schedule_id: ' . $sid], 422);
+            }
+        }
+
+        if (!empty($productIds)) {
+            $existingProducts = DB::table('ticket_products')
+                ->whereIn('product_id', $productIds)
+                ->pluck('product_id')
+                ->all();
+
+            $missing = array_diff($productIds, $existingProducts);
+            if (!empty($missing)) {
+                return response()->json(['error' => 'Invalid product_id: ' . implode(', ', $missing)], 422);
+            }
+        }
+
+        return DB::transaction(function () use ($validated, $userId, $scheduleProducts) {
+            $orderId = DB::table('orders')->insertGetId([
+                'user_id'     => $userId,
+                'order_date'  => now(),
+                'total_price' => $validated['total_price'],
             ]);
-            $order->save();
 
-            // Insert items dengan loop
-            foreach ($request->items as $item) {
-                $orderItem = new OrderItem([
-                    'order_id' => $order->order_id,
-                    'product_id' => $item['product_id'],
-                    'schedule_id' => $item['schedule_id'],
-                    'seat_id' => $item['seat_id'],
-                    'price' => $item['price'],
-                ]);
-                $orderItem->save();
+            $items = [];
+            foreach ($validated['items'] as $item) {
+                $unitPrice = $item['price'];
+                $quantity = $item['quantity'] ?? 1;
 
-                // Insert ticket instance untuk item
-                $ticketInstance = new TicketInstance([
-                    'order_item_id' => $orderItem->order_item_id,
-                    'user_id' => $user_id,
-                    'qr_code' => $this->generateQRCode(),
-                    'status' => 'active',
-                    'valid_until' => now()->addDays(365),
-                ]);
-                $ticketInstance->save();
+                $productId = $item['product_id'] ?? null;
+                if (!$productId && isset($item['schedule_id'])) {
+                    $productId = $scheduleProducts[$item['schedule_id']] ?? null;
+                }
+
+                // Expand quantity into individual order_items rows
+                for ($i = 0; $i < $quantity; $i++) {
+                    $items[] = [
+                        'order_id'    => $orderId,
+                        'product_id'  => $productId,
+                        'schedule_id' => $item['schedule_id'] ?? null,
+                        'seat_id'     => $item['seat_id'] ?? null,
+                        'price'       => $unitPrice,
+                    ];
+                }
             }
 
-            DB::commit();
+            if (!empty($items)) {
+                DB::table('order_items')->insert($items);
+            }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Order created successfully',
-                'order_id' => $order->order_id,
-                'user_id' => $user_id,
-            ], 201);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create order',
-                'error' => $e->getMessage(),
-                'user_id' => $user_id
-            ], 500);
-        }
+            return response()->json(['order_id' => $orderId], 201);
+        });
     }
 }

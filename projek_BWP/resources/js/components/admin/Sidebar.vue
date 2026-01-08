@@ -23,12 +23,17 @@
 
     <div class="admin-sidebar-footer">
       <p class="sidebar-tip">Need help? Our concierge is on standby.</p>
-      <button class="admin-pill-btn danger w-100">Sign Out</button>
+      <button class="admin-pill-btn danger w-100" @click="logout">Sign Out</button>
     </div>
   </aside>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+
+const router = useRouter()
+
 const props = defineProps({
   modelValue: { type: String, default: 'Dashboard' },
   menuItems: {
@@ -47,6 +52,16 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['update:modelValue', 'select'])
+
+const logout = async () => {
+  try {
+    await axios.post('/logout')
+    // Router in admin app has no named "login" route; send user to public login page
+    window.location.href = '/login'
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
 </script>
 
 <style scoped>

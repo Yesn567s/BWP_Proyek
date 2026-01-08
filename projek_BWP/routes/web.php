@@ -18,7 +18,18 @@ Route::get('/login', function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Admin Routes - Require Authentication AND Admin Role
+Route::post('/logout', function () {
+    session()->forget(['user_id', 'user_name', 'user_role']);
+    session()->flush();
+
+    $cookie = cookie('user_id', null, -1, '/', null, false, false, false, 'lax');
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Logged out successfully'
+    ])->withCookie($cookie);
+});
+
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function (){
         return view ('adminPage');
@@ -423,16 +434,6 @@ Route::middleware(['auth', 'user'])->group(function () {
 
     // User Vouchers Route
     Route::get('/api/user-vouchers', [VoucherController::class, 'getUserVouchers']);
-
-    // Logout route
-    Route::post('/logout', function () {
-        session()->flush();
-        
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Logged out successfully'
-        ]);
-    });
 
     // Catch-all route for SPA client-side routes (prevents 404 on page refresh)
     Route::get('/{any}', [Dummy::class, 'index'])->where('any', '.*');
