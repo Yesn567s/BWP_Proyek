@@ -491,7 +491,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
       //   "Name: " + result.user_name + "\n" +
       //   "Role: " + result.role
       // );
-
+      sessionStorage.setItem('user_id', result.user_id);
       // Role-based redirect
       if (result.role === "admin") {
         window.location.href = "/admin"; // Redirect to admin dashboard

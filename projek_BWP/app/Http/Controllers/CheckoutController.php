@@ -44,7 +44,7 @@ class CheckoutController extends Controller
 
     public function Orders(Request $request)
     {
-        $user_id = Auth::id();
+        $user_id = $request->user_id;
         try {
             DB::beginTransaction();
 

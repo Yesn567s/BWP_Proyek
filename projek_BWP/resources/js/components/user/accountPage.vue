@@ -537,6 +537,7 @@ const logout = async () => {
 
   // Clear any client-side auth/session data (if used)
   try {
+    sessionStorage.clear()
     localStorage.removeItem('auth_token')
     localStorage.removeItem('current_user')
     // remove any other app-specific keys

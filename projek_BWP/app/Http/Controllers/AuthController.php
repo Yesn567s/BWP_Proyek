@@ -155,6 +155,7 @@ class AuthController extends Controller
             'user_name' => $user->name,
             'role'      => $user->role,
             'language_code' => $user->language_code,
+            'session' => session('user_id'),
         ]);
     }
 

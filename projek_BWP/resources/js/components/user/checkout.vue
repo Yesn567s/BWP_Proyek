@@ -283,7 +283,8 @@ const completeCheckout = async () => {
     // Submit order to database
     const response = await axios.post('/api/orders', { //API di CheckoutController nanti
       items: seatItems,
-      total_price: cart.value.totalPrice
+      total_price: cart.value.totalPrice,
+      user_id: sessionStorage.getItem('user_id'),
     }); // Return order_id baru
 
     successOrderId.value = response.data.order_id;
