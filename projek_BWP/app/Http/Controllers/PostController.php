@@ -20,6 +20,7 @@ class PostController extends Controller
         $validated = $request->validate([
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
+            'image'   => 'nullable|string',
         ]);
 
         $post = Post::create($validated);
@@ -57,13 +58,14 @@ class PostController extends Controller
         $request->validate([
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
+            'image'   => 'nullable|string',
         ]);
-
         $updated = DB::table('post')
             ->where('post_id', $id)
             ->update([
                 'title'      => $request->title,
                 'content'    => $request->content,
+                'image'      => $request->image,
                 'created_at' => now(),
             ]);
 

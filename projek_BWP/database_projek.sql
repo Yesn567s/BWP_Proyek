@@ -21,17 +21,17 @@ USE `db_ticketing`;
 DROP TABLE IF EXISTS `notification_type`;
 
 CREATE TABLE `notification_type` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `CODE` varchar(50) NOT NULL,
-  `title` varchar(100) NOT NULL,
-  `DESCRIPTION` varchar(255) DEFAULT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `CODE` VARCHAR(50) NOT NULL,
+  `title` VARCHAR(100) NOT NULL,
+  `DESCRIPTION` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `CODE` (`CODE`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `notification_type` */
 
-insert  into `notification_type`(`id`,`CODE`,`title`,`DESCRIPTION`) values 
+INSERT  INTO `notification_type`(`id`,`CODE`,`title`,`DESCRIPTION`) VALUES 
 (1,'upcoming_movies','Upcoming Movies','Get notified about upcoming movies and premieres'),
 (2,'new_products','New Products','Snacks, merchandise, and exclusive items'),
 (3,'events','Events','Special events, premieres, and live shows'),
@@ -42,12 +42,12 @@ insert  into `notification_type`(`id`,`CODE`,`title`,`DESCRIPTION`) values
 DROP TABLE IF EXISTS `order_items`;
 
 CREATE TABLE `order_items` (
-  `order_item_id` int NOT NULL AUTO_INCREMENT,
-  `order_id` int DEFAULT NULL,
-  `product_id` int DEFAULT NULL,
-  `schedule_id` int DEFAULT NULL,
-  `seat_id` int DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
+  `order_item_id` INT NOT NULL AUTO_INCREMENT,
+  `order_id` INT DEFAULT NULL,
+  `product_id` INT DEFAULT NULL,
+  `schedule_id` INT DEFAULT NULL,
+  `seat_id` INT DEFAULT NULL,
+  `price` DECIMAL(10,2) DEFAULT NULL,
   PRIMARY KEY (`order_item_id`),
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`),
@@ -57,11 +57,11 @@ CREATE TABLE `order_items` (
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
   CONSTRAINT `order_items_ibfk_3` FOREIGN KEY (`schedule_id`) REFERENCES `schedules` (`schedule_id`),
   CONSTRAINT `order_items_ibfk_4` FOREIGN KEY (`seat_id`) REFERENCES `seats` (`seat_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `order_items` */
 
-insert  into `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`,`seat_id`,`price`) values 
+INSERT  INTO `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`,`seat_id`,`price`) VALUES 
 (1,1,1,1,1,45000.00),
 (2,1,1,1,2,45000.00),
 (3,2,6,4,4,750000.00);
@@ -71,18 +71,18 @@ insert  into `order_items`(`order_item_id`,`order_id`,`product_id`,`schedule_id`
 DROP TABLE IF EXISTS `orders`;
 
 CREATE TABLE `orders` (
-  `order_id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
-  `order_date` datetime DEFAULT NULL,
-  `total_price` decimal(10,2) DEFAULT NULL,
+  `order_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT DEFAULT NULL,
+  `order_date` DATETIME DEFAULT NULL,
+  `total_price` DECIMAL(10,2) DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `orders` */
 
-insert  into `orders`(`order_id`,`user_id`,`order_date`,`total_price`) values 
+INSERT  INTO `orders`(`order_id`,`user_id`,`order_date`,`total_price`) VALUES 
 (1,1,'2025-11-19 16:30:00',90000.00),
 (2,2,'2025-11-19 17:00:00',750000.00),
 (3,2,'2025-10-01 17:17:45',50000.00);
@@ -92,21 +92,21 @@ insert  into `orders`(`order_id`,`user_id`,`order_date`,`total_price`) values
 DROP TABLE IF EXISTS `payment_method`;
 
 CREATE TABLE `payment_method` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `card_type` enum('visa','mastercard') NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `card_number` varchar(25) NOT NULL,
-  `expire_date` date DEFAULT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `card_type` ENUM('visa','mastercard') NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `card_number` VARCHAR(25) NOT NULL,
+  `expire_date` DATE DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `card_number` (`card_number`),
   KEY `fk_payment_method_user` (`user_id`),
   CONSTRAINT `fk_payment_method_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `payment_method` */
 
-insert  into `payment_method`(`id`,`user_id`,`card_type`,`name`,`card_number`,`expire_date`) values 
+INSERT  INTO `payment_method`(`id`,`user_id`,`card_type`,`name`,`card_number`,`expire_date`) VALUES 
 (1,1,'visa','Joni','4111111111111111','2026-05-01'),
 (2,1,'mastercard','Joni A.','5500000000000004','2027-09-01'),
 (3,2,'visa','Ferlinda','4012888888881881','2025-12-01'),
@@ -119,35 +119,47 @@ insert  into `payment_method`(`id`,`user_id`,`card_type`,`name`,`card_number`,`e
 DROP TABLE IF EXISTS `post`;
 
 CREATE TABLE `post` (
-  `post_id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL,
-  `content` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `post_id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) DEFAULT NULL,
+  `content` TEXT,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `image` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`post_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `post` */
 
-insert  into `post`(`post_id`,`title`,`content`,`created_at`) values 
-(1,'Rayakan Tahun Baru Bareng Film Dusun Mayit di Bioskop!','Buat kamu para pemburu adrenalin, film Dusun Mayit resmi tayang perdana di seluruh bioskop pada hari ini, 31 Desember 2025! Film ini menjadi perbincangan hangat karena menandai kembalinya Amanda Manopo ke jagat sinema horor. Digarap oleh sutradara bertangan dingin, Rizal Mantovani, film ini bukan sekadar fiksi belaka, melainkan hasil adaptasi dari thread horor yang sempat viral di media sosial X milik @JeroPoint. Perpaduan antara nama besar aktor dan cerita yang sudah punya basis penggemar kuat membuat film ini jadi tontonan wajib untuk menutup tahun.\r\n\r\nTidak main-main produksi film in mengambil lokasi langsung di lereng Gunung Welirang. Amanda Manopo dan jajaran pemeran lainnya harus berjuang melawan cuaca ekstrem demi mendapatkan atmosfer yang autentik. Memberikan kisah yang dekat dengan mitos pendakian di Indonesia tentang sekelompok anak muda yang terjebak di desa gaib setelah tanpa sengaja karena melanggar adat setempat. Kamu akan diajak merasakan sensasi tersesat di dimensi lain yang penuh misteri yang menegangkan.\r\n\r\nDiperankan oleh nama-nama besar yang sudah tidak perlu lagi diragukan kemampuannya, langsung pesan tiket nonton Dusun Mayit kalian sekarang lewat aplikasi TIX ID untuk mendapatkan sensasi nonton terbaik dan jangan lupa un tuk memasukan film favorit kalian ke dalam watchlist!','2026-01-01 17:16:11');
+INSERT  INTO `post`(`post_id`,`title`,`content`,`created_at`,`image`) VALUES 
+(1,'Rayakan Tahun Baru Bareng Film Dusun Mayit di Bioskop!','
+Buat kamu para pemburu adrenalin, film Dusun Mayit resmi tayang perdana di seluruh bioskop pada hari ini, 31 Desember 2025! Film ini menjadi perbincangan hangat karena menandai kembalinya Amanda Manopo ke jagat sinema horor. Digarap oleh sutradara bertangan dingin, Rizal Mantovani, film ini bukan sekadar fiksi belaka, melainkan hasil adaptasi dari thread horor yang sempat viral di media sosial X milik @JeroPoint. Perpaduan antara nama besar aktor dan cerita yang sudah punya basis penggemar kuat membuat film ini jadi tontonan wajib untuk menutup tahun.\r\n\r\nTidak main-main produksi film in mengambil lokasi langsung di lereng Gunung Welirang. Amanda Manopo dan jajaran pemeran lainnya harus berjuang melawan cuaca ekstrem demi mendapatkan atmosfer yang autentik. Memberikan kisah yang dekat dengan mitos pendakian di Indonesia tentang sekelompok anak muda yang terjebak di desa gaib setelah tanpa sengaja karena melanggar adat setempat. Kamu akan diajak merasakan sensasi tersesat di dimensi lain yang penuh misteri yang menegangkan.\r\n\r\nDiperankan oleh nama-nama besar yang sudah tidak perlu lagi diragukan kemampuannya, langsung pesan tiket nonton Dusun Mayit kalian sekarang lewat aplikasi TIX ID untuk mendapatkan sensasi nonton terbaik dan jangan lupa un tuk memasukan film favorit kalian ke dalam watchlist!',
+'2026-01-01 17:16:11',
+'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Rio_New_Year_Fireworks.jpg/500px-Rio_New_Year_Fireworks.jpg'),
+(2,'5 Rekomendasi Film Indonesia Wajib Tonton Bulan Januari',
+  'Bulan Januari 2026 dibuka dengan deretan film Indonesia berkualitas dari berbagai genre, mulai dari horor, drama keluarga, hingga thriller psikologis. Berikut lima rekomendasi film lokal yang wajib masuk daftar tontonan kamu di awal tahun.',
+  '2026-01-03 14:30:00',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sala_de_cine.jpg/960px-Sala_de_cine.jpg'),
+(3,'Tips Hemat Nonton di Bioskop Favoritmu',
+  'Nonton film di bioskop bisa jadi pengalaman yang menyenangkan, tapi juga bisa menguras kantong. Berikut beberapa tips untuk menikmati film favoritmu tanpa harus merogoh kocek terlalu dalam. \r\n\r\n1. Manfaatkan Promo dan Diskon: Banyak bioskop menawarkan promo khusus pada hari-hari tertentu atau untuk pembelian tiket secara online. Jangan lupa cek aplikasi atau website bioskop favoritmu untuk mendapatkan penawaran terbaik.\r\n\r\n2. Pilih Waktu Tayang yang Tepat: Biasanya, tiket bioskop lebih murah pada hari kerja atau di sesi pagi dan siang hari. Hindari akhir pekan atau malam hari jika ingin lebih hemat.\r\n\r\n3. Bawa Cemilan dari Rumah: Meskipun banyak bioskop yang melarang membawa makanan dari luar, beberapa tempat memperbolehkan cemilan kecil seperti popcorn atau minuman ringan. Ini bisa menghemat pengeluaranmu dibandingkan membeli di dalam bioskop.\r\n\r\n4. Gunakan Kartu Keanggotaan: Beberapa bioskop memiliki program keanggotaan yang memberikan diskon khusus atau poin reward setiap kali kamu membeli tiket. Manfaatkan ini untuk mendapatkan harga lebih murah di kunjungan berikutnya.\r\n\r\n5. Nonton Bareng Teman: Ajak teman-temanmu untuk nonton bersama dan bagi biaya tiket serta cemilan. Selain lebih seru, ini juga bisa mengurangi beban biaya per orang.\r\n\r\nDengan mengikuti tips-tips di atas, kamu bisa tetap menikmati pengalaman menonton di bioskop tanpa harus khawatir soal budget. Selamat menonton!',
+  '2026-01-05 10:00:00',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Cinema_popcorn_bucket.jpg/960px-Cinema_popcorn_bucket.jpg');
 
 /*Table structure for table `product_media` */
 
 DROP TABLE IF EXISTS `product_media`;
 
 CREATE TABLE `product_media` (
-  `media_id` int NOT NULL AUTO_INCREMENT,
-  `product_id` int DEFAULT NULL,
-  `media_type` enum('poster','trailer','image','video') DEFAULT NULL,
-  `media_url` varchar(255) DEFAULT NULL,
+  `media_id` INT NOT NULL AUTO_INCREMENT,
+  `product_id` INT DEFAULT NULL,
+  `media_type` ENUM('poster','trailer','image','video') DEFAULT NULL,
+  `media_url` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`media_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_media_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `product_media` */
 
-insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) values 
+INSERT  INTO `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) VALUES 
 (1,1,'poster','posters/inside-out-2.jpg'),
 (2,1,'trailer','https://www.youtube.com/embed/LEjhY15eCx0'),
 (3,7,'poster','posters/minecraft-movie.jpg'),
@@ -171,21 +183,21 @@ insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) v
 DROP TABLE IF EXISTS `schedules`;
 
 CREATE TABLE `schedules` (
-  `schedule_id` int NOT NULL AUTO_INCREMENT,
-  `product_id` int DEFAULT NULL,
-  `studio_id` int DEFAULT NULL,
-  `start_datetime` datetime DEFAULT NULL,
-  `end_datetime` datetime DEFAULT NULL,
+  `schedule_id` INT NOT NULL AUTO_INCREMENT,
+  `product_id` INT DEFAULT NULL,
+  `studio_id` INT DEFAULT NULL,
+  `start_datetime` DATETIME DEFAULT NULL,
+  `end_datetime` DATETIME DEFAULT NULL,
   PRIMARY KEY (`schedule_id`),
   KEY `product_id` (`product_id`),
   KEY `studio_id` (`studio_id`),
   CONSTRAINT `schedules_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`),
   CONSTRAINT `schedules_ibfk_3` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3981 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=3981 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `schedules` */
 
-insert  into `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`,`end_datetime`) values 
+INSERT  INTO `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`,`end_datetime`) VALUES 
 (1,1,1,'2025-12-01 10:00:00','2025-12-01 11:45:00'),
 (2,4,NULL,'2025-11-21 14:00:00','2025-11-21 16:00:00'),
 (3,5,NULL,'2025-11-22 10:00:00','2025-11-22 11:00:00'),
@@ -3458,16 +3470,16 @@ insert  into `schedules`(`schedule_id`,`product_id`,`studio_id`,`start_datetime`
 DROP TABLE IF EXISTS `seats`;
 
 CREATE TABLE `seats` (
-  `seat_id` int NOT NULL AUTO_INCREMENT,
-  `studio_id` int NOT NULL,
-  `row_letter` char(1) NOT NULL,
-  `seat_number` int NOT NULL,
-  `status` enum('available','reserved','maintenance') DEFAULT 'available',
+  `seat_id` INT NOT NULL AUTO_INCREMENT,
+  `studio_id` INT NOT NULL,
+  `row_letter` CHAR(1) NOT NULL,
+  `seat_number` INT NOT NULL,
+  `status` ENUM('available','reserved','maintenance') DEFAULT 'available',
   PRIMARY KEY (`seat_id`),
   UNIQUE KEY `uniq_studio_seat` (`studio_id`,`row_letter`,`seat_number`),
   KEY `studio_id` (`studio_id`),
   CONSTRAINT `seats_ibfk_studio` FOREIGN KEY (`studio_id`) REFERENCES `studios` (`studio_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `seats` */
 
@@ -3487,18 +3499,18 @@ ORDER BY s.studio_id, r.row_letter, n.seat_number;
 DROP TABLE IF EXISTS `studios`;
 
 CREATE TABLE `studios` (
-  `studio_id` int NOT NULL AUTO_INCREMENT,
-  `venue_id` int NOT NULL,
-  `studio_name` varchar(50) NOT NULL,
-  `studio_type` varchar(50) DEFAULT 'Regular',
+  `studio_id` INT NOT NULL AUTO_INCREMENT,
+  `venue_id` INT NOT NULL,
+  `studio_name` VARCHAR(50) NOT NULL,
+  `studio_type` VARCHAR(50) DEFAULT 'Regular',
   PRIMARY KEY (`studio_id`),
   KEY `venue_id` (`venue_id`),
   CONSTRAINT `studios_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venues` (`venue_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `studios` */
 
-insert  into `studios`(`studio_id`,`venue_id`,`studio_name`,`studio_type`) values 
+INSERT  INTO `studios`(`studio_id`,`venue_id`,`studio_name`,`studio_type`) VALUES 
 (1,1,'Studio 1','Regular'),
 (2,6,'Studio 1','Regular'),
 (3,7,'Studio 1','Regular'),
@@ -3590,15 +3602,15 @@ insert  into `studios`(`studio_id`,`venue_id`,`studio_name`,`studio_type`) value
 DROP TABLE IF EXISTS `ticket_categories`;
 
 CREATE TABLE `ticket_categories` (
-  `category_id` int NOT NULL AUTO_INCREMENT,
-  `category_name` varchar(50) DEFAULT NULL,
-  `icons` varchar(50) NOT NULL,
+  `category_id` INT NOT NULL AUTO_INCREMENT,
+  `category_name` VARCHAR(50) DEFAULT NULL,
+  `icons` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_categories` */
 
-insert  into `ticket_categories`(`category_id`,`category_name`,`icons`) values 
+INSERT  INTO `ticket_categories`(`category_id`,`category_name`,`icons`) VALUES 
 (1,'Movie','icons/watching-a-movie.png'),
 (2,'Zoo','icons/zoo.png'),
 (3,'Museum','icons/art-museum.png'),
@@ -3613,24 +3625,24 @@ insert  into `ticket_categories`(`category_id`,`category_name`,`icons`) values
 DROP TABLE IF EXISTS `ticket_instances`;
 
 CREATE TABLE `ticket_instances` (
-  `ticket_instance_id` int NOT NULL AUTO_INCREMENT,
-  `order_item_id` int DEFAULT NULL,
-  `user_id` int DEFAULT NULL,
-  `qr_code` varchar(255) DEFAULT NULL,
-  `is_used` tinyint(1) DEFAULT '0',
-  `status` enum('active','used','cancelled','expired') DEFAULT 'active',
-  `valid_until` datetime DEFAULT NULL,
-  `used_at` datetime DEFAULT NULL,
+  `ticket_instance_id` INT NOT NULL AUTO_INCREMENT,
+  `order_item_id` INT DEFAULT NULL,
+  `user_id` INT DEFAULT NULL,
+  `qr_code` VARCHAR(255) DEFAULT NULL,
+  `is_used` TINYINT(1) DEFAULT '0',
+  `status` ENUM('active','used','cancelled','expired') DEFAULT 'active',
+  `valid_until` DATETIME DEFAULT NULL,
+  `used_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`ticket_instance_id`),
   KEY `order_item_id` (`order_item_id`),
   KEY `fk_ticket_instances_user` (`user_id`),
   CONSTRAINT `fk_ticket_instances_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `ticket_instances_ibfk_1` FOREIGN KEY (`order_item_id`) REFERENCES `order_items` (`order_item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_instances` */
 
-insert  into `ticket_instances`(`ticket_instance_id`,`order_item_id`,`user_id`,`qr_code`,`is_used`,`status`,`valid_until`,`used_at`) values 
+INSERT  INTO `ticket_instances`(`ticket_instance_id`,`order_item_id`,`user_id`,`qr_code`,`is_used`,`status`,`valid_until`,`used_at`) VALUES 
 (1,1,1,'QR-MOVIE-A1',0,'active',NULL,NULL),
 (2,2,1,'QR-MOVIE-A2',0,'active',NULL,NULL),
 (3,3,2,'QR-CONCERT-VIP1',0,'active',NULL,NULL);
@@ -3640,26 +3652,26 @@ insert  into `ticket_instances`(`ticket_instance_id`,`order_item_id`,`user_id`,`
 DROP TABLE IF EXISTS `ticket_products`;
 
 CREATE TABLE `ticket_products` (
-  `product_id` int NOT NULL AUTO_INCREMENT,
-  `category_id` int DEFAULT NULL,
-  `name` varchar(100) DEFAULT NULL,
-  `description` text,
-  `base_price` decimal(10,2) DEFAULT NULL,
-  `rating` decimal(2,1) DEFAULT NULL,
-  `genre` varchar(200) DEFAULT NULL,
-  `requires_schedule` tinyint(1) DEFAULT NULL,
-  `requires_seat` tinyint(1) DEFAULT NULL,
-  `duration_minutes` int DEFAULT NULL,
-  `age_rating` varchar(10) DEFAULT NULL,
+  `product_id` INT NOT NULL AUTO_INCREMENT,
+  `category_id` INT DEFAULT NULL,
+  `name` VARCHAR(100) DEFAULT NULL,
+  `description` TEXT,
+  `base_price` DECIMAL(10,2) DEFAULT NULL,
+  `rating` DECIMAL(2,1) DEFAULT NULL,
+  `genre` VARCHAR(200) DEFAULT NULL,
+  `requires_schedule` TINYINT(1) DEFAULT NULL,
+  `requires_seat` TINYINT(1) DEFAULT NULL,
+  `duration_minutes` INT DEFAULT NULL,
+  `age_rating` VARCHAR(10) DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `ticket_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `ticket_categories` (`category_id`),
-  CONSTRAINT `ticket_products_chk_1` CHECK ((`rating` between 0 and 5.0))
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `ticket_products_chk_1` CHECK ((`rating` BETWEEN 0 AND 5.0))
+) ENGINE=INNODB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `ticket_products` */
 
-insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`rating`,`genre`,`requires_schedule`,`requires_seat`,`duration_minutes`,`age_rating`) values 
+INSERT  INTO `ticket_products`(`product_id`,`category_id`,`name`,`description`,`base_price`,`rating`,`genre`,`requires_schedule`,`requires_seat`,`duration_minutes`,`age_rating`) VALUES 
 (1,1,'Inside Out 2','Inside Out 2 returns to the mind of newly minted teenager Riley just as headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!',45000.00,4.6,'Animation, Comedy, Family',1,1,96,'SU'),
 (2,2,'Zoo Entrance Ticket','All-day zoo access',30000.00,NULL,NULL,0,0,NULL,NULL),
 (3,3,'Museum Ticket','Historical museum entry',25000.00,NULL,NULL,0,0,NULL,NULL),
@@ -3685,23 +3697,23 @@ insert  into `ticket_products`(`product_id`,`category_id`,`name`,`description`,`
 DROP TABLE IF EXISTS `user_notification_setting`;
 
 CREATE TABLE `user_notification_setting` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `notification_type_id` int NOT NULL,
-  `email_enabled` tinyint(1) DEFAULT '0',
-  `push_enabled` tinyint(1) DEFAULT '0',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `notification_type_id` INT NOT NULL,
+  `email_enabled` TINYINT(1) DEFAULT '0',
+  `push_enabled` TINYINT(1) DEFAULT '0',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_user_notification` (`user_id`,`notification_type_id`),
   KEY `fk_user_notification_type` (`notification_type_id`),
   CONSTRAINT `fk_user_notification_type` FOREIGN KEY (`notification_type_id`) REFERENCES `notification_type` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_user_notification_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `user_notification_setting` */
 
-insert  into `user_notification_setting`(`id`,`user_id`,`notification_type_id`,`email_enabled`,`push_enabled`,`created_at`,`updated_at`) values 
+INSERT  INTO `user_notification_setting`(`id`,`user_id`,`notification_type_id`,`email_enabled`,`push_enabled`,`created_at`,`updated_at`) VALUES 
 (1,1,1,1,1,'2026-01-02 22:12:45','2026-01-02 22:12:45'),
 (2,1,2,1,0,'2026-01-02 22:12:45','2026-01-02 22:12:45'),
 (3,1,3,0,1,'2026-01-02 22:12:45','2026-01-02 22:12:45'),
@@ -3716,23 +3728,23 @@ insert  into `user_notification_setting`(`id`,`user_id`,`notification_type_id`,`
 DROP TABLE IF EXISTS `user_vouchers`;
 
 CREATE TABLE `user_vouchers` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `voucher_id` int NOT NULL,
-  `usage_count` int DEFAULT '0',
-  `max_usage_per_user` int DEFAULT NULL,
-  `assigned_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `voucher_id` INT NOT NULL,
+  `usage_count` INT DEFAULT '0',
+  `max_usage_per_user` INT DEFAULT NULL,
+  `assigned_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_user_voucher` (`user_id`,`voucher_id`),
   KEY `fk_user_voucher_voucher` (`voucher_id`),
   CONSTRAINT `fk_user_voucher_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_user_voucher_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`voucher_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `user_vouchers` */
 
-insert  into `user_vouchers`(`id`,`user_id`,`voucher_id`,`usage_count`,`max_usage_per_user`,`assigned_at`,`updated_at`) values 
+INSERT  INTO `user_vouchers`(`id`,`user_id`,`voucher_id`,`usage_count`,`max_usage_per_user`,`assigned_at`,`updated_at`) VALUES 
 (1,1,1,1,3,'2026-01-04 18:10:34','2026-01-04 18:10:34'),
 (2,1,3,2,5,'2026-01-04 18:10:34','2026-01-04 18:10:34'),
 (3,1,6,0,2,'2026-01-04 18:10:34','2026-01-04 18:10:34'),
@@ -3747,24 +3759,24 @@ insert  into `user_vouchers`(`id`,`user_id`,`voucher_id`,`usage_count`,`max_usag
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-  `user_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL,
-  `role` enum('admin','user') DEFAULT 'user',
-  `points` int DEFAULT '0',
-  `profile_picture` varchar(500) DEFAULT NULL,
-  `member_start` datetime DEFAULT NULL,
-  `phone_number` varchar(20) DEFAULT NULL,
-  `two_factor_auth` tinyint(1) DEFAULT '0',
-  `language_code` varchar(10) DEFAULT 'en',
+  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) DEFAULT NULL,
+  `email` VARCHAR(100) DEFAULT NULL,
+  `password` VARCHAR(100) DEFAULT NULL,
+  `role` ENUM('admin','user') DEFAULT 'user',
+  `points` INT DEFAULT '0',
+  `profile_picture` VARCHAR(500) DEFAULT NULL,
+  `member_start` DATETIME DEFAULT NULL,
+  `phone_number` VARCHAR(20) DEFAULT NULL,
+  `two_factor_auth` TINYINT(1) DEFAULT '0',
+  `language_code` VARCHAR(10) DEFAULT 'en',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `users` */
 
-insert  into `users`(`user_id`,`name`,`email`,`password`,`role`,`points`,`profile_picture`,`member_start`,`phone_number`,`two_factor_auth`,`language_code`) values 
+INSERT  INTO `users`(`user_id`,`name`,`email`,`password`,`role`,`points`,`profile_picture`,`member_start`,`phone_number`,`two_factor_auth`,`language_code`) VALUES 
 (1,'Joni','joni@mail.com','12345','user',120,NULL,'2023-01-15 00:00:00','081234567890',0,'id'),
 (2,'Ferlinda','fer@mail.com','12345','user',340,'profiles/ferlinda.png','2022-11-03 00:00:00','082198765432',1,'en'),
 (3,'Admin','admin@gmail.com','123','admin',999,NULL,'2021-06-01 00:00:00','089912345678',1,'en');
@@ -3774,16 +3786,16 @@ insert  into `users`(`user_id`,`name`,`email`,`password`,`role`,`points`,`profil
 DROP TABLE IF EXISTS `venues`;
 
 CREATE TABLE `venues` (
-  `venue_id` int NOT NULL AUTO_INCREMENT,
-  `venue_name` varchar(100) DEFAULT NULL,
-  `venue_type` varchar(50) DEFAULT NULL,
-  `location` varchar(255) DEFAULT NULL,
+  `venue_id` INT NOT NULL AUTO_INCREMENT,
+  `venue_name` VARCHAR(100) DEFAULT NULL,
+  `venue_type` VARCHAR(50) DEFAULT NULL,
+  `location` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`venue_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `venues` */
 
-insert  into `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) values 
+INSERT  INTO `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) VALUES 
 (1,'XXI Tunjungan Plaza','Cinema','Surabaya'),
 (2,'Surabaya Zoo','Zoo','Surabaya'),
 (3,'City Museum','Museum','Surabaya'),
@@ -3826,21 +3838,21 @@ insert  into `venues`(`venue_id`,`venue_name`,`venue_type`,`location`) values
 DROP TABLE IF EXISTS `voucher_usages`;
 
 CREATE TABLE `voucher_usages` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `voucher_id` int NOT NULL,
-  `used_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `reference_id` varchar(100) DEFAULT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `voucher_id` INT NOT NULL,
+  `used_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `reference_id` VARCHAR(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_voucher_usage_user` (`user_id`),
   KEY `fk_voucher_usage_voucher` (`voucher_id`),
   CONSTRAINT `fk_voucher_usage_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_voucher_usage_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`voucher_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `voucher_usages` */
 
-insert  into `voucher_usages`(`id`,`user_id`,`voucher_id`,`used_at`,`reference_id`) values 
+INSERT  INTO `voucher_usages`(`id`,`user_id`,`voucher_id`,`used_at`,`reference_id`) VALUES 
 (1,1,1,'2025-01-10 14:22:00','ORDER-1001'),
 (2,1,3,'2025-01-12 16:05:00','ARCADE-2001'),
 (3,1,3,'2025-01-15 18:30:00','ARCADE-2002'),
@@ -3919,26 +3931,26 @@ insert  into `voucher_usages`(`id`,`user_id`,`voucher_id`,`used_at`,`reference_i
 DROP TABLE IF EXISTS `vouchers`;
 
 CREATE TABLE `vouchers` (
-  `voucher_id` int NOT NULL AUTO_INCREMENT,
-  `code` varchar(50) NOT NULL,
-  `title` varchar(100) NOT NULL,
-  `description` text,
-  `discount_type` enum('percent','fixed') NOT NULL,
-  `discount_value` int NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `max_usage` int DEFAULT NULL,
-  `used_count` int DEFAULT '0',
-  `is_active` tinyint(1) DEFAULT '1',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `voucher_id` INT NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(50) NOT NULL,
+  `title` VARCHAR(100) NOT NULL,
+  `description` TEXT,
+  `discount_type` ENUM('percent','fixed') NOT NULL,
+  `discount_value` INT NOT NULL,
+  `start_date` DATE NOT NULL,
+  `end_date` DATE NOT NULL,
+  `max_usage` INT DEFAULT NULL,
+  `used_count` INT DEFAULT '0',
+  `is_active` TINYINT(1) DEFAULT '1',
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`voucher_id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=INNODB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `vouchers` */
 
-insert  into `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type`,`discount_value`,`start_date`,`end_date`,`max_usage`,`used_count`,`is_active`,`created_at`,`updated_at`) values 
+INSERT  INTO `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type`,`discount_value`,`start_date`,`end_date`,`max_usage`,`used_count`,`is_active`,`created_at`,`updated_at`) VALUES 
 (1,'MOV01','Movie Voucher 10%',NULL,'percent',10,'2025-01-01','2025-02-01',NULL,0,1,'2025-12-23 10:17:44','2025-12-23 10:19:27'),
 (2,'FAMILYB3G1','Family Pack','Buy 3 get 1 free for Waterpark','fixed',1,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
 (3,'ARCADE2X','Arcade Mania','Double credits for every top-up','percent',100,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),

@@ -70,7 +70,7 @@
         <div class="mb-4">
           <label class="form-label small text-muted">COVER IMAGE URL</label>
           <input
-            v-model="form.cover"
+            v-model="form.image"
             class="form-control soft-input"
             placeholder="https://..."
           />
@@ -104,6 +104,7 @@ const router = useRouter()
 const form = reactive({
   title: '',
   content: '',
+  image: ''
 })
 
 const goBack = () => router.back()
@@ -112,7 +113,8 @@ const updatePost = async () => {
   try {
     await axios.put(`/api/posts/${route.params.id}`, {
       title: form.title,
-      content: form.content
+      content: form.content,
+      image: form.image
     })
 
     alert('Post updated successfully')
@@ -134,6 +136,7 @@ onMounted(async () => {
 
     form.title = res.data.title
     form.content = res.data.content
+    form.image = res.data.image
   } catch (error) {
     console.error(error)
     alert('Failed to load post')

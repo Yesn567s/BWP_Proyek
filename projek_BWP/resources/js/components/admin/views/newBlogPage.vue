@@ -195,7 +195,7 @@ const form = reactive({
 
 // Function to navigate back
 const goBack = () => {
-  router.push({ name: 'adminBlog' })
+  router.push({ name: 'adminBlogList' })
 }
 
 // Function to save post
@@ -216,7 +216,7 @@ const savePost = async () => {
     form.image = ''
 
     // Navigate back to blog list page
-    router.push({ name: 'adminBlog' })
+    router.push({ name: 'adminBlogList' })
   } catch (error) {
     console.error(error.response || error)
     alert('Failed to save post. Check console for details.')
