@@ -14,6 +14,7 @@ import Movie from './components/user/movie.vue';
 import Food from './components/user/food.vue';
 import Fun from './components/user/fun.vue';
 import FoodMenu from './components/user/foodMenu.vue';
+import NonMovieSchedule from './components/user/nonMovieSchedule.vue';
 import Seats from './components/user/seats.vue';
 import Blog from './components/user/blog.vue';
 import Checkout from './components/user/checkout.vue';
@@ -60,10 +61,14 @@ const routes=[
         component: Food
     },
     {
-        path: '/food/:venueId',
+        path: '/food-menu',
         name: 'food-menu',
-        component: FoodMenu,
-        props: true
+        component: FoodMenu
+    },
+    {
+        path: '/non-movie-schedule',
+        name: 'nonMovieSchedule',
+        component: NonMovieSchedule
     },
     {
         path: '/fun',

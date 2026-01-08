@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Schedule;
 use App\Models\TicketProduct;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
@@ -21,31 +21,33 @@ class MovieController extends Controller
 
     public function nowPlaying()
     {
-        // Treat "now playing" as anything scheduled recently or in the near future
-        // so the list stays populated even when the demo seed dates are slightly old.
-        $windowStart = now()->subDays(30);
-        $windowEnd   = now()->addDays(30);
-
         return TicketProduct::with('poster')
             ->where('category_id', 1)
-            ->whereHas('schedules', function ($q) use ($windowStart, $windowEnd) {
-                $q->whereBetween('start_datetime', [$windowStart, $windowEnd]);
+            ->whereHas('schedules', function ($q) {
+                $q->where('start_datetime', '<=', now());
+            })
+            ->whereHas('schedules', function ($q) {
+                $q->where('start_datetime', '>=', now());
             })
             ->get()
             ->map(fn ($movie) => $this->formatMovie($movie));
     }
 
 
+
     public function coomingSoon()
-{
-    return TicketProduct::with('poster')
-        ->where('category_id', 1)
-        ->whereHas('schedules', function ($q) {
-            $q->where('start_datetime', '>', now());
-        })
-        ->get()
-        ->map(fn ($movie) => $this->formatMovie($movie));
-}
+        {
+        return TicketProduct::with('poster')
+            ->where('category_id', 1)
+            ->whereHas('schedules', function ($q) {
+                $q->select('product_id')
+                ->groupBy('product_id')
+                ->havingRaw('MIN(start_datetime) > ?', [now()]);
+            })
+            ->get()
+            ->map(fn ($movie) => $this->formatMovie($movie));
+
+        }
 
 
     private function formatMovie($movie)
@@ -104,8 +106,5 @@ class MovieController extends Controller
 
     //     return response()->json($dates);
     // }
-
-
-
 }
 

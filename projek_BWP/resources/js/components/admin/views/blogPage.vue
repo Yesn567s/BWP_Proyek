@@ -27,7 +27,7 @@
             <div class="blog-card h-100 p-4" @click="$router.push({ name: 'adminBlogEdit', params: { id: post.post_id } })">
                 <!-- img -->
                  <div class="image-wrapper">
-                    <img :src="post.image" alt="cover" />
+                    <img :src="post.image || 'https://media.tenor.com/Ym6VeAcZoTcAAAAm/aaaah-cat.webp'" alt="cover" />
 
                     <span
                     class="status-badge"
@@ -62,7 +62,7 @@
 
                     <button
                         class="btn btn-link text-danger p-0"
-                        @click="deletePost(post.post_id)"
+                        @click.stop="deletePost(post.post_id)"
                     >
                         Delete
                     </button>
@@ -90,6 +90,20 @@ const fetchPosts = async () => {
     console.error('Failed to load posts', err)
   } finally {
     loading.value = false
+  }
+}
+
+const deletePost = async (id) => {
+  if (!confirm('Are you sure you want to delete this post?')) {
+    return
+  }
+  
+  try {
+    await axios.delete(`/api/posts/${id}`)
+    posts.value = posts.value.filter(post => post.post_id !== id)
+  } catch (err) {
+    console.error('Failed to delete post', err)
+    alert('Failed to delete post')
   }
 }
 

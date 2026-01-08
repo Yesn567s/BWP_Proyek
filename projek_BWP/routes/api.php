@@ -38,8 +38,9 @@ Route::get('/stats', function () {
 });
 Route::get('/categories', [TicketCategoryController::class, 'index']);
 Route::get('/vouchers', [VoucherController::class, 'index']);
+Route::get('/vouchers/{code}', [VoucherController::class, 'showByCode']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
-Route::get('/yourTickets', [TicketInstanceController::class, 'index']);
+Route::get('/yourTickets', [TicketInstanceController::class, 'index'])->middleware('web');
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);
@@ -51,9 +52,11 @@ Route::post('/admin/schedules', [AdminScheduleController::class, 'store']);
 
 Route::get('/checkout', [CheckoutController::class, 'index']);
 Route::get('/orders', [CheckoutController::class, 'orders']);
+Route::post('/orders', [CheckoutController::class, 'store'])->middleware('web');
 
 Route::get('/food/venues', [VenueController::class, 'foodVenues']);
 Route::get('/food', [FoodController::class, 'allFood']);
+Route::get('/food/{id}', [FoodController::class, 'show']);
 Route::get('/cinema-partners', [VenueController::class, 'partners']);
 
 

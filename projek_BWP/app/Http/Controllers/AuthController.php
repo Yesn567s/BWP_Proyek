@@ -142,20 +142,32 @@ class AuthController extends Controller
         }
 
         // Store session
-        session([
+        $sessionData = [
             'user_id'   => $user->user_id,
             'user_name' => $user->name,
             'user_role' => $user->role,
-        ]);
+        ];
 
-        // Return role for frontend redirect
+        session($sessionData);
+
+        // Return role for frontend redirect and persist the user id in a cookie for the client
         return response()->json([
             'status'    => 'success',
             'user_id'   => $user->user_id,
             'user_name' => $user->name,
             'role'      => $user->role,
             'language_code' => $user->language_code,
-        ]);
+        ])->cookie(
+            'user_id',
+            $user->user_id,
+            60 * 24 * 30, // keep for 30 days
+            '/',
+            null,
+            false,
+            false,
+            false,
+            'lax'
+        );
     }
 
 

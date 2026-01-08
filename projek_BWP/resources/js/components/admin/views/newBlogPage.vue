@@ -97,6 +97,13 @@
 
 <template>
   <div class="container py-4">
+    <!-- BACK BUTTON -->
+    <div class="mb-4">
+      <button class="btn btn-link p-0" @click="goBack">
+        ← Back to Blog List
+      </button>
+    </div>
+
     <div class="row g-4">
       <!-- LEFT: FORM -->
       <div class="col-lg-8">
@@ -138,7 +145,7 @@
 
             <!-- ACTIONS -->
             <div class="d-flex justify-content-end gap-2 mt-4">
-              <button class="btn btn-light rounded-pill px-4">
+              <button class="btn btn-light rounded-pill px-4" @click="goBack">
                 Discard
               </button>
               <button class="btn btn-primary rounded-pill px-4" @click="savePost">
@@ -175,13 +182,21 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
+
+const router = useRouter()
 
 const form = reactive({
   title: '',
   content: '',
   image: ''
 })
+
+// Function to navigate back
+const goBack = () => {
+  router.push({ name: 'adminBlog' })
+}
 
 // Function to save post
 const savePost = async () => {
@@ -199,6 +214,9 @@ const savePost = async () => {
     form.title = ''
     form.content = ''
     form.image = ''
+
+    // Navigate back to blog list page
+    router.push({ name: 'adminBlog' })
   } catch (error) {
     console.error(error.response || error)
     alert('Failed to save post. Check console for details.')

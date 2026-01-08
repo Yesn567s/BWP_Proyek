@@ -61,4 +61,24 @@ class VoucherController extends Controller
 
         return response()->json($userVouchers);
     }
+
+    /**
+     * Retrieve a single active voucher by its code.
+     */
+    public function showByCode(string $code)
+    {
+        $voucher = Voucher::where('code', $code)
+            ->where('is_active', 1)
+            ->first();
+
+        if (!$voucher) {
+            return response()->json(['error' => 'Invalid voucher code'], 404);
+        }
+
+        if ($voucher->end_date && now()->isAfter($voucher->end_date)) {
+            return response()->json(['error' => 'Voucher expired'], 400);
+        }
+
+        return response()->json($voucher);
+    }
 }
