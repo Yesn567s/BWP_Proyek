@@ -7,9 +7,9 @@
   background-color: #f2f2f2;
   width: 100vw;
   margin: 0 auto;         /* center it */
-  border-radius: 20px;    /* soft edges */
-  padding: 3rem 1.5rem;   /* inner spacing */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* subtle softness */
+  height: auto;
+  overflow-y: hidden;
   
 }
 
@@ -61,7 +61,7 @@
 <template>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <footer class="tixly-footer py-5">
+  <footer class="tixly-footer">
     <div class="footer-bg">
       <div class="row gy-5 align-items-start mx-3 px-3">
 
@@ -142,9 +142,9 @@
       </div>
 
       <!-- Bottom -->
-      <div class="row mt-5 pt-4 border-top bg-black text-white">
+      <div class="footer-bottom w-100 py-3" style="background: #111; border-top: 2px solid #222;">
         <div class="col-12">
-          <div class="d-flex flex-wrap justify-content-center text-center gap-3 text-muted small">
+          <div class="d-flex flex-wrap justify-content-center text-center gap-3 small" style="color: #fff;">
             <span>© 2025 Tixly. All rights reserved.</span>
           </div>
         </div>

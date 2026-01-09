@@ -9,8 +9,13 @@ const redeeming = ref(false)
 const tickets = ref([])
 
 onMounted(async () => {
-  const res = await axios.get('/api/yourTickets')
-  tickets.value = res.data
+  try {
+    const res = await axios.get('/api/yourTickets')
+    tickets.value = res.data
+  } catch (err) {
+    console.error('Failed to load tickets', err)
+    tickets.value = []
+  }
 })
 
 const filteredTickets = computed(() => {

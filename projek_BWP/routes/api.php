@@ -85,3 +85,9 @@ Route::post('/posts', [PostController::class, 'store']);
 Route::delete('/posts/{id}', [PostController::class, 'destroy']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
 Route::put('/posts/{id}', [PostController::class, 'update']);
+
+// Admin Voucher Management
+Route::get('/admin/vouchers', [VoucherController::class, 'adminIndex']);
+Route::post('/admin/vouchers', [VoucherController::class, 'store']);
+Route::put('/admin/vouchers/{id}', [VoucherController::class, 'update']);
+Route::delete('/admin/vouchers/{id}', [VoucherController::class, 'destroy']);

@@ -16,6 +16,103 @@ class VoucherController extends Controller
     }
 
     /**
+     * Admin: Get all vouchers (including inactive)
+     */
+    public function adminIndex()
+    {
+        return response()->json(
+            Voucher::orderBy('created_at', 'desc')->get()
+        );
+    }
+
+    /**
+     * Admin: Create a new voucher
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:50|unique:vouchers,code',
+            'title' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'discount_type' => 'required|in:percent,fixed',
+            'discount_value' => 'required|integer|min:1',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'max_usage' => 'nullable|integer|min:1',
+            'is_active' => 'required|boolean',
+            'media' => 'nullable|string|max:100',
+        ]);
+
+        $voucher = Voucher::create([
+            'code' => strtoupper($validated['code']),
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'discount_type' => $validated['discount_type'],
+            'discount_value' => $validated['discount_value'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'],
+            'max_usage' => $validated['max_usage'],
+            'is_active' => $validated['is_active'],
+            'media' => $validated['media'] ?? '',
+            'used_count' => 0,
+        ]);
+
+        return response()->json($voucher, 201);
+    }
+
+    /**
+     * Admin: Update a voucher
+     */
+    public function update(Request $request, $id)
+    {
+        $voucher = Voucher::findOrFail($id);
+
+        $validated = $request->validate([
+            'code' => 'required|string|max:50|unique:vouchers,code,' . $id . ',voucher_id',
+            'title' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'discount_type' => 'required|in:percent,fixed',
+            'discount_value' => 'required|integer|min:1',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'max_usage' => 'nullable|integer|min:1',
+            'is_active' => 'required|boolean',
+            'media' => 'nullable|string|max:100',
+        ]);
+
+        $voucher->update([
+            'code' => strtoupper($validated['code']),
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'discount_type' => $validated['discount_type'],
+            'discount_value' => $validated['discount_value'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'],
+            'max_usage' => $validated['max_usage'],
+            'is_active' => $validated['is_active'],
+            'media' => $validated['media'] ?? '',
+        ]);
+
+        return response()->json($voucher);
+    }
+
+    /**
+     * Admin: Delete a voucher
+     */
+    public function destroy($id)
+    {
+        $voucher = Voucher::findOrFail($id);
+        
+        // Also delete related user_vouchers and voucher_usages
+        DB::table('user_vouchers')->where('voucher_id', $id)->delete();
+        DB::table('voucher_usages')->where('voucher_id', $id)->delete();
+        
+        $voucher->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
      * Get user vouchers with remaining usage
      */
     public function getUserVouchers(Request $request)
