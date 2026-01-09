@@ -554,6 +554,11 @@ const selectedVoucher = ref(null)
 
 const openVoucherModal = (deal) => {
   selectedVoucher.value = deal
+  localStorage.setItem('latestClaimedVoucher', JSON.stringify({
+    code: deal.code,
+    discount: deal.discount,
+    claimedAt: Date.now()
+  }))
   showVoucherModal.value = true
 }
 </script>

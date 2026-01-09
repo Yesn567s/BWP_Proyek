@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class VoucherController extends Controller
 {
@@ -40,8 +41,22 @@ class VoucherController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'max_usage' => 'nullable|integer|min:1',
             'is_active' => 'required|boolean',
-            'media' => 'nullable|string|max:100',
+            'media' => 'nullable|image|max:2048',
+            'media_path' => 'nullable|string|max:200',
         ]);
+
+        $mediaPath = $validated['media_path'] ?? '';
+
+        if ($request->hasFile('media')) {
+            $file = $request->file('media');
+            $dir = public_path('uploads/vouchers');
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $mediaPath = 'uploads/vouchers/' . $filename;
+        }
 
         $voucher = Voucher::create([
             'code' => strtoupper($validated['code']),
@@ -51,9 +66,9 @@ class VoucherController extends Controller
             'discount_value' => $validated['discount_value'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
-            'max_usage' => $validated['max_usage'],
+            'max_usage' => $validated['max_usage'] ?? null,
             'is_active' => $validated['is_active'],
-            'media' => $validated['media'] ?? '',
+            'media' => $mediaPath,
             'used_count' => 0,
         ]);
 
@@ -77,8 +92,30 @@ class VoucherController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'max_usage' => 'nullable|integer|min:1',
             'is_active' => 'required|boolean',
-            'media' => 'nullable|string|max:100',
+            'media' => 'nullable|image|max:2048',
+            'media_path' => 'nullable|string|max:200',
         ]);
+
+        $mediaPath = $validated['media_path'] ?? $voucher->media ?? '';
+
+        if ($request->hasFile('media')) {
+            $file = $request->file('media');
+            $dir = public_path('uploads/vouchers');
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $mediaPath = 'uploads/vouchers/' . $filename;
+
+            // Delete old file if it existed in the uploads directory
+            if (!empty($voucher->media)) {
+                $oldPath = public_path($voucher->media);
+                if (is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+        }
 
         $voucher->update([
             'code' => strtoupper($validated['code']),
@@ -88,9 +125,9 @@ class VoucherController extends Controller
             'discount_value' => $validated['discount_value'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
-            'max_usage' => $validated['max_usage'],
+            'max_usage' => $validated['max_usage'] ?? null,
             'is_active' => $validated['is_active'],
-            'media' => $validated['media'] ?? '',
+            'media' => $mediaPath,
         ]);
 
         return response()->json($voucher);

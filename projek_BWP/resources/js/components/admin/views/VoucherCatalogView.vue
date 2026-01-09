@@ -131,8 +131,12 @@
                   <input v-model="form.end_date" type="date" class="form-control" required />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Media Image Path</label>
-                  <input v-model="form.media" type="text" class="form-control" placeholder="e.g. images/voucher.png" />
+                  <label class="form-label">Media Image</label>
+                  <input type="file" class="form-control" accept="image/*" @change="onFileChange" />
+                  <small class="text-muted">Upload an image or leave empty to keep the current one.</small>
+                  <div v-if="mediaPreview || form.media" class="mt-2">
+                    <img :src="mediaPreview || ('/' + form.media)" alt="Voucher" class="img-fluid rounded" style="max-height: 120px; object-fit: cover;">
+                  </div>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
                   <div class="form-check">
@@ -163,6 +167,8 @@ const vouchers = ref([])
 const showModal = ref(false)
 const isEdit = ref(false)
 const saving = ref(false)
+const mediaFile = ref(null)
+const mediaPreview = ref('')
 
 const defaultForm = {
   voucher_id: null,
@@ -227,6 +233,8 @@ function openModal(voucher = null) {
   if (voucher) {
     isEdit.value = true
     form.value = { ...voucher }
+    mediaFile.value = null
+    mediaPreview.value = voucher.media ? `/${voucher.media}` : ''
   } else {
     isEdit.value = false
     const today = new Date().toISOString().split('T')[0]
@@ -237,6 +245,8 @@ function openModal(voucher = null) {
       start_date: today,
       end_date: nextMonth.toISOString().split('T')[0]
     }
+    mediaFile.value = null
+    mediaPreview.value = ''
   }
   showModal.value = true
 }
@@ -244,28 +254,51 @@ function openModal(voucher = null) {
 function closeModal() {
   showModal.value = false
   form.value = { ...defaultForm }
+  mediaFile.value = null
+  mediaPreview.value = ''
+}
+
+function onFileChange(e) {
+  const file = e.target.files?.[0]
+  if (!file) {
+    mediaFile.value = null
+    mediaPreview.value = ''
+    return
+  }
+  mediaFile.value = file
+  mediaPreview.value = URL.createObjectURL(file)
 }
 
 async function saveVoucher() {
   saving.value = true
   try {
-    const payload = {
-      code: form.value.code,
-      title: form.value.title,
-      description: form.value.description || null,
-      discount_type: form.value.discount_type,
-      discount_value: form.value.discount_value,
-      start_date: form.value.start_date,
-      end_date: form.value.end_date,
-      max_usage: form.value.max_usage || null,
-      is_active: form.value.is_active ? 1 : 0,
-      media: form.value.media || ''
+    const payload = new FormData()
+    payload.append('code', form.value.code)
+    payload.append('title', form.value.title)
+    payload.append('description', form.value.description || '')
+    payload.append('discount_type', form.value.discount_type)
+    payload.append('discount_value', form.value.discount_value)
+    payload.append('start_date', form.value.start_date)
+    payload.append('end_date', form.value.end_date)
+    if (form.value.max_usage !== null && form.value.max_usage !== undefined && form.value.max_usage !== '') {
+      payload.append('max_usage', form.value.max_usage)
+    }
+    payload.append('is_active', form.value.is_active ? 1 : 0)
+
+    if (mediaFile.value) {
+      payload.append('media', mediaFile.value)
+    } else if (form.value.media) {
+      payload.append('media_path', form.value.media)
     }
 
     if (isEdit.value) {
-      await axios.put(`/api/admin/vouchers/${form.value.voucher_id}`, payload)
+      await axios.put(`/api/admin/vouchers/${form.value.voucher_id}`, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
     } else {
-      await axios.post('/api/admin/vouchers', payload)
+      await axios.post('/api/admin/vouchers', payload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
     }
 
     closeModal()

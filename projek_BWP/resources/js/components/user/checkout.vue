@@ -73,6 +73,9 @@
               <h5 class="mb-0">Promo Code</h5>
             </div>
             <div class="card-body">
+              <div v-if="claimedVoucher" class="alert alert-warning py-2">
+                Don't forget to use your {{ claimedVoucher.discount || 'voucher' }}! The code is <strong>{{ claimedVoucher.code }}</strong>.
+              </div>
               <div class="input-group">
                 <input v-model="voucherCode" type="text" class="form-control" placeholder="Enter voucher code" @keyup.enter="applyVoucher">
                 <button @click="applyVoucher" class="btn btn-primary" type="button">Apply</button>
@@ -187,6 +190,7 @@ const appliedVoucher = ref(null);
 const showSuccessModal = ref(false);
 const successOrderId = ref(null);
 const checkoutSource = ref(null); // 'seat' or 'food'
+const claimedVoucher = ref(null);
 
 // Ensure axios sends session cookie + CSRF for web middleware
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -194,6 +198,18 @@ if (csrfToken) {
   axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
 }
 axios.defaults.withCredentials = true;
+
+onMounted(() => {
+  const storedVoucher = localStorage.getItem('latestClaimedVoucher');
+  if (!storedVoucher) return;
+  try {
+    claimedVoucher.value = JSON.parse(storedVoucher);
+    voucherCode.value = claimedVoucher.value?.code || '';
+  } catch (err) {
+    console.error('Failed to parse stored voucher', err);
+    claimedVoucher.value = null;
+  }
+});
 
 const seatCount = computed(() => cartItems.value.filter(item => item.type === 'seat').length);
 
@@ -257,7 +273,15 @@ const applyVoucher = async () => {
     console.log('Applied voucher:', res.data);
     voucherMessage.value = 'Voucher applied successfully!';
   } catch (error) {
-    voucherMessage.value = 'Invalid voucher code';
+    const apiError = error?.response?.data?.error || '';
+    const lowered = apiError.toLowerCase();
+    if (lowered.includes('expired')) {
+      voucherMessage.value = 'This voucher is expired';
+    } else if (lowered.includes('invalid')) {
+      voucherMessage.value = 'Invalid voucher code';
+    } else {
+      voucherMessage.value = 'Unable to apply voucher';
+    }
     appliedVoucher.value = null;
   } finally {
     loading.value = false;
