@@ -479,6 +479,7 @@ onMounted(async () => {
 
 const nowPlayingRef = ref(null)
 const upcomingRef = ref(null)
+const scrollRef = ref(null)
 
 const scrollList = (targetRef, direction) => {
   if (!targetRef?.value) return
@@ -490,6 +491,7 @@ const scrollList = (targetRef, direction) => {
   })
 }
 
+const scroll = (direction) => scrollList(scrollRef, direction)
 const scrollNow = (direction) => scrollList(nowPlayingRef, direction)
 const scrollUpcoming = (direction) => scrollList(upcomingRef, direction)
 
