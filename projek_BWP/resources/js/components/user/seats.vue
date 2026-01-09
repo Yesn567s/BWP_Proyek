@@ -51,6 +51,7 @@ const fetchSeats = async () => {
 			'id': schedule.value.product_id,
 			'name': schedule.value.name,
 			'totalPrice': schedule.value.price*1,
+			'valid_until': schedule.value.date ?? props.date ?? null,
 		};
 
 		console.log('Checkout data:', data);
@@ -205,6 +206,7 @@ const handleCheckout = async () => {
 			'id': schedule.value.product_id,
 			'seats': selectedSeats.value,
 			'totalPrice': totalPrice.value,
+			'valid_until': schedule.value.date ?? props.date ?? null,
 		};
 
 		console.log('Checkout data:', data);

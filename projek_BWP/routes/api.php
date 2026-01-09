@@ -41,6 +41,7 @@ Route::get('/vouchers', [VoucherController::class, 'index']);
 Route::get('/vouchers/{code}', [VoucherController::class, 'showByCode']);
 Route::get('/tickets', [TicketProductController::class, 'index']);
 Route::get('/yourTickets', [TicketInstanceController::class, 'index'])->middleware('web');
+Route::post('/tickets/redeem', [TicketInstanceController::class, 'redeem'])->middleware('web');
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('/movies/{id}/schedule', [ScheduleController::class, 'show']);

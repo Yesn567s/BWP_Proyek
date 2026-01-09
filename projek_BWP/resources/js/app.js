@@ -13,6 +13,7 @@ import AccountPage from './components/user/accountPage.vue';
 import Movie from './components/user/movie.vue';
 import Food from './components/user/food.vue';
 import Fun from './components/user/fun.vue';
+import FunSchedule from './components/user/funSchedule.vue';
 import FoodMenu from './components/user/foodMenu.vue';
 import NonMovieSchedule from './components/user/nonMovieSchedule.vue';
 import Seats from './components/user/seats.vue';
@@ -74,6 +75,11 @@ const routes=[
         path: '/fun',
         name: 'fun',
         component: Fun
+    },
+    {
+        path: '/fun-schedule',
+        name: 'funSchedule',
+        component: FunSchedule
     },
     {
         path: '/blog',
