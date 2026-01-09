@@ -51,7 +51,7 @@ const filteredUpcoming = computed(() =>
     <div class="row align-items-center mb-4 g-3">
       <div class="col-md">
         <h1 class="fw-bold">Explore Movies</h1>
-        <p class="text-muted mb-0">blablalbalbeadfvbf vfqdwe nb movie </p>
+        <p class="text-muted mb-0">Discover the latest and greatest movies playing now and coming soon.</p>
       </div>
 
       <!-- Search -->
@@ -116,7 +116,7 @@ const filteredUpcoming = computed(() =>
       <div class="row align-items-center mb-4 g-3">
         <div class="col-md">
           <h1 class="fw-bold">Upcoming Ticket Sales</h1>
-          <p class="text-muted mb-0">yuhu beli tiket yg mo tayang disini </p>
+          <p class="text-muted mb-0">Discover upcoming ticket sales for movies that are about to be released.</p>
         </div>
       </div>
       <div

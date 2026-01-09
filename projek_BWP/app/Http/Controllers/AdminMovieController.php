@@ -15,7 +15,7 @@ class AdminMovieController extends Controller
         'title'            => 'required|string|max:100',
         'genre'            => 'required|string|max:200',
         'description'      => 'required|string|max:1000',
-        'releaseDate'      => 'required|string',
+        'releaseDate'      => 'required|date',
         'playingTime'      => 'required|integer|min:1|max:30',
         'duration_minutes' => 'required|integer|min:60|max:240',
         'ageRating'        => 'required|in:SU,13+,17+',
@@ -30,6 +30,11 @@ class AdminMovieController extends Controller
 
     try {
         // 1️⃣ Insert movie product
+        $releaseDate = Carbon::parse(
+            $request->releaseDate,
+            config('app.timezone') ?? 'UTC'
+        )->startOfDay();
+
         $productId = DB::table('ticket_products')->insertGetId([
             'category_id'       => 1, // Movie
             'name'              => $request->title,
@@ -56,7 +61,8 @@ class AdminMovieController extends Controller
             $productId,
             $request->studio_ids,
             $request->playingTime,
-            $request->duration_minutes
+            $request->duration_minutes,
+            $releaseDate
         );
 
         if ($insertedSchedules === 0) {
@@ -169,51 +175,51 @@ class AdminMovieController extends Controller
     //         'detail' => $e->getMessage()
     //     ], 500);
     // }
-    private function generateSchedules($productId, $studioIds, $days, $duration)
+    private function generateSchedules($productId, $studioIds, $days, $duration, Carbon $startDate)
     {
-    $days     = (int) $days;
-    $duration = (int) $duration;
-    
-    $startDate = Carbon::now()->startOfDay()->addDays(1);
-    $inserted = 0;
-    
-    foreach ($studioIds as $studioId) {
-        foreach (range(0, $days - 1) as $day) {
-    
-            $time = $startDate
-                ->copy()
-                ->addDays($day)
-                ->setTime(10, 0);
-    
-            while ($time->hour < 22) {
-    
-                $start = $time->copy();
-                $end   = $time->copy()->addMinutes($duration);
-    
-                $isOccupied = DB::table('schedules')
-                    ->where('studio_id', $studioId)
-                    ->where(function ($q) use ($start, $end) {
-                        $q->where('start_datetime', '<', $end)
-                          ->where('end_datetime',   '>', $start);
-                    })
-                    ->exists();
-    
-                if (!$isOccupied) {
-                    DB::table('schedules')->insert([
-                        'product_id'     => $productId,
-                        'studio_id'      => $studioId,
-                        'start_datetime' => $start,
-                        'end_datetime'   => $end,
-                    ]);
-                    $inserted++;
+        $days     = (int) $days;
+        $duration = (int) $duration;
+        $inserted = 0;
+
+        foreach ($studioIds as $studioId) {
+            foreach (range(0, $days - 1) as $day) {
+
+                $dayStart  = $startDate->copy()->addDays($day)->setTime(10, 0);
+                $dayCutoff = $startDate->copy()->addDays($day)->setTime(23, 40);
+                $time      = $dayStart->copy();
+
+                while ($time->lt($dayCutoff)) {
+                    $start = $time->copy();
+                    $end   = $start->copy()->addMinutes($duration);
+
+                    if ($end->gt($dayCutoff)) {
+                        break;
+                    }
+
+                    $isOccupied = DB::table('schedules')
+                        ->where('studio_id', $studioId)
+                        ->where(function ($q) use ($start, $end) {
+                            $q->where('start_datetime', '<', $end)
+                              ->where('end_datetime',   '>', $start);
+                        })
+                        ->exists();
+
+                    if (!$isOccupied) {
+                        DB::table('schedules')->insert([
+                            'product_id'     => $productId,
+                            'studio_id'      => $studioId,
+                            'start_datetime' => $start,
+                            'end_datetime'   => $end,
+                        ]);
+                        $inserted++;
+                    }
+
+                    $time->addMinutes($duration + 20);
                 }
-    
-                $time->addMinutes($duration + 20);
             }
         }
-    }
-    
-    return $inserted;
+
+        return $inserted;
     }
 
     public function destroy(int $productId)
