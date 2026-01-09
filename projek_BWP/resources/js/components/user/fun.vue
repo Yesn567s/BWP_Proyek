@@ -191,7 +191,7 @@ const filteredItems = computed(() => {
               </div>
 
               <router-link
-                :to="{ path: '/schedule', query: { productId: item.id } }"
+                :to="{ path: '/fun-schedule', query: { productId: item.id } }"
               >
                 <button class="btn btn-primary rounded-pill fw-bold px-3">
                   Book

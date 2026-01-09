@@ -4,13 +4,14 @@ import axios from 'axios'
 
 const activeTab = ref('active')
 const showingQR = ref(null)
+const currentTicket = ref(null)
+const redeeming = ref(false)
 const tickets = ref([])
 
 onMounted(async () => {
   const res = await axios.get('/api/yourTickets')
   tickets.value = res.data
 })
-
 
 const filteredTickets = computed(() => {
   return tickets.value.filter(t =>
@@ -19,18 +20,48 @@ const filteredTickets = computed(() => {
       : t.status !== 'active'
   )
 })
-// const filteredTickets = computed(() => {
-//   return tickets.value 
-// })
 
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('/api/my-tickets')
-//     tickets.value = res.data
-//   } catch (err) {
-//     console.error('Failed to load tickets', err)
-//   }
-// })
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'N/A'
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+const openQRModal = (ticket) => {
+  showingQR.value = ticket.qr_value
+  currentTicket.value = ticket
+}
+
+const closeQRModal = () => {
+  showingQR.value = null
+  currentTicket.value = null
+}
+
+const redeemTicket = async () => {
+  if (!currentTicket.value || redeeming.value) return
+
+  redeeming.value = true
+  try {
+    const res = await axios.post('/api/tickets/redeem', {
+      qr_code: currentTicket.value.qr_value
+    })
+
+    if (res.data.success) {
+      // Update the ticket status locally
+      const ticketIndex = tickets.value.findIndex(t => t.qr_value === currentTicket.value.qr_value)
+      if (ticketIndex !== -1) {
+        tickets.value[ticketIndex].status = 'used'
+      }
+      alert('Ticket redeemed successfully!')
+      closeQRModal()
+    }
+  } catch (err) {
+    console.error('Redeem failed:', err)
+    alert(err.response?.data?.error || 'Failed to redeem ticket')
+  } finally {
+    redeeming.value = false
+  }
+}
 </script>
 
 <template>
@@ -80,7 +111,7 @@ const filteredTickets = computed(() => {
                   : 'bg-secondary bg-opacity-10 text-secondary'"
                 style="width:64px;height:64px"
               >
-                <!-- {{ getIcon(ticket.category_name) }} -->
+                <i class="bi bi-ticket-perforated"></i>
               </div>
 
               <div>
@@ -88,12 +119,12 @@ const filteredTickets = computed(() => {
                   {{ ticket.category_name }}
                 </small>
                 <h5 class="fw-bold mb-1">{{ ticket.title }}</h5>
-                <small class="text-muted">
-                  {{ ticket.date }}
+                <small class="text-muted d-block" v-if="ticket.valid_until">
+                  <i class="bi bi-calendar-check me-1"></i>Valid until: {{ formatDate(ticket.valid_until) }}
                 </small>
-                <!-- <small class="text-muted">
-                  {{ ticket.date }} • {{ ticket.time }}
-                </small> -->
+                <small class="text-muted d-block" v-if="ticket.order_date">
+                  <i class="bi bi-bag-check me-1"></i>Ordered: {{ formatDate(ticket.order_date) }}
+                </small>
               </div>
             </div>
 
@@ -101,12 +132,11 @@ const filteredTickets = computed(() => {
               <button
                 v-if="ticket.status === 'active'"
                 class="btn btn-primary rounded-pill px-4"
-                @click="showingQR = ticket.qr_value"
+                @click="openQRModal(ticket)"
               >
                 View QR
               </button>
 
-              <button class="btn btn-light rounded-circle">⋮</button>
             </div>
 
           </div>
@@ -115,7 +145,7 @@ const filteredTickets = computed(() => {
     </div>
 
     <!-- Empty -->
-    <div v-else class="text-center py-5">
+    <div v-if="!filteredTickets.length" class="text-center py-5">
       <div class="fs-1">🎫</div>
       <h4 class="fw-bold">No tickets found</h4>
     </div>
@@ -128,7 +158,7 @@ const filteredTickets = computed(() => {
     >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4 p-4 text-center">
-          <button class="btn-close ms-auto" @click="showingQR = null"></button>
+          <button class="btn-close ms-auto" @click="closeQRModal"></button>
 
           <h4 class="fw-bold">Your Ticket QR</h4>
 
@@ -137,7 +167,16 @@ const filteredTickets = computed(() => {
             class="img-fluid my-3"
           />
 
-          <code>{{ showingQR }}</code>
+          <code class="d-block mb-3">{{ showingQR }}</code>
+
+          <button 
+            class="btn btn-success btn-lg rounded-pill px-5 fw-bold"
+            :disabled="redeeming"
+            @click="redeemTicket"
+          >
+            <span v-if="redeeming">Redeeming...</span>
+            <span v-else><i class="bi bi-check-circle me-2"></i>Redeem Ticket</span>
+          </button>
         </div>
       </div>
     </div>

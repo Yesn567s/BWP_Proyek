@@ -31,32 +31,56 @@ class TicketInstanceController extends Controller
                 DB::raw("COALESCE(t.status, 'active') as status"),
                 'tc.category_name as category_name',
                 't.qr_code as qr_value',
-                's.start_datetime as date'
+                't.valid_until as valid_until',
+                'ord.order_date as order_date'
             )
             ->get();
 
-        // Food & Beverage orders (no ticket instances)
-        $foodOrders = DB::table('order_items as oi')
+        $foodOrders = DB::table('ticket_instances as t')
+            ->join('order_items as oi', 't.order_item_id', '=', 'oi.order_item_id')
             ->join('orders as ord', 'oi.order_id', '=', 'ord.order_id')
             ->join('ticket_products as tp', 'oi.product_id', '=', 'tp.product_id')
             ->leftJoin('ticket_categories as tc', 'tp.category_id', '=', 'tc.category_id')
             ->where('ord.user_id', $userId)
-            ->where('tp.category_id', 8) // category 8 = Food & Beverage
-            ->groupBy('ord.order_id', 'tp.product_id', 'tp.name', 'tc.category_name', 'ord.order_date')
+            ->where('tp.category_id', 8)
             ->select(
-                DB::raw('CONCAT(ord.order_id, "-", tp.product_id) as id'),
+                't.ticket_instance_id as id',
                 'tp.name as title',
                 DB::raw('NULL as seatNumber'),
-                DB::raw("'completed' as status"),
+                DB::raw("COALESCE(t.status, 'active') as status"),
                 DB::raw("COALESCE(tc.category_name, 'Food & Beverage') as category_name"),
-                DB::raw('ord.order_id as qr_value'),
-                'ord.order_date as date',
-                DB::raw('COUNT(*) as quantity')
+                't.qr_code as qr_value',
+                't.valid_until as valid_until',
+                'ord.order_date as order_date'
             )
             ->get();
 
         $combined = $tickets->concat($foodOrders)->values();
 
         return response()->json($combined);
+    }
+
+    public function redeem(Request $request)
+    {
+        $userId = $request->session()->get('user_id') ?? $request->cookie('user_id');
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $qrCode = $request->input('qr_code');
+        if (!$qrCode) {
+            return response()->json(['error' => 'QR code is required'], 400);
+        }
+
+        // Update ticket instance status to 'used'
+        $updated = DB::table('ticket_instances')
+            ->where('qr_code', $qrCode)
+            ->update(['status' => 'used']);
+
+        if ($updated) {
+            return response()->json(['success' => true, 'message' => 'Ticket redeemed successfully']);
+        }
+
+        return response()->json(['error' => 'Ticket not found or already used'], 404);
     }
 }

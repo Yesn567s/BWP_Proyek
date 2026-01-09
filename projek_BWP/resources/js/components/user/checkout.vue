@@ -19,12 +19,26 @@
                 <div v-for="(item, index) in cartItems" :key="index" class="d-flex justify-content-between align-items-center pb-3 border-bottom">
                   <div>
                     <h6 class="fw-bold mb-1" v-if="item.type === 'seat'">Seat Booking</h6>
+                    <h6 class="fw-bold mb-1" v-else-if="item.type === 'fun'">Fun Ticket</h6>
+                    <h6 class="fw-bold mb-1" v-else-if="item.type === 'food'">Food & Beverage</h6>
                     <h6 class="fw-bold mb-1" v-else>Item</h6>
-                    <small class="text-muted" v-if="item.type === 'seat'">
-                      Seat: {{ item.row }}{{ item.number }} (ID: {{ item.id }})
+                    <small class="text-muted d-block" v-if="item.type === 'seat'">
+                      Seat: {{ item.row }}{{ item.number }}
                     </small>
-                    <small class="text-muted" v-else>
-                      {{ item.title || item.name }} (Qty: {{ item.quantity || 1 }}) (ID: {{ item.id }})
+                    <small class="text-muted d-block" v-if="item.type === 'seat' && item.valid_until">
+                      <i class="bi bi-calendar-check me-1"></i>Show date: {{ item.valid_until }}
+                    </small>
+                    <small class="text-muted d-block" v-if="item.type === 'fun' || item.type === 'food'">
+                      {{ item.title || item.name }} × {{ item.quantity || 1 }}
+                    </small>
+                    <small class="text-muted d-block" v-if="(item.type === 'fun' || item.type === 'food') && item.valid_until">
+                      <i class="bi bi-calendar-check me-1"></i>Valid until: {{ item.valid_until }}
+                    </small>
+                    <small class="text-muted d-block" v-if="item.type !== 'seat' && item.type !== 'fun' && item.type !== 'food'">
+                      {{ item.title || item.name }} (Qty: {{ item.quantity || 1 }})
+                    </small>
+                    <small class="text-muted d-block" v-if="item.type !== 'seat' && item.type !== 'fun' && item.type !== 'food' && item.valid_until">
+                      <i class="bi bi-calendar-check me-1"></i>Valid until: {{ item.valid_until }}
                     </small>
                   </div>
                   <span class="fw-bold">Rp {{ formatPrice((item.price ?? pricePerSeat) * (item.quantity || 1)) }}</span>
@@ -261,7 +275,8 @@ const buildOrderItems = () => {
       product_id: !isSeat ? item.id : null,
       seat_id: isSeat ? item.id : null,
       price: unitPrice,
-      quantity: 1
+      quantity: 1,
+      valid_until: item.valid_until || null
     }));
   });
 };
@@ -347,7 +362,7 @@ onMounted(() => {
   const hasQueryItems = !!route.query.items;
 
   if (hasQueryItems) {
-    // Prioritize food checkout if query items exist
+    // Prioritize food/fun checkout if query items exist
     try {
       const parsed = JSON.parse(route.query.items);
       if (Array.isArray(parsed)) {
@@ -357,9 +372,11 @@ onMounted(() => {
           title: item.title,
           price: Number(item.price) || 0,
           quantity: item.quantity ?? 1,
-          type: 'food'
+          date: item.date || null,
+          valid_until: item.valid_until || null,
+          type: item.type || 'food'
         }));
-        checkoutSource.value = 'food';
+        checkoutSource.value = parsed[0]?.type || 'food';
       }
     } catch (err) {
       console.error('Error parsing query items:', err);
@@ -371,6 +388,7 @@ onMounted(() => {
     try {
       cart.value = JSON.parse(savedCart);
       scheduleId.value = cart.value.scheduleId;
+      const validUntil = cart.value.valid_until || null;
 
       if (cart.value.seats && Array.isArray(cart.value.seats) && cart.value.seats.length > 0) {
         const seatPrice = cart.value.totalPrice && cart.value.seats.length
@@ -381,7 +399,8 @@ onMounted(() => {
           ...seat,
           type: 'seat',
           price: seat.price ?? seatPrice,
-          quantity: 1
+          quantity: 1,
+          valid_until: validUntil
         }));
         checkoutSource.value = 'seat';
       } else if (cart.value.id && cart.value.name) {
@@ -390,7 +409,8 @@ onMounted(() => {
           name: cart.value.name,
           type: 'item',
           price: cart.value.totalPrice,
-          quantity: 1
+          quantity: 1,
+          valid_until: validUntil
         }];
         checkoutSource.value = 'seat';
       }

@@ -27,7 +27,6 @@ const loadSchedule = async () => {
 	try {
 		const productId = route.params.id || route.query.productId || 1
 
-		// Fetch schedule and the precomputed dates in parallel
 		const [scheduleRes, datesRes] = await Promise.all([
 			axios.get(`/api/movies/${productId}/schedule`),
 			axios.get(`/api/movies/${productId}/dates`),
@@ -36,10 +35,8 @@ const loadSchedule = async () => {
 		movie.value = scheduleRes.data.movie
 		schedules.value = scheduleRes.data.schedules
 
-		// API returns array of { value, weekday, day, month }
 		dates.value = Array.isArray(datesRes.data) ? datesRes.data : []
 
-		// Prefer first date from dates API, fallback to schedule date
 		selectedDate.value = dates.value?.[0]?.value ?? scheduleRes.data.schedules?.[0]?.date ?? null
 	} catch (err) {
 		console.error(err)
@@ -50,14 +47,6 @@ const loadSchedule = async () => {
 }
 
 onMounted(loadSchedule)
-// onMounted(async () => {
-//   const res = await axios.get('/api/movies/1/dates')
-//   dates.value = res.data          // ✅ BENAR
-//   selectedDate.value = res.data[0]?.value ?? null
-// })
-
-// `dates` is now populated from the API above (array of { value, weekday, day, month })
-// If you prefer computing from `schedules`, we can keep that logic as a fallback later.
 
 const venuesForSelectedDate = computed(() => {
 	if (!selectedDate.value) return []
@@ -79,13 +68,12 @@ const venuesForSelectedDate = computed(() => {
 			}
 		}
 
-		// 🔹 langsung push slot (tanpa group studio)
 		venues[slot.venue_id].slots.push({
 			id: slot.id,
 			start: slot.start_time,
 			end: slot.end_time,
-			studioId: slot.studio_id,      // disimpan, tidak ditampilkan
-			studioName: slot.studio_name,  // disimpan, tidak ditampilkan
+			studioId: slot.studio_id, 
+			studioName: slot.studio_name, 
 			date: slot.date,
 			startFull: slot.start,
 			endFull: slot.end,

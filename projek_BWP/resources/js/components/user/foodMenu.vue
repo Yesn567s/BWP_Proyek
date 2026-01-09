@@ -174,10 +174,27 @@ const selectedItems = computed(() =>
   foods.value.filter(item => (item.quantity || 0) > 0)
 )
 
+// Calculate valid_until as 3 days from today
+const getValidUntil = () => {
+  const date = new Date()
+  date.setDate(date.getDate() + 3)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const checkout = () => {
   if (!selectedItems.value.length) return
 
-  router.push({ name: 'checkout', query: { items: JSON.stringify(selectedItems.value) } })
+  const validUntil = getValidUntil()
+  const itemsWithValidUntil = selectedItems.value.map(item => ({
+    ...item,
+    valid_until: validUntil,
+    type: 'food'
+  }))
+
+  router.push({ name: 'checkout', query: { items: JSON.stringify(itemsWithValidUntil) } })
 }
 
 const changeQuantity = (item, delta) => {
