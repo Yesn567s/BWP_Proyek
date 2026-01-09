@@ -31,6 +31,32 @@
 .search-input {
   padding-left: 3rem;
 }
+
+.fun-category-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;        
+  overflow-x: auto;         
+  padding-bottom: 5px;
+}
+
+.fun-btn {
+  display: flex;
+  align-items: center;      
+  gap: 8px;
+  white-space: nowrap;      
+  height: 40px;             
+  padding: 0 16px;
+  flex-shrink: 0;           
+}
+
+.cat-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
 </style>
 
 <script setup>
@@ -126,11 +152,10 @@ const filteredItems = computed(() => {
     </div>
 
     <!-- CATEGORIES -->
-    <div class="d-flex gap-2 overflow-auto mb-4 pb-2 category-scroll">
-
-      <!-- ALL -->
+    <div class="fun-category-wrapper">
+      <!-- All Fun -->
       <button
-        class="btn rounded-pill fw-bold"
+        class="btn rounded-pill fw-bold fun-btn"
         :class="!route.query.category ? 'btn-primary' : 'btn-outline-secondary'"
         @click="router.push({ name: 'fun' })"
       >
@@ -141,7 +166,7 @@ const filteredItems = computed(() => {
       <button
         v-for="cat in funCategories"
         :key="cat.category_id"
-        class="btn rounded-pill fw-bold text-nowrap"
+        class="btn rounded-pill fw-bold fun-btn"
         :class="route.query.category == cat.category_id
           ? 'btn-primary'
           : 'btn-outline-secondary'"
@@ -150,8 +175,8 @@ const filteredItems = computed(() => {
         <img :src="`/${cat.icons}`" class="cat-icon" />
         {{ cat.category_name }}
       </button>
-
     </div>
+
 
     <!-- TICKETS GRID -->
     <div class="row g-4">
