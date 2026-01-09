@@ -100,7 +100,7 @@
         <div class="col-12 col-lg-9 order-1 order-lg-2 text-center">
           <div class="row justify-content-lg-end text-lg-end">
             <!-- Tickets -->
-            <div class="col-6 col-md-4 col-lg-3 mb-4 mb-lg-0">
+            <div class="col-6 col-md-4 col-lg-3 mb-4 mb-lg-0 text-center">
               <h6 class="fw-bold mb-3">Tickets</h6>
               <ul class="list-unstyled footer-links">
                 <router-link to="/movies">

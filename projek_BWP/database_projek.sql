@@ -1,5 +1,5 @@
 /*
-SQLyog Community v13.3.0 (64 bit)
+SQLyog Community v13.3.1 (64 bit)
 MySQL - 8.0.30 : Database - db_ticketing
 *********************************************************************
 */
@@ -146,7 +146,7 @@ CREATE TABLE `product_media` (
   PRIMARY KEY (`media_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_media_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `ticket_products` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `product_media` */
 
@@ -167,7 +167,12 @@ insert  into `product_media`(`media_id`,`product_id`,`media_type`,`media_url`) v
 (21,20,'poster','posters/popcorn.jpg'),
 (22,21,'poster','posters/burger.jpg'),
 (23,22,'poster','posters/hotdog.jpg'),
-(24,23,'poster','posters/coca-cola.jpg');
+(24,23,'poster','posters/coca-cola.jpg'),
+(25,2,'poster','posters/zoo.jpg'),
+(26,3,'poster','posters/musium.jpg'),
+(27,4,'poster','posters/arcade.jpg'),
+(28,6,'poster','posters/concert.jpg'),
+(29,5,'poster','posters/trampoline.jpg');
 
 /*Table structure for table `schedules` */
 
@@ -6102,19 +6107,20 @@ CREATE TABLE `vouchers` (
   `is_active` tinyint(1) DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `media` varchar(50) NOT NULL,
   PRIMARY KEY (`voucher_id`),
   UNIQUE KEY `code` (`code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `vouchers` */
 
-insert  into `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type`,`discount_value`,`start_date`,`end_date`,`max_usage`,`used_count`,`is_active`,`created_at`,`updated_at`) values 
-(1,'MOV01','Movie Voucher 10%',NULL,'percent',10,'2025-01-01','2025-02-01',NULL,0,1,'2025-12-23 10:17:44','2025-12-23 10:19:27'),
-(2,'FAMILYB3G1','Family Pack','Buy 3 get 1 free for Waterpark','fixed',1,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
-(3,'ARCADE2X','Arcade Mania','Double credits for every top-up','percent',100,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
-(4,'NIGHT5','Night Show','Special price for late night movies','fixed',5,'2025-01-01','2025-12-31',500,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
-(5,'STUDENT20','Student Special','20% discount for students on selected shows','percent',20,'2025-01-01','2025-12-31',300,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23'),
-(6,'WEEKEND15','Weekend Deal','15% off for weekend attractions','percent',15,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2025-12-23 10:23:23');
+insert  into `vouchers`(`voucher_id`,`code`,`title`,`description`,`discount_type`,`discount_value`,`start_date`,`end_date`,`max_usage`,`used_count`,`is_active`,`created_at`,`updated_at`,`media`) values 
+(1,'MOV01','Movie Voucher 10%',NULL,'percent',10,'2025-01-01','2025-02-01',NULL,0,1,'2025-12-23 10:17:44','2026-01-09 21:07:44','images/movie-voucher.png'),
+(2,'FAMILYB3G1','Family Pack','Buy 3 get 1 free for Waterpark','fixed',1,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2026-01-09 21:08:09','images/waterpark.png'),
+(3,'ARCADE2X','Arcade Mania','Double credits for every top-up','percent',100,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2026-01-09 21:08:30','images/arcade.png'),
+(4,'NIGHT5','Night Show','Special price for late night movies','fixed',5,'2025-01-01','2025-12-31',500,0,1,'2025-12-23 10:23:23','2026-01-09 21:08:44','images/night-show.png'),
+(5,'STUDENT20','Student Special','20% discount for students on selected shows','percent',20,'2025-01-01','2025-12-31',300,0,1,'2025-12-23 10:23:23','2026-01-09 21:14:37','images/student.png'),
+(6,'WEEKEND15','Weekend Deal','15% off for weekend attractions','percent',15,'2025-01-01','2025-12-31',NULL,0,1,'2025-12-23 10:23:23','2026-01-09 21:13:41','images/weekend.png');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

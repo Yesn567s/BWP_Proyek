@@ -420,6 +420,8 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import ModalClaimDealsVoucher from './modalClaimDealsVoucher.vue'
+
 
 const router = useRouter()
 
@@ -445,9 +447,13 @@ onMounted(async () => {
       voucher.discount_type === 'percent'
         ? `${voucher.discount_value}% OFF`
         : `FLAT ${voucher.discount_value}`,
-    imageUrl: '/images/posters/zootopia-movie.jpg', // static for now
-    validUntil: voucher.end_date
+    imageUrl: voucher.media
+      ? `/${voucher.media}`
+      : '/images/default.jpg',
+    validUntil: voucher.end_date,
+    code: voucher.code
   }))
+
 })
 
 const categories = ref([])
@@ -541,6 +547,13 @@ onMounted(async () => {
   }
 });
 
+const showVoucherModal = ref(false)
+const selectedVoucher = ref(null)
+
+const openVoucherModal = (deal) => {
+  selectedVoucher.value = deal
+  showVoucherModal.value = true
+}
 </script>
 
 <template>
@@ -573,9 +586,8 @@ onMounted(async () => {
 
             <div class="d-flex justify-content-between align-items-center">
               <small class="text-muted text-uppercase">Valid until 30 Dec</small>
-              <a href="#" class="fw-bold text-primary text-decoration-none">
-                Claim Deal →
-              </a>
+              <a v-if="!deal.isClaimed" href="#" class="btn btn-link fw-bold text-primary text-decoration-none p-0" @click.prevent="openVoucherModal(deal)">Claim Deal →</a>
+              <span v-else class="badge bg-success">Claimed</span>
             </div>
           </div>
         </div>
@@ -795,4 +807,12 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+
+  <ModalClaimDealsVoucher
+  v-if="selectedVoucher"
+  :show="showVoucherModal"
+  :voucher="selectedVoucher"
+  @close="showVoucherModal = false"
+/>
+
 </template>
